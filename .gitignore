@@ -26,9 +26,9 @@ hs_err_pid*
 
 # NetBeans specific
 nbproject/private/
-/build/
+build/
 nbbuild/
-/dist/
+dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
