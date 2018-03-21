@@ -1,0 +1,28 @@
+cd /d C:\NWTiS\grupa_2\damdrempe\vjezba_05\vjezba_05_1
+SET PROMPT=$G
+
+java -jar dist\vjezba_05_1.jar NWTiS_damdrempe.txt
+
+keytool -keyalg RSA -genkey -dname "CN=ime prezime, OU=NWTiS O=FOI, L=Varazdin, ST=Croatia, C=HR" -alias damdrempe -keypass 123456 -keystore damdrempe.jks -storepass nwtis2018
+keytool -list -keystore damdrempe.jks -storepass nwtis2018
+
+jarsigner -keystore damdrempe.jks -storepass nwtis2018 -keypass 123456 -signedjar dist\vjezba_05_1_sign.jar dist\vjezba_05_1.jar damdrempe
+
+jarsigner -verify -verbose -certs dist\vjezba_05_1_sign.jar
+
+keytool -export -keystore damdrempe.jks -storepass nwtis2018 -alias  damdrempe -file damdrempe.cer
+
+java -jar dist\vjezba_05_1_sign.jar NWTiS_damdrempe.txt
+
+java -Djava.security.manager -jar dist\vjezba_05_1_sign.jar NWTiS_damdrempe.txt
+
+java -Djava.security.manager -Djava.security.policy=damdrempe.policy -jar dist\vjezba_05_1_sign.jar NWTiS_damdrempe.txt
+
+java -Djava.security.manager -Djava.security.policy=damdrempe_signed.policy -jar dist\vjezba_05_1_sign.jar NWTiS_damdrempe.txt
+
+Korak 22 ne radi jer nije potpisan jar vjezbe 3 2 
+pa ponoviti korak 13 ali za vjezbu 3 2
+
+jarsigner -keystore damdrempe.jks -storepass nwtis2018 -keypass 123456 -signedjar lib\vjezba_03_2_sign.jar lib\vjezba_03_2.jar damdrempe
+
+Ali treba Clean and build Vjezba 5 1, ponovo ju potpisati i onda probati korak 22

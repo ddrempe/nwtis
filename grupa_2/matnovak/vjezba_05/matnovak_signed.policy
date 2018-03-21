@@ -1,0 +1,5 @@
+keystore "http://161.53.120.205/NWTiS/NWTiS.jks", "jks";
+
+grant signedBy "matnovak" {
+    permission java.io.FilePermission "<<ALL FILES>>", "read";
+};

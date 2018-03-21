@@ -1,0 +1,25 @@
+java -jar dist\vjezba_05.jar NWTiS_matnovak.txt
+java -cp dist\vjezba_05.jar org.foi.nwtis.matnovak.sigurnost.Vjezba_05 NWTiS_matnovak.txt
+
+keytool -keyalg RSA -genkey -dname "CN=Matija Novak, OU=NWTiS O=FOI, L=Varazdin, ST=Croatia, C=HR" -alias matnovak -keypass 123456 -keystore matnovak.jks -storepass nwtis2018 
+keytool -list -keystore matnovak.jks -storepass nwtis2018 
+
+jarsigner -keystore matnovak.jks -storepass nwtis2018 -keypass 123456 -signedjar dist\vjezba_05_sign.jar dist\vjezba_05.jar matnovak
+jarsigner -verify -verbose -certs dist\vjezba_05_sign.jar 
+
+keytool -export -keystore matnovak.jks -storepass nwtis2018 -alias  matnovak -file matnovak.cer
+
+java -jar dist\vjezba_05_sign.jar NWTiS_matnovak.txt
+java -cp dist\vjezba_05_sign.jar org.foi.nwtis.matnovak.sigurnost.Vjezba_05 NWTiS_matnovak.txt
+
+java -Djava.security.manager -jar dist\vjezba_05_sign.jar NWTiS_matnovak.txt
+java -Djava.security.manager -cp dist\vjezba_05_sign.jar org.foi.nwtis.matnovak.sigurnost.Vjezba_05 NWTiS_matnovak.txt
+
+java -Djava.security.manager -Djava.security.policy=matnovak.policy -jar dist\vjezba_05_sign.jar NWTiS_matnovak.txt
+java -Djava.security.manager -Djava.security.policy=matnovak.policy -cp dist\vjezba_05_sign.jar org.foi.nwtis.matnovak.sigurnost.Vjezba_05 NWTiS_matnovak.txt
+
+java -Djava.security.manager -Djava.security.policy=matnovak_signed.policy -jar dist\vjezba_05_sign.jar NWTiS_matnovak.txt
+java -Djava.security.manager -Djava.security.policy=matnovak_signed.policy -cp dist\vjezba_05_sign.jar org.foi.nwtis.matnovak.sigurnost.Vjezba_05 NWTiS_matnovak.txt
+
+1. jarsigner -keystore matnovak.jks -storepass nwtis2018 -keypass 123456 -signedjar lib\vjezba_03_2_sign.jar lib\vjezba_03_2.jar matnovak
+2. jarsigner -keystore matnovak.jks -storepass nwtis2018 -keypass 123456 -signedjar dist\vjezba_05_sign.jar dist\vjezba_05.jar matnovak

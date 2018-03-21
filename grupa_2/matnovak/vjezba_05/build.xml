@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="vjezba_05" default="default" basedir=".">
+    <description>Builds, tests, and runs the project vjezba_05.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!--
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar:                  JAR building
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="vjezba_05-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+ 
+    <target name="keygen" depends="">
+        <echo level="info">keygen</echo>
+        <genkey alias="matnovak"
+                keystore="matnovak.jks" storepass="nwtis2018"
+                keypass="123456">
+            <dname>
+                <param name="CN" value="Matija Novak"/>
+                <param name="OU" value="NWTiS"/>
+                <param name="O" value="FOI"/>
+                <param name="L" value="Varazdin"/>
+                <param name="C" value="Croatia"/>
+            </dname>
+        </genkey>
+    </target>
+    
+    <target name="-post-jar" depends="-init-check">
+        <echo level="info">-post-jar</echo>
+        <signjar alias="matnovak" jar="${dist.jar}"
+                 signedjar="${dist.dir}/${ant.project.name}_sign.jar"
+                 keystore="matnovak.jks" storepass="nwtis2018"
+                 keypass="123456"/>
+    </target>
+    
+    <target name="run.0" depends="-init-check">
+        <echo level="info">run.0</echo>
+        <java jar="${dist.jar}">
+            <arg value="NWTiS_matnovak.txt"/>
+        </java>
+    </target>
+    
+    <target name="run.1" depends="-init-check">
+        <echo level="info">run.1</echo>
+        <java jar="${dist.jar}">
+            <arg value="NWTiS_matnovak.xml"/>
+        </java>
+    </target>
+    
+    <target name="run.2" depends="-init-check">
+        <echo level="info">run.2</echo>
+        <java jar="${dist.dir}/${ant.project.name}_sign.jar">
+            <arg value="NWTiS_matnovak.txt"/>
+            <jvmarg value="-Djava.security.manager"/>
+            <jvmarg value="-Djava.security.manager=matnovak_signed.policy"/>
+        </java>
+    </target>
+</project>

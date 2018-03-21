@@ -1,0 +1,7 @@
+#Konfiguracija NWTiS Grupa 2
+#Tue Mar 13 16:56:54 CET 2018
+port=8000
+maks.broj.zahtjeva.cekanje=5
+maks.broj.radnih.dretvi=3
+datoteka.evidencije.rada=NWTiS_damdrempe_evidencija_rada.bin
+interval.za.serijalizaciju=60
