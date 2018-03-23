@@ -78,7 +78,6 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija{
         return true;
     }
     
-    //TODO dovrsiti?
     public static Konfiguracija kreirajKonfiguraciju(String datoteka) throws NemaKonfiguracije, NeispravnaKonfiguracija{
         Konfiguracija konfig = null;
         
@@ -99,7 +98,6 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija{
         return konfig;
     }
     
-    //TODO vidjeti koja je razlika između preuzmi i kreiraj pa popraviti
     public static Konfiguracija preuzmiKonfiguraciju(String datoteka) throws NemaKonfiguracije, NeispravnaKonfiguracija{
         Konfiguracija konfig = null;
         
@@ -115,7 +113,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija{
             throw new NemaKonfiguracije("Neispravna ekstenzija!");
         }
         
-        konfig.spremiKonfiguraciju();
+        konfig.ucitajKonfiguraciju();
         
         return konfig;
     }

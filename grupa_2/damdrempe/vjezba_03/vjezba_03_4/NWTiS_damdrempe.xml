@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Konfiguracija NWTIS grupa 2</comment>
+<entry key="oj.zahtjeva.cekanje">5</entry>
+<entry key="maks.broj.radnih.dretvi">5</entry>
+<entry key="interval.za.serijalizaciju">60</entry>
+<entry key="datoteka.evidencije.rada">NWTiS_damdrempe_evidencija_rada.bin</entry>
+<entry key="skup.kodova.znakova">UTF-8</entry>
+<entry key="admin.0.damdrempe">FOI_1234</entry>
+<entry key="korisnik">ivo</entry>
+<entry key="lozinka">000000</entry>
+</properties>

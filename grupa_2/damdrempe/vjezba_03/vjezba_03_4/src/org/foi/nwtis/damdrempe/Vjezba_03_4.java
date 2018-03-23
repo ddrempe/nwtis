@@ -1,8 +1,8 @@
 package org.foi.nwtis.damdrempe;
 
-import com.sun.istack.internal.logging.Logger;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.damdrempe.konfiguracije.NeispravnaKonfiguracija;
@@ -25,21 +25,22 @@ public class Vjezba_03_4 {
                     System.out.println(k + " = " + v);
                 }
             } catch (NemaKonfiguracije | NeispravnaKonfiguracija ex) {
-                Logger.getLogger(Vjezba_03_4.class.getName()).log(Level.SEVERE);
+                Logger.getLogger(Vjezba_03_4.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
         if(args.length == 2){
             try {
                 Konfiguracija konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(args[0]);
-                String p = konf.dajPostavku(args[0]);
-                for (Object k : p.keySet()) {
-                    String v = konf.dajPostavku((String) k);
-                    System.out.println(k + " = " + v);
-                }
+                String p = konf.dajPostavku(args[1]);
+                System.out.println(args[1] + " = " + p);
             } catch (NemaKonfiguracije | NeispravnaKonfiguracija ex) {
-                Logger.getLogger(Vjezba_03_4.class.getName()).log(Level.SEVERE);
+                Logger.getLogger(Vjezba_03_4.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        
+        if(args.length == 3){
+            //TODO iskodirati
         }
     }
     
