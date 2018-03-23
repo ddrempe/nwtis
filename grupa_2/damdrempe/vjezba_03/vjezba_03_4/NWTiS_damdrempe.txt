@@ -3,7 +3,6 @@
 interval.za.serijalizaciju=60
 skup.kodova.znakova=UTF-8
 admin.3.mato=654321
-nova=50
 lozinka=000000
 admin.1.matnovak=FOI_5678
 admin.5.helga=24680

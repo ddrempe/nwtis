@@ -1,12 +1,17 @@
 package org.foi.nwtis.damdrempe.konfiguracije;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import java.io.Writer;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KonfiguracijaJSON extends KonfiguracijaApstraktna {
 
@@ -33,7 +38,12 @@ public class KonfiguracijaJSON extends KonfiguracijaApstraktna {
             throw new NemaKonfiguracije(datoteka + " nije datoteka već direktorij");
         }
 
-        //TODO: dovršiti
+        try {
+            Gson gson = new Gson();
+            this.postavke = gson.fromJson(new FileReader(datoteka), Properties.class);
+        } catch (FileNotFoundException ex) {
+            throw new NeispravnaKonfiguracija("Problem kod ucitavanja datoteke: " + datKonf.getAbsolutePath());
+        }
     }
 
     @Override
@@ -53,6 +63,13 @@ public class KonfiguracijaJSON extends KonfiguracijaApstraktna {
             throw new NemaKonfiguracije(datoteka + " nije datoteka već direktorij!");
         }
         
-        //TODO: dovršiti
+        try {
+            Writer writer = new FileWriter(datoteka);
+            Gson gson = new GsonBuilder().create();
+            gson.toJson(this.postavke, writer);
+            writer.close();
+        } catch (IOException ex) {
+            throw new NeispravnaKonfiguracija("Problem kod spremanja datoteke: " + datKonf.getAbsolutePath());
+        }
     }
 }
