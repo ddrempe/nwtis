@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Properties;
 
 public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
 
@@ -16,7 +15,7 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
 
     @Override
     public void ucitajKonfiguraciju() throws NemaKonfiguracije, NeispravnaKonfiguracija {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ucitajKonfiguraciju(this.datoteka);
     }
 
     @Override
@@ -36,6 +35,7 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
         try {
             InputStream is = Files.newInputStream(datKonf.toPath(), StandardOpenOption.READ);
             this.postavke.load(is);
+            is.close();
         } catch (IOException ex) {
             throw new NeispravnaKonfiguracija("Problem kod ucitavanja datoteke: " + datKonf.getAbsolutePath());
         }
@@ -43,7 +43,7 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
 
     @Override
     public void spremiKonfiguraciju() throws NemaKonfiguracije, NeispravnaKonfiguracija {
-        spremiKonfiguraciju(datoteka);
+        spremiKonfiguraciju(this.datoteka);
     }
 
     @Override
@@ -61,6 +61,7 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
         try {
             OutputStream os = Files.newOutputStream(datKonf.toPath(), StandardOpenOption.CREATE);
             this.postavke.store(os, "Konfiguracija NWTIS grupa 2");
+            os.close();
         } catch (IOException ex) {
             throw new NeispravnaKonfiguracija("Problem kod spremanja datoteke: " + datKonf.getAbsolutePath());
         }

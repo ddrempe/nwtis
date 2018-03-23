@@ -18,7 +18,7 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
 
     @Override
     public void ucitajKonfiguraciju() throws NemaKonfiguracije, NeispravnaKonfiguracija {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ucitajKonfiguraciju(this.datoteka);
     }
 
     @Override
@@ -41,14 +41,14 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
             this.postavke = (Properties) ois.readObject();
             ois.close();
             is.close();
-        } catch (IOException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             throw new NeispravnaKonfiguracija("Problem kod ucitavanja datoteke: " + datKonf.getAbsolutePath());
         }
     }
 
     @Override
     public void spremiKonfiguraciju() throws NemaKonfiguracije, NeispravnaKonfiguracija {
-        spremiKonfiguraciju(datoteka);
+        spremiKonfiguraciju(this.datoteka);
     }
 
     @Override
@@ -67,7 +67,8 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
             OutputStream os = Files.newOutputStream(datKonf.toPath(), StandardOpenOption.CREATE);
             ObjectOutputStream oos = new ObjectOutputStream(os);
             oos.writeObject(this.postavke);
-            this.postavke.store(os, "Konfiguracija NWTIS grupa 2");
+            oos.close();
+            os.close();
         } catch (IOException ex) {
             throw new NeispravnaKonfiguracija("Problem kod spremanja datoteke: " + datKonf.getAbsolutePath());
         }

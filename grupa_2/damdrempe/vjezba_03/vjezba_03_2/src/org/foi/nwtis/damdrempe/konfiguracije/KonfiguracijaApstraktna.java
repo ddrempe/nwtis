@@ -10,7 +10,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija{
         this.datoteka = datoteka;
         this.postavke = new Properties();
     }
-
+    
     @Override
     public void dodajKonfiguraciju(Properties postavke) {
         for(Object k1 : postavke.keySet()) {
@@ -50,7 +50,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija{
         if(this.postavke.containsKey(postavka))
             return false;
         
-        this.postavke.setProperty(postavka, datoteka);
+        this.postavke.setProperty(postavka, vrijednost);
         return true;
     }
 
@@ -78,6 +78,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija{
         return true;
     }
     
+    //TODO dovrsiti?
     public static Konfiguracija kreirajKonfiguraciju(String datoteka) throws NemaKonfiguracije, NeispravnaKonfiguracija{
         Konfiguracija konfig = null;
         
@@ -98,6 +99,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija{
         return konfig;
     }
     
+    //TODO vidjeti koja je razlika između preuzmi i kreiraj pa popraviti
     public static Konfiguracija preuzmiKonfiguraciju(String datoteka) throws NemaKonfiguracije, NeispravnaKonfiguracija{
         Konfiguracija konfig = null;
         

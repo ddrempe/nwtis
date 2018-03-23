@@ -16,7 +16,7 @@ public class KonfiguracijaJSON extends KonfiguracijaApstraktna {
 
     @Override
     public void ucitajKonfiguraciju() throws NemaKonfiguracije, NeispravnaKonfiguracija {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ucitajKonfiguraciju(this.datoteka);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class KonfiguracijaJSON extends KonfiguracijaApstraktna {
 
     @Override
     public void spremiKonfiguraciju() throws NemaKonfiguracije, NeispravnaKonfiguracija {
-        spremiKonfiguraciju(datoteka);
+        spremiKonfiguraciju(this.datoteka);
     }
 
     @Override
