@@ -1,16 +1,17 @@
 #Konfiguracija NWTIS grupa 2
-#Fri Mar 23 18:25:40 CET 2018
-oj.zahtjeva.cekanje=5
-maks.broj.radnih.dretvi=5
+#Fri Mar 23 21:25:13 CET 2018
 interval.za.serijalizaciju=60
-datoteka.evidencije.rada=NWTiS_damdrempe_evidencija_rada.bin
 skup.kodova.znakova=UTF-8
-admin.0.damdrempe=FOI_1234
-admin.1.matnovak=FOI_5678
-admin.2.pero=123456
 admin.3.mato=654321
-admin.4.iva=13579
-admin.5.helga=24680
-admin.6.goga=192837
-korisnik=ivo
+nova=50
 lozinka=000000
+admin.1.matnovak=FOI_5678
+admin.5.helga=24680
+datoteka.evidencije.rada=NWTiS_damdrempe_evidencija_rada.bin
+admin.2.pero=123456
+korisnik=pero
+maks.broj.radnih.dretvi=5
+admin.0.damdrempe=FOI_1234
+admin.6.goga=192837
+admin.4.iva=13579
+oj.zahtjeva.cekanje=5

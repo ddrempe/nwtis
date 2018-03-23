@@ -40,7 +40,21 @@ public class Vjezba_03_4 {
         }
         
         if(args.length == 3){
-            //TODO iskodirati
+            try {
+                Konfiguracija konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(args[0]);
+                if(konf.spremiPostavku(args[1], args[2]) == true){
+                    System.out.println("Postavka je kreirana!");
+                    konf.spremiKonfiguraciju();
+                }
+                else{
+                    konf.azurirajPostavku(args[1], args[2]);
+                    System.out.println("Postavka je azurirana!");
+                    konf.spremiKonfiguraciju();
+                }                
+            } catch (NemaKonfiguracije |NeispravnaKonfiguracija ex) {
+                Logger.getLogger(Vjezba_03_4.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
     }
     
