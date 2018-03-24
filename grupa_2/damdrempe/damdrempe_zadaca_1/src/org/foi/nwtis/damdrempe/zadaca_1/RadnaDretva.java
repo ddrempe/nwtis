@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.zadaca_1;
 
 import java.io.IOException;
@@ -13,10 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 
-/**
- *
- * @author grupa_2
- */
 class RadnaDretva extends Thread {
 
     private Socket socket;
@@ -32,7 +23,7 @@ class RadnaDretva extends Thread {
 
     @Override
     public void interrupt() {
-        super.interrupt(); //To change body of generated methods, choose Tools | Templates.
+        super.interrupt();
     }
 
     @Override
@@ -49,8 +40,6 @@ class RadnaDretva extends Thread {
                 }
                 buffer.append((char) znak);
             }
-            //TODO smanji broj aktivnih radnih dretvi kod servera sustava
-            //TODO zasto ne radi prvi zahtjev?
             
             System.out.println("Dretva: "+ nazivDretve + "Komanda: " + buffer.toString());
             //TODO provjeri ispravnost primljene komande i vrati odgovarajući odgovor
@@ -60,11 +49,12 @@ class RadnaDretva extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
         }
+        //TODO smanji broj aktivnih radnih dretvi kod servera sustava
+        //TODO zasto ne radi prvi zahtjev?
     }
 
     @Override
     public synchronized void start() {
-        super.start(); //To change body of generated methods, choose Tools | Templates.
-    }
-    
+        super.start();
+    }    
 }

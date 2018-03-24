@@ -4,7 +4,6 @@ import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
@@ -18,8 +17,7 @@ public class ServerSustava {
         if(args.length != 1){
             System.out.println("Krivi broj argumenata!");
             return;
-        }
-        
+        }        
 
         try {
             Konfiguracija konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(args[0]);
@@ -48,11 +46,11 @@ public class ServerSustava {
             while (radiDok) { 
                 Socket socket = serverSocket.accept();
                 
-                try {   //TODO samo za privremeno testiranje
-                    sleep(60000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex);
-                }
+//                try {   //TODO samo za privremeno testiranje
+//                    sleep(60000);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex);
+//                }
                 
                 System.out.println("Korisnik se spojio");
                 if(brojDretvi == maksDretvi){

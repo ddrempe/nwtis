@@ -1,28 +1,29 @@
 package org.foi.nwtis.damdrempe.zadaca_1;
 
 public class KorisnikSustava {
+    
     String korisnik;
     String lozinka;
     String adresa;
     int port;
-    boolean administrator = false;
-    
+    boolean administrator = false;    
     String[] args;
+    
     public static void main(String[] args) {
         // TODO provjeri upisane argumente
         KorisnikSustava ks = new KorisnikSustava();
         ks.preuzmiPostavke(args);
         ks.args = args;
-    }
     
-    if(ks.administrator){
-        //TODO kreiraj objekt AdministratorSustava i predaj mu kontrolu
-        AdministratorSustava as = new AdministratorSustava(null);
-        as.preuzmiKontrolu();
-    } else {
-        //TODO kreiraj objekt KorisnikSustava i predaj mu kontrol
-        KlijentSustava kls = new KlijentSustava();
-        kls.preuzmiKontrolu();
+        if(ks.administrator){
+            //TODO kreiraj objekt AdministratorSustava i predaj mu kontrolu
+            AdministratorSustava as = new AdministratorSustava();
+            as.preuzmiKontrolu();
+        } else {
+            //TODO kreiraj objekt KorisnikSustava i predaj mu kontrol
+            KlijentSustava kls = new KlijentSustava();
+            kls.preuzmiKontrolu();
+        }
     }
 
     public KorisnikSustava() {

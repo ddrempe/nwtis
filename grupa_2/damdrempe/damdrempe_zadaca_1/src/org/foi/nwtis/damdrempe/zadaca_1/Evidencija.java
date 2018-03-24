@@ -2,13 +2,14 @@ package org.foi.nwtis.damdrempe.zadaca_1;
 
 import java.io.Serializable;
 
-public class Evidencija implements Serializable{
-    private long ukupanBrojZahtjeva = 0;
-    private long brojNeispravnihZahtjeva = 0;
-    private long brojNedozvoljenihZahtjeva = 0;
-    private long brojUspjesnihZahtjeva = 0;
-    private long brojPrekinutihZahtjeva = 0;
-    private long brojObavljenihSerijalizacija = 0;
+public class Evidencija implements Serializable {
+   private long ukupanBrojZahtjeva = 0;
+   private long brojNeispravnihZahtjeva = 0;
+   private long brojNedozvoljenihZahtjeva = 0;
+   private long brojUspjesnihZahtjeva = 0;
+   private long brojPrekinutihZahtjeva = 0;
+   private long ukupnoVrijemeRadaRadnihDretvi = 0;
+   private long brojObavljenihSerijalizacija = 0;
 
     public long getUkupanBrojZahtjeva() {
         return ukupanBrojZahtjeva;
@@ -50,13 +51,19 @@ public class Evidencija implements Serializable{
         this.brojPrekinutihZahtjeva = brojPrekinutihZahtjeva;
     }
 
+    public long getUkupnoVrijemeRadaRadnihDretvi() {
+        return ukupnoVrijemeRadaRadnihDretvi;
+    }
+
+    public void setUkupnoVrijemeRadaRadnihDretvi(long ukupnoVrijemeRadaRadnihDretvi) {
+        this.ukupnoVrijemeRadaRadnihDretvi = ukupnoVrijemeRadaRadnihDretvi;
+    }
+
     public long getBrojObavljenihSerijalizacija() {
         return brojObavljenihSerijalizacija;
     }
 
     public void setBrojObavljenihSerijalizacija(long brojObavljenihSerijalizacija) {
         this.brojObavljenihSerijalizacija = brojObavljenihSerijalizacija;
-    }
-    
-    
+    }  
 }

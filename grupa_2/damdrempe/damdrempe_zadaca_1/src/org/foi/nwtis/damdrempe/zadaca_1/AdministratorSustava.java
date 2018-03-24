@@ -10,11 +10,9 @@ import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 
 
 public class AdministratorSustava extends KorisnikSustava {
-    Konfiguracija konf;
-
-    public AdministratorSustava(Konfiguracija konf) {
+    
+    public AdministratorSustava() {
         super();
-        this.konf = konf;
     }
     
     public void preuzmiKontrolu(){  
@@ -38,7 +36,7 @@ public class AdministratorSustava extends KorisnikSustava {
                 buffer.append((char) znak);
             }
             
-            System.out.println(adresa); //TODO nešto
+            System.out.println("Odgovor: " + buffer.toString());
         } catch (IOException ex) {
             Logger.getLogger(AdministratorSustava.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -29,9 +29,9 @@ public class KlijentSustava extends KorisnikSustava{
                 buffer.append((char) znak);
             }
             
-            System.out.println(adresa); //TODO nešto
+            System.out.println("Odgovor: " + buffer.toString());
         } catch (IOException ex) {
-            Logger.getLogger(AdministratorSustava.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AdministratorSustava.class.getName()).log(Level.SEVERE, null, ex); //TODO vidjeti zasto je tu AdministratorSustava
         }
     }    
 }

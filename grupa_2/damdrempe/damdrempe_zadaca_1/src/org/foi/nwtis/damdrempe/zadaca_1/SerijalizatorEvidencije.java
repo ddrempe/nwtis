@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.zadaca_1;
 
 import java.io.File;
@@ -14,10 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 
-/**
- *
- * @author grupa_2
- */
 class SerijalizatorEvidencije extends Thread{
 
     private String nazivDretve;
@@ -32,7 +23,7 @@ class SerijalizatorEvidencije extends Thread{
 
     @Override
     public void interrupt() {
-        super.interrupt(); //To change body of generated methods, choose Tools | Templates.
+        super.interrupt();
     }
 
     @Override
@@ -76,7 +67,7 @@ class SerijalizatorEvidencije extends Thread{
 
     @Override
     public synchronized void start() {
-        super.start(); //To change body of generated methods, choose Tools | Templates.
+        super.start();
     }
     
     
