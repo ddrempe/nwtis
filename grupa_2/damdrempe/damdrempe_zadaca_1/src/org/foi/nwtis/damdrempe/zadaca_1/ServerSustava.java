@@ -24,7 +24,7 @@ public class ServerSustava {
             ServerSustava ss = new ServerSustava();
             ss.pokreniPosluzitelj(konf);
         } catch (NemaKonfiguracije | NeispravnaKonfiguracija ex) {
-            Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex); //TODO: getname umjesto getclass
+            Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex);
             return;
         }
     }
@@ -64,6 +64,5 @@ public class ServerSustava {
         } catch (IOException ex) {
             Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
+    }    
 }

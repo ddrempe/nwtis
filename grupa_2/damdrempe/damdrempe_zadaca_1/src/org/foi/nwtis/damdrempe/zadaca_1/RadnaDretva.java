@@ -10,8 +10,8 @@ import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 
 class RadnaDretva extends Thread {
 
-    private Socket socket;
     private String nazivDretve;
+    private Socket socket;
     private Konfiguracija konf;
 
     public RadnaDretva(Socket socket, String nazivDretve, Konfiguracija konf) {

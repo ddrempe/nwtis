@@ -31,7 +31,7 @@ class SerijalizatorEvidencije extends Thread{
         String nazivDatEvidencije = konf.dajPostavku("datoteka.evidencije.rada");
         int intervalSerijalizacije = Integer.parseInt(konf.dajPostavku("interval.za.serijalizaciju"));
         
-        while(true){
+        while(radiDok){
             long pocetak = System.currentTimeMillis();
             System.out.println("Dretva: " + nazivDretve + " Početak: " + pocetak);
             
@@ -40,7 +40,7 @@ class SerijalizatorEvidencije extends Thread{
             
             try {
                 oos = new ObjectOutputStream(new FileOutputStream(datEvidencije));
-                //TODO dodaj objekt evidencija rada iz serversustava i serijaliziraj ga
+                //TODO dozvati objekt evidencija rada iz ServerSustava i serijaliziraj ga
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -68,7 +68,5 @@ class SerijalizatorEvidencije extends Thread{
     @Override
     public synchronized void start() {
         super.start();
-    }
-    
-    
+    }   
 }

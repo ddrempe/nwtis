@@ -6,8 +6,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
-
 
 public class AdministratorSustava extends KorisnikSustava {
     

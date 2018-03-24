@@ -36,9 +36,16 @@ public class KorisnikSustava {
         adresa = "127.0.0.1";
         port=8000;
         
-        if (korisnik != null){
+        if(korisnik != null){
             korisnik = korisnik.trim();
             if(!korisnik.isEmpty()){
+                administrator = true;
+            }
+        }
+        
+        if(lozinka != null) {
+            lozinka = lozinka.trim();
+            if(!lozinka.isEmpty()){
                 administrator = true;
             } else {
                 administrator = false;
