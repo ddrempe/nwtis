@@ -1,0 +1,7 @@
+{
+	"port" : "8000",
+	"maks.broj.zahtjeva.cekanje" : "5",
+	"maks.broj.radnih.dretvi" : "3",
+	"datoteka.evidencije.rada" : "NWTiS_damdrempe_evidencija_rada.bin",
+	"interval.za.serijalizaciju" : "60"
+}
