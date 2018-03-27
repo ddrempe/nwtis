@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import static java.lang.Thread.sleep;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,6 +18,10 @@ import org.foi.nwtis.damdrempe.konfiguracije.NemaKonfiguracije;
 
 public class ServerSustava {   
 
+    public static Evidencija evidencijaRada;
+    public static int brojDretvi = 0;
+    private static int redniBrojZadnjeDretve = 0;
+    
     /**
      * Provjerava postoji li datoteka konfiguracije i prekida rad ako ne postoji.
      * Pokreće metodu pokreniPosluzitelj().
@@ -51,11 +56,10 @@ public class ServerSustava {
         int maksCekanje = Integer.parseInt(konf.dajPostavku("maks.broj.zahtjeva.cekanje"));
         int maksDretvi = Integer.parseInt(konf.dajPostavku("maks.broj.radnih.dretvi"));
         String nazivDatEvidencije = konf.dajPostavku("datoteka.evidencije.rada");
-        int brojDretvi = 0;
         boolean radiDok = true;
         
         File datEvidencije = new File(nazivDatEvidencije);
-        Evidencija evidencijaRada = new Evidencija();
+        evidencijaRada = new Evidencija();
         if(!datEvidencije.exists()){
             System.out.println(nazivDatEvidencije + " ne postoji! Datoteka evidencije rada nije ucitana.");
         } else {
@@ -67,10 +71,10 @@ public class ServerSustava {
             }
         }
         
-        SerijalizatorEvidencije se = new SerijalizatorEvidencije("damdrempe - Serijalizator", konf, evidencijaRada);
+        SerijalizatorEvidencije se = new SerijalizatorEvidencije("damdrempe - Serijalizator", konf);
         se.start(); 
         
-        //TODO kreira objekt za evidenciju rada i objekt za kolekciju IOT uredaja
+        //TODO kreira objekt za kolekciju IOT uredaja
         
         try {
             ServerSocket serverSocket = new ServerSocket(port, maksCekanje);
@@ -84,11 +88,16 @@ public class ServerSustava {
 //                }
                 
                 System.out.println("Korisnik se spojio");
-                if(brojDretvi == maksDretvi){
-                //TODO vrati ispravan error odgovor ERROR 01; nema raspolozive radne dretve
+                if(brojDretvi >= maksDretvi){
+                    OutputStream os = socket.getOutputStream();
+                    String odgovor = "ERROR 01; nema raspolozive radne dretve";
+                    os.write(odgovor.getBytes());
+                    os.flush();
+                    socket.shutdownOutput();
                 } else {
-                    RadnaDretva radnaDretva = new RadnaDretva(socket, "damdrempe - dretva " + brojDretvi + " ", konf);
                     brojDretvi++;
+                    povecajRedniBrojZadnjeDretve();
+                    RadnaDretva radnaDretva = new RadnaDretva(socket, "damdrempe - dretva " + redniBrojZadnjeDretve + " ", konf);
                     radnaDretva.start();
                 }
             }
@@ -104,5 +113,10 @@ public class ServerSustava {
         Evidencija ucitanaEvidencija = (Evidencija) ois.readObject();
         
         return ucitanaEvidencija;
+    }
+    
+    private void povecajRedniBrojZadnjeDretve(){
+        redniBrojZadnjeDretve++;
+        if(redniBrojZadnjeDretve > 63) redniBrojZadnjeDretve = 0;              
     }
 }

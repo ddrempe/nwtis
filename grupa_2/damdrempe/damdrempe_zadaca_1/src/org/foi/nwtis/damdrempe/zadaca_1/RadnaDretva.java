@@ -39,17 +39,25 @@ class RadnaDretva extends Thread {
                     break;
                 }
                 buffer.append((char) znak);
-            }
+            }            
             
             System.out.println("Dretva: "+ nazivDretve + "Komanda: " + buffer.toString());
+            
             //TODO provjeri ispravnost primljene komande i vrati odgovarajući odgovor
-            os.write("OK".getBytes());
+            boolean ispravnostKomande = false;
+            if(ispravnostKomande == false){
+                    String odgovor = "ERROR 02; sintaksa nije ispravna ili komanda nije dozvoljena";
+                    os.write(odgovor.getBytes());
+            }
+            else{
+                    os.write("OK".getBytes());
+            }
             os.flush();
             socket.shutdownOutput();
         } catch (IOException ex) {
             Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //TODO smanji broj aktivnih radnih dretvi kod servera sustava
+        ServerSustava.brojDretvi--;
         //TODO zasto ne radi prvi zahtjev?
     }
 

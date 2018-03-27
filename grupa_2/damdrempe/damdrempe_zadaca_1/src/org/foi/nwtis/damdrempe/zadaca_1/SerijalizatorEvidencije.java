@@ -14,13 +14,11 @@ class SerijalizatorEvidencije extends Thread{
     private String nazivDretve;
     private Konfiguracija konf;
     private boolean radiDok = true;
-    private Evidencija evidencija;
 
-    SerijalizatorEvidencije(String nazivDretve, Konfiguracija konf, Evidencija evidencijaRada) {
+    SerijalizatorEvidencije(String nazivDretve, Konfiguracija konf) {
         super(nazivDretve);
         this.nazivDretve = nazivDretve;
         this.konf = konf;
-        this.evidencija = evidencijaRada;
     }
 
     @Override
@@ -42,7 +40,7 @@ class SerijalizatorEvidencije extends Thread{
             
             try {
                 oos = new ObjectOutputStream(new FileOutputStream(datEvidencije));             
-                oos.writeObject(evidencija);
+                oos.writeObject(ServerSustava.evidencijaRada);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {

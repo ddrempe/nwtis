@@ -16,11 +16,9 @@ public class KorisnikSustava {
         ks.args = args;
     
         if(ks.administrator){
-            //TODO kreiraj objekt AdministratorSustava i predaj mu kontrolu
             AdministratorSustava as = new AdministratorSustava();
             as.preuzmiKontrolu();
         } else {
-            //TODO kreiraj objekt KorisnikSustava i predaj mu kontrol
             KlijentSustava kls = new KlijentSustava();
             kls.preuzmiKontrolu();
         }
