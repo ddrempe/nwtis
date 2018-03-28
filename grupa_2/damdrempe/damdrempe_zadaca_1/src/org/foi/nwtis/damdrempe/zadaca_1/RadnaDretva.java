@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 
 class RadnaDretva extends Thread {
@@ -13,6 +15,15 @@ class RadnaDretva extends Thread {
     private String nazivDretve;
     private Socket socket;
     private Konfiguracija konf;
+    private long radnoVrijemeDretve;
+    
+    /**
+     * 1 - neispravni
+     * 2 - nedozvoljeni
+     * 3 - uspjesni
+     * 4 - prekinuti
+     */
+    private static int statusKod = 0;
 
     public RadnaDretva(Socket socket, String nazivDretve, Konfiguracija konf) {
         super(nazivDretve);
@@ -24,10 +35,12 @@ class RadnaDretva extends Thread {
     @Override
     public void interrupt() {
         super.interrupt();
+        azurirajEvidencijuRadaServera();
     }
 
     @Override
     public void run() {
+        long pocetakRada = System.currentTimeMillis();
         try {
             InputStream is = socket.getInputStream();
             OutputStream os = socket.getOutputStream();
@@ -40,11 +53,13 @@ class RadnaDretva extends Thread {
                 }
                 buffer.append((char) znak);
             }            
-            
-            System.out.println("Dretva: "+ nazivDretve + "Komanda: " + buffer.toString());
+            String komanda = buffer.toString();
+            System.out.println("Dretva: "+ nazivDretve + "Komanda: " + komanda);
             
             //TODO provjeri ispravnost primljene komande i vrati odgovarajući odgovor
-            boolean ispravnostKomande = false;
+            String regexAdminKomande = "^KORISNIK ([A-Za-z0-9\\-\\_]{3,10}); LOZINKA ([A-Za-z0-9\\-\\_\\#\\!]{3,10}); (PAUZA|KRENI|ZAUSTAVI|STANJE)";
+            boolean ispravnostKomande = provjeriIspravnostKomande(komanda, regexAdminKomande);
+            
             if(ispravnostKomande == false){
                     String odgovor = "ERROR 02; sintaksa nije ispravna ili komanda nije dozvoljena";
                     os.write(odgovor.getBytes());
@@ -57,12 +72,47 @@ class RadnaDretva extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
         }
+        long krajRada = System.currentTimeMillis();
+        radnoVrijemeDretve = krajRada - pocetakRada;
         ServerSustava.brojDretvi--;
-        //TODO zasto ne radi prvi zahtjev?
+        azurirajEvidencijuRadaServera();       
     }
 
     @Override
     public synchronized void start() {
         super.start();
-    }    
+    }
+
+    private synchronized void azurirajEvidencijuRadaServera(){
+        long brojZahtjeva = ServerSustava.evidencijaRada.getUkupanBrojZahtjeva();
+        long vrijemeRadaRadnihDretvi = ServerSustava.evidencijaRada.getUkupnoVrijemeRadaRadnihDretvi();
+        long brojObavljenihSerijalizacija = ServerSustava.evidencijaRada.getBrojObavljenihSerijalizacija();
+        
+        ServerSustava.evidencijaRada.setUkupanBrojZahtjeva(brojZahtjeva + 1);
+        ServerSustava.evidencijaRada.setUkupnoVrijemeRadaRadnihDretvi(vrijemeRadaRadnihDretvi + radnoVrijemeDretve);
+        ServerSustava.evidencijaRada.setBrojObavljenihSerijalizacija(brojObavljenihSerijalizacija + SerijalizatorEvidencije.brojObavljenihSerijalizacija);
+        
+        switch(statusKod){
+            //TODO skratiti ove linije
+            case 1:
+                ServerSustava.evidencijaRada.setBrojNeispravnihZahtjeva(ServerSustava.evidencijaRada.getBrojNeispravnihZahtjeva()+ 1);
+                break;
+            case 2:
+                ServerSustava.evidencijaRada.setBrojNedozvoljenihZahtjeva(ServerSustava.evidencijaRada.getBrojNedozvoljenihZahtjeva()+ 1);
+                break;
+            case 3:
+                ServerSustava.evidencijaRada.setBrojUspjesnihZahtjeva(ServerSustava.evidencijaRada.getBrojUspjesnihZahtjeva()+ 1);
+                break;
+            case 4:
+                ServerSustava.evidencijaRada.setBrojPrekinutihZahtjeva(ServerSustava.evidencijaRada.getBrojPrekinutihZahtjeva()+ 1);
+                break;                
+        }
+    }
+    
+    private boolean provjeriIspravnostKomande(String komanda, String regularniIzraz){
+        Pattern pattern = Pattern.compile(regularniIzraz);
+        Matcher m = pattern.matcher(komanda);
+        
+        return m.matches();
+    }
 }

@@ -16,7 +16,7 @@ public class KlijentSustava extends KorisnikSustava{
             OutputStream os = socket.getOutputStream();
             StringBuffer buffer = new StringBuffer();
             //TODO provjeri upisane argumente
-            String komanda = "CEKAJ 60;";
+            String komanda = "CEKAJ 60;";   //TODO tu je cekaj 60
             os.write(komanda.getBytes());
             os.flush();
             socket.shutdownOutput();

@@ -7,4 +7,5 @@
 <entry key="maks.broj.radnih.dretvi">3</entry>
 <entry key="datoteka.evidencije.rada">NWTiS_damdrempe_evidencija_rada.bin</entry>
 <entry key="interval.za.serijalizaciju">60</entry>
+<entry key="admin.0.damdrempe">FOI_1234</entry>
 </properties>

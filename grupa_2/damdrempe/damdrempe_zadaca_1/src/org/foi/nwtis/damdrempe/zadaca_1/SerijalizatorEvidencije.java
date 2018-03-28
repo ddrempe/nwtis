@@ -14,7 +14,9 @@ class SerijalizatorEvidencije extends Thread{
     private String nazivDretve;
     private Konfiguracija konf;
     private boolean radiDok = true;
-
+    
+    public static long brojObavljenihSerijalizacija = 0;
+    
     SerijalizatorEvidencije(String nazivDretve, Konfiguracija konf) {
         super(nazivDretve);
         this.nazivDretve = nazivDretve;
@@ -32,26 +34,17 @@ class SerijalizatorEvidencije extends Thread{
         int intervalSerijalizacije = Integer.parseInt(konf.dajPostavku("interval.za.serijalizaciju"));
         
         while(radiDok){
+            brojObavljenihSerijalizacija++;
             long pocetak = System.currentTimeMillis();
             System.out.println("Dretva: " + nazivDretve + " Početak: " + pocetak);
             
-            File datEvidencije = new File(nazivDatEvidencije);
-            ObjectOutputStream oos = null;
-            
             try {
-                oos = new ObjectOutputStream(new FileOutputStream(datEvidencije));             
-                oos.writeObject(ServerSustava.evidencijaRada);
+                zapisiEvidencijuRadaUDatoteku(nazivDatEvidencije);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    oos.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            } 
             
             long kraj = System.currentTimeMillis();
             long odradeno = kraj - pocetak;
@@ -69,4 +62,12 @@ class SerijalizatorEvidencije extends Thread{
     public synchronized void start() {
         super.start();
     }   
+    
+    private synchronized void zapisiEvidencijuRadaUDatoteku(String nazivDatoteke) throws FileNotFoundException, IOException{
+        File datEvidencije = new File(nazivDatoteke);
+        FileOutputStream outputStream = new FileOutputStream(datEvidencije);
+        ObjectOutputStream oos = new ObjectOutputStream(outputStream);             
+        oos.writeObject(ServerSustava.evidencijaRada);
+        oos.close();
+    }
 }

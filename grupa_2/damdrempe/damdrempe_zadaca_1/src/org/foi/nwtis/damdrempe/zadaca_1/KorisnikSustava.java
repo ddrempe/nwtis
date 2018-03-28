@@ -14,6 +14,8 @@ public class KorisnikSustava {
         KorisnikSustava ks = new KorisnikSustava();
         ks.preuzmiPostavke(args);
         ks.args = args;
+        
+        //TODO utvrdi da je taj korisnik administrator citanjem iz postavki
     
         if(ks.administrator){
             AdministratorSustava as = new AdministratorSustava();
