@@ -8,7 +8,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class KlijentSustava extends KorisnikSustava{
-        public void preuzmiKontrolu(){  
+
+    public KlijentSustava(String[] argumenti) {
+        super(argumenti);
+    }
+    public void preuzmiKontrolu(){  
         try {
             Socket socket = new Socket(adresa, port);
             

@@ -2,59 +2,48 @@ package org.foi.nwtis.damdrempe.zadaca_1;
 
 public class KorisnikSustava {
     
+    String nacinRada;
     String korisnik;
     String lozinka;
     String adresa;
     int port;
+    String operacija;
+    
     boolean administrator = false;    
     String[] args;
     
     public static void main(String[] args) {
-        // TODO provjeri upisane argumente
-        KorisnikSustava ks = new KorisnikSustava();
-        ks.preuzmiPostavke(args);
-        ks.args = args;
+        KorisnikSustava ks = new KorisnikSustava(args);
         
-        //TODO utvrdi da je taj korisnik administrator citanjem iz postavki
-    
         if(ks.administrator){
-            AdministratorSustava as = new AdministratorSustava();
+            AdministratorSustava as = new AdministratorSustava(ks.args);
             as.preuzmiKontrolu();
         } else {
-            KlijentSustava kls = new KlijentSustava();
+            KlijentSustava kls = new KlijentSustava(ks.args);
             kls.preuzmiKontrolu();
         }
     }
 
-    public KorisnikSustava() {
-        preuzmiPostavke(args);
+    public KorisnikSustava(String[] argumenti) {
+        this.args = argumenti;
+        preuzmiPostavke(this.args);
     }   
 
-    private void preuzmiPostavke(String[] args) {
-        //korisnik = "matnovak";
-        //lozinka = "123456";
-        adresa = "127.0.0.1";
-        port=8000;
+    private void preuzmiPostavke(String[] argumenti) {
+        nacinRada = argumenti[1];       
         
-        if(korisnik != null){
-            korisnik = korisnik.trim();
-            if(!korisnik.isEmpty()){
-                administrator = true;
-            }
+        if(nacinRada.equals("-k")){
+            korisnik = argumenti[2];
+            lozinka = argumenti[4];
+            adresa = argumenti[6];
+            port = Integer.parseInt(argumenti[8]);
+            operacija = argumenti[9].replace("--","").toUpperCase();    
+            
+            administrator = true;
         }
-        
-        if(lozinka != null) {
-            lozinka = lozinka.trim();
-            if(!lozinka.isEmpty()){
-                administrator = true;
-            } else {
-                administrator = false;
-            }
-        } else {
-            administrator = false;
+        else if(nacinRada.equals("-s")){
+            adresa = argumenti[2];
+            port = Integer.parseInt(argumenti[4]);
         }
-        
-        //TODO provjeri da li je korisnik kao administrator u postavkama
-    }
-    
+    }    
 }

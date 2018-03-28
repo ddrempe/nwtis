@@ -23,7 +23,7 @@ class RadnaDretva extends Thread {
      * 3 - uspjesni
      * 4 - prekinuti
      */
-    private static int statusKod = 0;
+    private int statusKod = 0;
 
     public RadnaDretva(Socket socket, String nazivDretve, Konfiguracija konf) {
         super(nazivDretve);
@@ -35,37 +35,27 @@ class RadnaDretva extends Thread {
     @Override
     public void interrupt() {
         super.interrupt();
+        statusKod = 4;
         azurirajEvidencijuRadaServera();
     }
 
     @Override
     public void run() {
         long pocetakRada = System.currentTimeMillis();
-        try {
-            InputStream is = socket.getInputStream();
-            OutputStream os = socket.getOutputStream();
-            StringBuffer buffer = new StringBuffer();
-            
-            while (true){
-                int znak = is.read();
-                if(znak == -1){
-                    break;
-                }
-                buffer.append((char) znak);
-            }            
-            String komanda = buffer.toString();
+        try {                       
+            String komanda = procitajKomandu();
+            String regexAdminKomande = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|ZAUSTAVI|STANJE);$";         
+            OutputStream os = socket.getOutputStream();            
             System.out.println("Dretva: "+ nazivDretve + "Komanda: " + komanda);
-            
-            //TODO provjeri ispravnost primljene komande i vrati odgovarajući odgovor
-            String regexAdminKomande = "^KORISNIK ([A-Za-z0-9\\-\\_]{3,10}); LOZINKA ([A-Za-z0-9\\-\\_\\#\\!]{3,10}); (PAUZA|KRENI|ZAUSTAVI|STANJE)";
-            boolean ispravnostKomande = provjeriIspravnostKomande(komanda, regexAdminKomande);
-            
-            if(ispravnostKomande == false){
-                    String odgovor = "ERROR 02; sintaksa nije ispravna ili komanda nije dozvoljena";
-                    os.write(odgovor.getBytes());
+
+            if(provjeriIspravnostKomande(komanda, regexAdminKomande) == false){
+                String odgovor = "ERROR 02; sintaksa nije ispravna ili komanda nije dozvoljena";
+                os.write(odgovor.getBytes());
+                statusKod = 1;
             }
             else{
-                    os.write("OK".getBytes());
+                os.write("OK".getBytes());
+                statusKod = 3;
             }
             os.flush();
             socket.shutdownOutput();
@@ -81,6 +71,21 @@ class RadnaDretva extends Thread {
     @Override
     public synchronized void start() {
         super.start();
+    }
+    
+    private String procitajKomandu() throws IOException{
+        InputStream is = socket.getInputStream();
+        StringBuffer buffer = new StringBuffer();
+
+        while (true){
+            int znak = is.read();
+            if(znak == -1){
+                break;
+            }
+            buffer.append((char) znak);
+        }
+        
+        return buffer.toString();
     }
 
     private synchronized void azurirajEvidencijuRadaServera(){

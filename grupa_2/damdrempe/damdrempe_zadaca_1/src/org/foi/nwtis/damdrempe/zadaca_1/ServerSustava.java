@@ -30,13 +30,13 @@ public class ServerSustava {
      * @param args  argument proslijeđen programu, mora biti točno jedan   
      */
     public static void main(String[] args) {
-        if(args.length != 1){
+        if(args.length != 2){
             System.out.println("Krivi broj argumenata!");
             return;
         }        
 
         try {
-            konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(args[0]);
+            konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(args[1]);
             ServerSustava ss = new ServerSustava();
             ss.pokreniPosluzitelj(konf);
         } catch (NemaKonfiguracije | NeispravnaKonfiguracija ex) {

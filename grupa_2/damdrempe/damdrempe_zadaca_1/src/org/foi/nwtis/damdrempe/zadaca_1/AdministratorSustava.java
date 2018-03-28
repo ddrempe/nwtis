@@ -7,10 +7,10 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AdministratorSustava extends KorisnikSustava {
+public class AdministratorSustava extends KorisnikSustava {   
     
-    public AdministratorSustava() {
-        super();
+    public AdministratorSustava(String[] argumenti) {
+        super(argumenti);
     }
     
     public void preuzmiKontrolu(){  
@@ -21,7 +21,7 @@ public class AdministratorSustava extends KorisnikSustava {
             OutputStream os = socket.getOutputStream();
             StringBuffer buffer = new StringBuffer();
             
-            String komanda = "KORISNIK " + korisnik + "; LOZINKA "+lozinka+"; PAUZA; ";
+            String komanda = "KORISNIK " + korisnik + "; LOZINKA "+ lozinka + "; " + operacija + ";";
             os.write(komanda.getBytes());
             os.flush();
             socket.shutdownOutput();
