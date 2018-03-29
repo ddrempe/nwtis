@@ -19,8 +19,8 @@ public class KlijentSustava extends KorisnikSustava{
             InputStream is = socket.getInputStream();
             OutputStream os = socket.getOutputStream();
             StringBuffer buffer = new StringBuffer();
-            //TODO provjeri upisane argumente
-            String komanda = "CEKAJ 60;";   //TODO tu je cekaj 60
+
+            String komanda = "CEKAJ " + n + ";";
             os.write(komanda.getBytes());
             os.flush();
             socket.shutdownOutput();
@@ -35,7 +35,7 @@ public class KlijentSustava extends KorisnikSustava{
             
             System.out.println("Odgovor: " + buffer.toString());
         } catch (IOException ex) {
-            Logger.getLogger(AdministratorSustava.class.getName()).log(Level.SEVERE, null, ex); //TODO vidjeti zasto je tu AdministratorSustava
+            Logger.getLogger(KlijentSustava.class.getName()).log(Level.SEVERE, null, ex);
         }
     }    
 }

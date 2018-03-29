@@ -8,6 +8,7 @@ public class KorisnikSustava {
     String adresa;
     int port;
     String akcija;
+    long n;
     
     boolean administrator = false;    
     String[] args;
@@ -44,6 +45,7 @@ public class KorisnikSustava {
         else if(nacinRada.equals("-s")){
             adresa = argumenti[2];
             port = Integer.parseInt(argumenti[4]);
+            n = Integer.parseInt(argumenti[6]);
         }
     }    
 }

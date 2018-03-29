@@ -45,15 +45,32 @@ class RadnaDretva extends Thread {
     public void run() {
         long pocetakRada = System.currentTimeMillis();                     
         String komanda = procitajKomandu();
-        String regexAdminKomande = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|ZAUSTAVI|STANJE);$";         
+        String regexAdminKomande = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|ZAUSTAVI|STANJE);$";
+        String regexKlijentKomande = "CEKAJ(.*)";
         System.out.println("Dretva: "+ nazivDretve + "Komanda: " + komanda);
 
         Matcher provjeraAdmin = provjeriIspravnostKomande(komanda, regexAdminKomande);
+        Matcher provjeraKlijent = provjeriIspravnostKomande(komanda, regexKlijentKomande);
         if(provjeraAdmin.matches() == true){
-            String odgovor = odrediAkcijuIOdgovor(provjeraAdmin.group(1), provjeraAdmin.group(2), provjeraAdmin.group(3));
+            String odgovor = odrediAdminAkcijuIOdgovor(provjeraAdmin.group(1), provjeraAdmin.group(2), provjeraAdmin.group(3));
             posaljiOdgovor(odgovor);                
             statusKod = 3;
         } 
+        else if(provjeraKlijent.matches() == true){
+            String odgovor;
+            String parsiraniBroj = komanda.replace("CEKAJ ", "");
+            parsiraniBroj = parsiraniBroj.replace(";", "");
+            long n = Integer.parseInt(parsiraniBroj);
+            if(ServerSustava.stanje == ServerSustava.StanjeServera.POKRENUT){
+                odgovor = akcijaKlijentCekaj(n);
+                statusKod = 3;
+            }
+            else{
+                odgovor = "Server je pauziran ili zaustavljen i klijent ne moze izvrsavati naredbe";
+                statusKod = 2;
+            }
+            posaljiOdgovor(odgovor);                
+        }
         else{
             posaljiOdgovor("ERROR 02; sintaksa nije ispravna ili komanda nije dozvoljena");                
             statusKod = 1;        
@@ -89,10 +106,11 @@ class RadnaDretva extends Thread {
         return buffer.toString();
     }
     
-    private String odrediAkcijuIOdgovor(String korisnik, String lozinka, String akcija){
+    private String odrediAdminAkcijuIOdgovor(String korisnik, String lozinka, String akcija){
         String odgovor = "PRAZNO";
         
         if(provjeriKorisnickePodatke(korisnik, lozinka) == false){
+            statusKod = 2;
             return "ERROR 10; Korisnik nije administrator ili lozinka ne odgovara";
         }
         
@@ -169,6 +187,17 @@ class RadnaDretva extends Thread {
         }
         
         return odgovor;
+    }
+    
+    private String akcijaKlijentCekaj(long n){
+        try {
+            Thread.sleep(n * 1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
+            return "ERROR 22; Cekanje je prekinuto";
+        }
+        
+        return "OK;";
     }
     
     private void posaljiOdgovor(String odgovor){
