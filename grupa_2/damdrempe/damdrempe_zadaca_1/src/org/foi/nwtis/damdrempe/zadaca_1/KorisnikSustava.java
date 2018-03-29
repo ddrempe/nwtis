@@ -7,7 +7,7 @@ public class KorisnikSustava {
     String lozinka;
     String adresa;
     int port;
-    String operacija;
+    String akcija;
     
     boolean administrator = false;    
     String[] args;
@@ -37,7 +37,7 @@ public class KorisnikSustava {
             lozinka = argumenti[4];
             adresa = argumenti[6];
             port = Integer.parseInt(argumenti[8]);
-            operacija = argumenti[9].replace("--","").toUpperCase();    
+            akcija = argumenti[9].replace("--","").toUpperCase();    
             
             administrator = true;
         }

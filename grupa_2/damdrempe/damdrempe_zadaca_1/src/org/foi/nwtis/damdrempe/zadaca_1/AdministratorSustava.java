@@ -21,7 +21,7 @@ public class AdministratorSustava extends KorisnikSustava {
             OutputStream os = socket.getOutputStream();
             StringBuffer buffer = new StringBuffer();
             
-            String komanda = "KORISNIK " + korisnik + "; LOZINKA "+ lozinka + "; " + operacija + ";";
+            String komanda = "KORISNIK " + korisnik + "; LOZINKA "+ lozinka + "; " + akcija + ";";
             os.write(komanda.getBytes());
             os.flush();
             socket.shutdownOutput();

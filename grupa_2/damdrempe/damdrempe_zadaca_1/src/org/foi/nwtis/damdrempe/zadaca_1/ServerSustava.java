@@ -15,13 +15,21 @@ import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.damdrempe.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.damdrempe.konfiguracije.NemaKonfiguracije;
 
-public class ServerSustava {  
+public class ServerSustava {
+    
+    public enum StanjeServera {
+        NISTA,
+        POKRENUT,
+        PAUZIRAN,
+        ZAUSTAVLJEN,
+    }
     
     public static Evidencija evidencijaRada;
     public static int brojDretvi = 0;
     private static int redniBrojZadnjeDretve = 0;
     private boolean radiDok = true;
     private static Konfiguracija konf;
+    public static StanjeServera stanje = StanjeServera.NISTA;
     
     /**
      * Provjerava postoji li datoteka konfiguracije i prekida rad ako ne postoji.
@@ -67,7 +75,8 @@ public class ServerSustava {
         
         SerijalizatorEvidencije se = new SerijalizatorEvidencije("damdrempe - Serijalizator", konf);
         se.start();        
-        
+        stanje = StanjeServera.POKRENUT;
+
         try {
             primajZahtjeveKorisnika();
         } catch (IOException ex) {
