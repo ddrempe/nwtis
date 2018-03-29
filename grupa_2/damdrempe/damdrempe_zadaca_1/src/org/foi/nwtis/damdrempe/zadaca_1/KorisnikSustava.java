@@ -1,5 +1,11 @@
 package org.foi.nwtis.damdrempe.zadaca_1;
 
+/**
+ * Klasa za rad korisnika unutar sustava.
+ * Učitava korisničke parametre te određuje korisničku ulogu.
+ * Korisnik može biti administrator ili klijent sustava.
+ * @author ddrempetic
+ */
 public class KorisnikSustava {
     
     String nacinRada;
@@ -13,6 +19,10 @@ public class KorisnikSustava {
     boolean administrator = false;    
     String[] args;
     
+    /**
+     * Određuje ulogu korisnika i predaje mu kontrolu.
+     * @param args argumenti proslijeđeni programu
+     */
     public static void main(String[] args) {
         KorisnikSustava ks = new KorisnikSustava(args);
         
@@ -25,11 +35,21 @@ public class KorisnikSustava {
         }
     }
 
+    /**
+     * Konstruktor za spremanje argumenata u objekt.
+     * Poziva i preuzimanje postavki koje su nužne za rad svakog objekta korisnika sustava.
+     * @param argumenti argumenti proslijeđeni programu
+     */
     public KorisnikSustava(String[] argumenti) {
         this.args = argumenti;
         preuzmiPostavke(this.args);
     }   
 
+    /**
+     * Klasa za preuzimanje postavki kod objekta KorisnikaSustava.
+     * Poziva u konstruktoru što znači da se koristi kod svake inicijalizacije objekta ove klase.
+     * @param argumenti argumenti proslijeđeni programu
+     */
     private void preuzmiPostavke(String[] argumenti) {
         nacinRada = argumenti[1];       
         

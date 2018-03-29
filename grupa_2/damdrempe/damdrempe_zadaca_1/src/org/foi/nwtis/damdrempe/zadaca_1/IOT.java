@@ -1,5 +1,8 @@
 package org.foi.nwtis.damdrempe.zadaca_1;
 
-public class IOT {
-    //TODO definirati strukturu i klasu za podatke pojedinog IOT uređaja    
+/**
+ * Klasa predviđena za spremanje kolekcije IOT uređaja.
+ * @author ddrempetic
+ */
+public class IOT {  
 }

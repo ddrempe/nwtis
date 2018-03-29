@@ -7,16 +7,27 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Klasa za korisnika sustava koji ima ulogu administratora.
+ * @author ddrempetic
+ */
 public class AdministratorSustava extends KorisnikSustava {   
     
+    /**
+     * Koristi konstruktor nadklase za preuzimanje postavki i učitavanje argumenata
+     * @param argumenti argumenti proslijeđeni programu
+     */
     public AdministratorSustava(String[] argumenti) {
         super(argumenti);
     }
     
+    /**
+     * Preuzima kontrolu nad serverom sustava.
+     * Spaja se na server i šalje mu komandu definiranu pomoću parametara koje je proslijedio korisnik.
+     */
     public void preuzmiKontrolu(){  
         try {
-            Socket socket = new Socket(adresa, port);
-            
+            Socket socket = new Socket(adresa, port);            
             InputStream is = socket.getInputStream();
             OutputStream os = socket.getOutputStream();
             StringBuffer buffer = new StringBuffer();
@@ -32,8 +43,7 @@ public class AdministratorSustava extends KorisnikSustava {
                     break;
                 }
                 buffer.append((char) znak);
-            }
-            
+            }            
             System.out.println("Odgovor: " + buffer.toString());
         } catch (IOException ex) {
             Logger.getLogger(AdministratorSustava.class.getName()).log(Level.SEVERE, null, ex);

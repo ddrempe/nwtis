@@ -7,15 +7,27 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Klasa za korisnika sustava koji ima ulogu klijenta.
+ * @author ddrempetic
+ */
 public class KlijentSustava extends KorisnikSustava{
 
+    /**
+     * Koristi konstruktor nadklase za preuzimanje postavki i učitavanje argumenata
+     * @param argumenti argumenti proslijeđeni programu
+     */
     public KlijentSustava(String[] argumenti) {
         super(argumenti);
     }
+    
+    /**
+     * Preuzima kontrolu nad serverom sustava.
+     * Spaja se na server i šalje mu komandu definiranu pomoću parametara koje je proslijedio korisnik.
+     */
     public void preuzmiKontrolu(){  
         try {
-            Socket socket = new Socket(adresa, port);
-            
+            Socket socket = new Socket(adresa, port);            
             InputStream is = socket.getInputStream();
             OutputStream os = socket.getOutputStream();
             StringBuffer buffer = new StringBuffer();
@@ -31,8 +43,7 @@ public class KlijentSustava extends KorisnikSustava{
                     break;
                 }
                 buffer.append((char) znak);
-            }
-            
+            }            
             System.out.println("Odgovor: " + buffer.toString());
         } catch (IOException ex) {
             Logger.getLogger(KlijentSustava.class.getName()).log(Level.SEVERE, null, ex);

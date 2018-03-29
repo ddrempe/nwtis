@@ -15,8 +15,15 @@ import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.damdrempe.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.damdrempe.konfiguracije.NemaKonfiguracije;
 
+/**
+ * Klasa za pokretanje serverskog dijela sustava.
+ * @author ddrempetic
+ */
 public class ServerSustava {
     
+    /**
+     * Pobrojenje koje definira moguca stanja servera
+     */
     public enum StanjeServera {
         NISTA,
         POKRENUT,
@@ -71,8 +78,7 @@ public class ServerSustava {
             Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        IOT iot = new IOT();    //TODO kreira objekt za kolekciju IOT uredaja
-        
+        IOT iot = new IOT();        
         SerijalizatorEvidencije se = new SerijalizatorEvidencije("damdrempe - Serijalizator", konf);
         se.start();        
         stanje = StanjeServera.POKRENUT;
@@ -88,7 +94,7 @@ public class ServerSustava {
      * Provjerava da li datoteka evidencije s traženim nazivom postoji.
      * Ako postoji čita vrijednosti iz nje i zapisuje u statični objekt klase Evidencija unutar ServerSustava.
      * @param nazivDatoteke naziv datoteke iz koje treba učitati evidenciju rada
-     * @return vraća return ako datoteka s traženim nazivom postoji, inače vraća false
+     * @return vraća true ako datoteka s traženim nazivom postoji, inače vraća false
      * @throws FileNotFoundException
      * @throws IOException
      * @throws ClassNotFoundException 

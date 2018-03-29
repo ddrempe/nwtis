@@ -2,14 +2,20 @@ package org.foi.nwtis.damdrempe.zadaca_1;
 
 import java.io.Serializable;
 
-public class Evidencija implements Serializable {
-   private long ukupanBrojZahtjeva = 0;
-   private long brojNeispravnihZahtjeva = 0;
-   private long brojNedozvoljenihZahtjeva = 0;
-   private long brojUspjesnihZahtjeva = 0;
-   private long brojPrekinutihZahtjeva = 0;
-   private long ukupnoVrijemeRadaRadnihDretvi = 0;
-   private long brojObavljenihSerijalizacija = 0;
+/**
+ * Klasa za rad s evidencijom rada sustava.
+ * Može se serijalizirati.
+ * Sadrži jednostavne gettere i settere za sve svoje atribute.
+ * @author ddrempetic
+ */
+public class Evidencija implements Serializable {    
+    private long ukupanBrojZahtjeva = 0;
+    private long brojNeispravnihZahtjeva = 0;
+    private long brojNedozvoljenihZahtjeva = 0;
+    private long brojUspjesnihZahtjeva = 0;
+    private long brojPrekinutihZahtjeva = 0;
+    private long ukupnoVrijemeRadaRadnihDretvi = 0;
+    private long brojObavljenihSerijalizacija = 0;
 
     public long getUkupanBrojZahtjeva() {
         return ukupanBrojZahtjeva;

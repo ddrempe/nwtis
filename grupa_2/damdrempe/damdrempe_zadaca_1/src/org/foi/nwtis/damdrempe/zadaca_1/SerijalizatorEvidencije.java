@@ -9,25 +9,40 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 
+/**
+ * Periodicki serijalizira objekt evidencije rada iz ServerSustava i zapisuje ga u objekt za evidenciju rada.
+ * @author ddrempetic
+ */
 class SerijalizatorEvidencije extends Thread{
 
     private String nazivDretve;
     private Konfiguracija konf;
-    private boolean radiDok = true;
-    
+    private boolean radiDok = true;    
     public static long brojObavljenihSerijalizacija = 0;
     
+    /**
+     * Konstruktor koji sprema naziv dretve i konfiguraciju u objekt klase
+     * @param nazivDretve naziv dretve koja pokrece serijalizator
+     * @param konf postavke pročitane iz datoteke kod pokretanja servera
+     */
     SerijalizatorEvidencije(String nazivDretve, Konfiguracija konf) {
         super(nazivDretve);
         this.nazivDretve = nazivDretve;
         this.konf = konf;
     }
 
+    /**
+     * Metoda koja se okida kod prekida dretve
+     */
     @Override
     public void interrupt() {
         super.interrupt();
     }
 
+    /**
+     * Metoda koja se pokrece pokretanjem dretve.
+     * Za podatke zapisane u objektu evidencije periodicki poziva zapisivanje u datoteku.
+     */
     @Override
     public void run() {
         String nazivDatEvidencije = konf.dajPostavku("datoteka.evidencije.rada");
@@ -38,14 +53,7 @@ class SerijalizatorEvidencije extends Thread{
             long pocetak = System.currentTimeMillis();
             System.out.println("Dretva: " + nazivDretve + " Početak: " + pocetak);
             
-            try {
-                zapisiEvidencijuRadaUDatoteku(nazivDatEvidencije);
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
-            } 
-            
+            zapisiEvidencijuRadaUDatoteku(nazivDatEvidencije);            
             long kraj = System.currentTimeMillis();
             long odradeno = kraj - pocetak;
             long cekaj = (intervalSerijalizacije * 1000) - odradeno;
@@ -58,16 +66,30 @@ class SerijalizatorEvidencije extends Thread{
         }
     }
 
+    /**
+     * Metoda koja se pokrece startanjem dretve.
+     */
     @Override
     public synchronized void start() {
         super.start();
     }   
     
-    private synchronized void zapisiEvidencijuRadaUDatoteku(String nazivDatoteke) throws FileNotFoundException, IOException{
+    /**
+     * Metoda koja sluzi za serijalizaciju i zapisivanje objekta evidencije u datoteku.
+     * @param nazivDatoteke naziv datoteke u koji se zapisuje evidencija rada
+     */
+    private synchronized void zapisiEvidencijuRadaUDatoteku(String nazivDatoteke){
         File datEvidencije = new File(nazivDatoteke);
-        FileOutputStream outputStream = new FileOutputStream(datEvidencije);
-        ObjectOutputStream oos = new ObjectOutputStream(outputStream);             
-        oos.writeObject(ServerSustava.evidencijaRada);
-        oos.close();
+        FileOutputStream outputStream;
+        try {
+            outputStream = new FileOutputStream(datEvidencije);
+            ObjectOutputStream oos = new ObjectOutputStream(outputStream);             
+            oos.writeObject(ServerSustava.evidencijaRada);
+            oos.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SerijalizatorEvidencije.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
