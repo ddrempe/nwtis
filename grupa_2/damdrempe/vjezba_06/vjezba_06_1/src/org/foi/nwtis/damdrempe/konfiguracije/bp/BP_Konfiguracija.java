@@ -5,9 +5,7 @@
  */
 package org.foi.nwtis.damdrempe.konfiguracije.bp;
 
-import java.security.AuthProvider;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Properties;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
@@ -55,7 +53,7 @@ public class BP_Konfiguracija implements BP_Sucelje{
     @Override
     public Properties getDriversDatabase() {
         Properties postavke = new Properties();
-        for(Enumeration e = konfiguracija.dajSvePostavke().keys(); e.hasMoreElements(); e.nextElement()){
+        for(Enumeration e = konfiguracija.dajSvePostavke().keys(); e.hasMoreElements();){
             String kljuc = (String) e.nextElement();
             if(kljuc.startsWith("driver.database.")){
                 String vrijednost = konfiguracija.dajPostavku(kljuc);
