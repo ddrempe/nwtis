@@ -65,7 +65,7 @@ public class Vjezba_07_2 extends HttpServlet {
             String korisnik = bpk.getUserUsername();
             String lozinka = bpk.getUserPassword();
             String upit = "select kor_ime, prezime, ime from POLAZNICI";
-            String uprProgram = bpk.getDriverDatabase();        //TODO tu negdje puca, uporno cita konfiguraciju sa g1 nwtis, trebalo bi ispisati
+            String uprProgram = bpk.getDriverDatabase();
             Class.forName(uprProgram);
 
                 try (   //TODO obrati paznju na try with resources

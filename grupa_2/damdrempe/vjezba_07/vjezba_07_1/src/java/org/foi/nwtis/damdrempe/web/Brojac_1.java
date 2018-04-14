@@ -38,7 +38,7 @@ public class Brojac_1 implements Brojaci {
     public void setRedniBroj(int redniBroj) {
         int staraVr = this.redniBroj;
         this.redniBroj = redniBroj;
-        podrskaZaPromjenu.firePropertyChange("redniBroj", staraVr, this.redniBroj); //TODO provjeriti da li je dobro prepisano
+        podrskaZaPromjenu.firePropertyChange("redniBroj", staraVr, this.redniBroj);
     }
 
     @Override
