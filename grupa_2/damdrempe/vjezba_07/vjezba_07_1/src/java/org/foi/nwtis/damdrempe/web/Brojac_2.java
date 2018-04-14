@@ -47,6 +47,5 @@ public class Brojac_2 implements Brojaci {
         Random r = new Random(System.nanoTime());
         int noviBroj = r.nextInt(100);
         setRedniBroj(noviBroj);
-    }
-    
+    }    
 }

@@ -21,8 +21,5 @@ public class SlusacPromjena implements PropertyChangeListener {
                 " varijabla: " + varijabla +
                 "stara vr: " + staraVrijednost + 
                 "nova vr: " + novaVrijednost);
-        
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
+    }    
 }

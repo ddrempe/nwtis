@@ -24,6 +24,19 @@
             <param-value>123456</param-value>
         </init-param>
     </servlet>
+    <servlet>
+        <servlet-name>Vjezba_07_3</servlet-name>
+        <servlet-class>org.foi.nwtis.damdrempe.web.Vjezba_07_3</servlet-class>
+        <init-param>
+            <param-name>interval</param-name>
+            <param-value>10</param-value>
+        </init-param>
+        <init-param>
+            <param-name>klasa</param-name>
+            <param-value>org.foi.nwtis.damdrempe.web.Brojac_1</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Vjezba_07_1</servlet-name>
         <url-pattern>/Vjezba_07_1</url-pattern>
