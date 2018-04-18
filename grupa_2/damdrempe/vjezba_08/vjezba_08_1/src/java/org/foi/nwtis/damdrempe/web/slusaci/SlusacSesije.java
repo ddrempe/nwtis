@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.slusaci;
 
 import java.util.ArrayList;
@@ -14,11 +9,6 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import org.foi.nwtis.damdrempe.web.kontrole.Korisnik;
 
-/**
- * Web application lifecycle listener.
- *
- * @author grupa_2
- */
 public class SlusacSesije implements HttpSessionListener, HttpSessionAttributeListener {
 
     @Override
@@ -47,17 +37,10 @@ public class SlusacSesije implements HttpSessionListener, HttpSessionAttributeLi
                 lista.add(k);
                 sc.setAttribute("PRIJAVLJENI_KORISNICI", lista);
                 System.out.println("Korisnik prijavljen: "+ k.getKorime());
-            }
-            else{
+            } else{
                 System.err.println("Nepoznata klasa u sesiji korisnika!");
             }
         }
-        
-        //TODO obrisati
-//        List<Korisnik> lista = new ArrayList<>();
-//        
-//        ServletContext sc = event.getSession().getServletContext();
-//        sc.setAttribute("BP_Konfig", bpk);
     }
 
     @Override
