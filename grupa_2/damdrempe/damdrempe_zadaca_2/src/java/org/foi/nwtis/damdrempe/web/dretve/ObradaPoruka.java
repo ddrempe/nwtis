@@ -33,6 +33,7 @@ public class ObradaPoruka extends Thread {
     @Override
     public void run() {
         super.run(); //To change body of generated methods, choose Tools | Templates.
+        int broj=0;
         while(radi){
             try {
                 String defaultFrom;
@@ -58,13 +59,16 @@ public class ObradaPoruka extends Thread {
                 //TODO ne dohvacati sve poruke odjednom nego ih po grupama dohvatiti
                 //npr 10 po 10
                 messages = folder.getMessages();
-                
+                System.out.println("Imamo trenutno "+ messages.length + " poruka u sanducicu!");
                 for(int i=0; i<messages.length;i++){
                     //TODO pretraziti tzv. NWTIS poruke i s njima obavi potrebne radnje
                 }
                 
                 folder.close(false);
                 store.close();
+                
+                System.out.println("Završila iteracija: "+ (broj++) + "!");
+                //TODO tu je neka greska ne povecava dobr obroj
                 
                 //TODO korigiraj vrijeme spavanja za rad ciklusa
                 sleep(spavanje);

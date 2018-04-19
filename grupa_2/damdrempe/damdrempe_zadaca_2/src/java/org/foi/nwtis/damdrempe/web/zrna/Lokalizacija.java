@@ -8,6 +8,8 @@ package org.foi.nwtis.damdrempe.web.zrna;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.util.Locale;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -16,8 +18,33 @@ import java.io.Serializable;
 @Named(value = "lokalizacija")
 @SessionScoped
 public class Lokalizacija implements Serializable {
+    
+    private String odabraniJezik;
 
     public Lokalizacija() {
     }
     
+    public String getOdabraniJezik() {
+        odabraniJezik = FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage();
+        return odabraniJezik;
+    }
+    
+    public Object odaberiJezik(String jezik) {
+        Locale locale = new Locale(jezik);
+        FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+        
+        return "";
+    } 
+    
+    public String slanjePoruka() {
+        return "slanjePoruka";
+    }
+
+    public String pregledPoruka() {
+        return "pregledPoruka";
+    }
+
+    public String pregledDnevnika() {
+        return "pregledDnevnika";
+    }
 }

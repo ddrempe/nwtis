@@ -14,4 +14,37 @@
             <var>p</var>
         </resource-bundle>
     </application>
+    <navigation-rule>
+        <from-view-id>/index.xhtml</from-view-id>
+        <navigation-case>
+            <from-action>#{lokalizacija.slanjePoruka()}</from-action>
+            <from-outcome>slanjePoruka</from-outcome>
+            <to-view-id>/slanjePoruka.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-action>#{lokalizacija.pregledPoruka()}</from-action>
+            <from-outcome>pregledPoruka</from-outcome>
+            <to-view-id>/pregledPoruka.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-action>#{lokalizacija.pregledDnevnika()}</from-action>
+            <from-outcome>pregledDnevnika</from-outcome>
+            <to-view-id>/pregledDnevnika.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/slanjePoruka.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>promjeniJezik</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>pregledDnevnika</from-outcome>
+            <to-view-id>/pregledDnevnika.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>pregledPoruka</from-outcome>
+            <to-view-id>/pregledPoruka.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
 </faces-config>

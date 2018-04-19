@@ -40,7 +40,7 @@ public class SlusacAplikacije implements ServletContextListener {
         
         obrada = new ObradaPoruka();    //TODO
         //TODO ovo makni kada James bude konfiguriran
-        //obrada.start();
+        obrada.start();
     }
 
     @Override
