@@ -31,6 +31,7 @@ public class PregledPoruka {
         lozinka = "123456";
 
         preuzmiMape();
+        preuzmiPoruke();
     }
 
     private void preuzmiMape() {
@@ -41,6 +42,7 @@ public class PregledPoruka {
     }
     
     private void preuzmiPoruke() {
+        //TODO tu preuzmi stvarne poruke
         popisPoruka = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             popisPoruka.add(new Poruka(Integer.toString(i), new Date(), new Date(), "damdrempe@foi.hr", "Poruka " + i, "{}", Poruka.VrstaPoruka.NWTiS_poruka));

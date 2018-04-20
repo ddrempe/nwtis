@@ -23,6 +23,7 @@ hs_err_pid*
 
 # added manually
 .svn/
+james-server-app-3.0.0-beta5-SNAPSHOT/
 
 # NetBeans specific
 nbproject/private/

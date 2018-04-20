@@ -12,6 +12,8 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
+import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 /**
  *
@@ -23,7 +25,8 @@ public class ObradaPoruka extends Thread {
     private String korIme;
     private String lozinka;
     private int spavanje;
-    private boolean radi = true;
+    private boolean radi = true;    
+    private int brojMailovaZaCitanje;
     
     @Override
     public void interrupt() {
@@ -58,7 +61,10 @@ public class ObradaPoruka extends Thread {
                 
                 //TODO ne dohvacati sve poruke odjednom nego ih po grupama dohvatiti
                 //npr 10 po 10
-                messages = folder.getMessages();
+                int trenutnaStranica = 0;
+                int startniBroj = trenutnaStranica * brojMailovaZaCitanje + 1;
+                int zavrsniBroj = startniBroj + brojMailovaZaCitanje - 1;
+                messages = folder.getMessages(startniBroj, zavrsniBroj);
                 System.out.println("Imamo trenutno "+ messages.length + " poruka u sanducicu!");
                 for(int i=0; i<messages.length;i++){
                     //TODO pretraziti tzv. NWTIS poruke i s njima obavi potrebne radnje
@@ -68,9 +74,7 @@ public class ObradaPoruka extends Thread {
                 store.close();
                 
                 System.out.println("Završila iteracija: "+ (broj++) + "!");
-                //TODO tu je neka greska ne povecava dobr obroj
                 
-                //TODO korigiraj vrijeme spavanja za rad ciklusa
                 sleep(spavanje);
             } catch (MessagingException | InterruptedException ex) {
                 Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
@@ -80,11 +84,13 @@ public class ObradaPoruka extends Thread {
 
     @Override
     public synchronized void start() {
-        //TODO preuzmi podatke iz postavki
-        posluzitelj = "127.0.0.1";
-        korIme = "servis@nwtis.nastava.foi.hr";
-        lozinka = "123456";
-        spavanje = 30 * 1000;
+        Konfiguracija k = SlusacAplikacije.konf;        
+        posluzitelj = k.dajPostavku("mail.server");
+        korIme = k.dajPostavku("mail.usernameThread");
+        lozinka = k.dajPostavku("mail.passwordThread");
+        spavanje = Integer.parseInt(k.dajPostavku("mail.timeSecThreadCycle")) * 1000;
+        brojMailovaZaCitanje = Integer.parseInt(k.dajPostavku("mail.numMessagesToRead"));
+        
         super.start();
     }   
 }

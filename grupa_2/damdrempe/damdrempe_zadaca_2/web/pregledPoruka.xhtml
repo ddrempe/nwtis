@@ -9,12 +9,10 @@
     <h:body>
         Pregled poruka
         <h:form>
-            <h:selectOneListbox size="5" value="#{pregledPoruka.odabranaDatoteka}">
-                <f:selectItems value="#{pregledPoruka.popisDatoteka}"
-                               var="d" itemLabel="#{poruka.salje}" itemValue="#{d}"/>
+            <h:selectOneListbox size="5" value="#{pregledPoruka.odabranaMapa}">
+                <f:selectItems value="#{pregledPoruka.popisPoruka}" 
+                               var="poruka" itemLabel="#{poruka.salje}-#{poruka.predmet}" itemValue="#{poruka.id}"/>
             </h:selectOneListbox>
-<!--            TODO popraviti vidjeti zasto nema propertiesa-->
-            
         </h:form>
     </h:body>
 </html>

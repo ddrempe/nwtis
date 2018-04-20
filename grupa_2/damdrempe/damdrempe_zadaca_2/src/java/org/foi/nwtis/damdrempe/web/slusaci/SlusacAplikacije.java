@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
+import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.damdrempe.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.damdrempe.konfiguracije.NemaKonfiguracije;
 import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
@@ -22,6 +24,7 @@ import org.foi.nwtis.damdrempe.web.dretve.ObradaPoruka;
  */
 public class SlusacAplikacije implements ServletContextListener {
     ObradaPoruka obrada;
+    public static Konfiguracija konf;
     
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -29,6 +32,12 @@ public class SlusacAplikacije implements ServletContextListener {
         String datoteka = sc.getInitParameter("konfiguracija");
         String putanja = sc.getRealPath("/WEB-INF") + java.io.File.separator;
         String puniNazivDatoteke = putanja + datoteka;
+        
+        try {
+            konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(puniNazivDatoteke);
+        } catch (NemaKonfiguracije | NeispravnaKonfiguracija ex) {
+            Logger.getLogger(SlusacAplikacije.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         BP_Konfiguracija bpk;
         try {
@@ -38,8 +47,7 @@ public class SlusacAplikacije implements ServletContextListener {
             Logger.getLogger(SlusacAplikacije.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        obrada = new ObradaPoruka();    //TODO
-        //TODO ovo makni kada James bude konfiguriran
+        obrada = new ObradaPoruka();
         obrada.start();
     }
 
