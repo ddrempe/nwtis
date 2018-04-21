@@ -12,6 +12,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
@@ -30,6 +31,7 @@ public class ObradaPoruka extends Thread {
     
     @Override
     public void interrupt() {
+        radi = false;
         super.interrupt(); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -84,7 +86,8 @@ public class ObradaPoruka extends Thread {
 
     @Override
     public synchronized void start() {
-        Konfiguracija k = SlusacAplikacije.konf;        
+        ServletContext sc = SlusacAplikacije.servletContext;
+        Konfiguracija k = (Konfiguracija) sc.getAttribute("MAIL_Konfig");       
         posluzitelj = k.dajPostavku("mail.server");
         korIme = k.dajPostavku("mail.usernameThread");
         lozinka = k.dajPostavku("mail.passwordThread");

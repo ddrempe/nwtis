@@ -24,7 +24,7 @@ import org.foi.nwtis.damdrempe.web.dretve.ObradaPoruka;
  */
 public class SlusacAplikacije implements ServletContextListener {
     ObradaPoruka obrada;
-    public static Konfiguracija konf;
+    public static ServletContext servletContext;
     
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -34,7 +34,8 @@ public class SlusacAplikacije implements ServletContextListener {
         String puniNazivDatoteke = putanja + datoteka;
         
         try {
-            konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(puniNazivDatoteke);
+            Konfiguracija konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(puniNazivDatoteke);
+            sce.getServletContext().setAttribute("MAIL_Konfig", konf);
         } catch (NemaKonfiguracije | NeispravnaKonfiguracija ex) {
             Logger.getLogger(SlusacAplikacije.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -47,6 +48,7 @@ public class SlusacAplikacije implements ServletContextListener {
             Logger.getLogger(SlusacAplikacije.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        servletContext = sc;
         obrada = new ObradaPoruka();
         obrada.start();
     }
@@ -55,7 +57,8 @@ public class SlusacAplikacije implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContext sc = sce.getServletContext();
         sc.removeAttribute("BP_Konfig");
-        
+        sc.removeAttribute("MAIL_Konfig");
+
         obrada.interrupt();
     }
 }

@@ -8,10 +8,20 @@ package org.foi.nwtis.damdrempe.web.zrna;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
+import javax.mail.Folder;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.servlet.ServletContext;
+import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.web.kontrole.Izbornik;
 import org.foi.nwtis.damdrempe.web.kontrole.Poruka;
+import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 @Named(value = "pregledPoruka")
 @RequestScoped
@@ -23,12 +33,15 @@ public class PregledPoruka {
     private List<Izbornik> popisMapa;
     private String odabranaMapa;
     private List<Poruka> popisPoruka;
+    private String posebnaMapa;
 
     public PregledPoruka() {
-        // TODO preuzmi adresu poslužitelja, korisničko ime, lozinku, vrijeme spavanja iz postavki
-        posluzitelj = "127.0.0.1";
-        korIme = "servis@nwtis.nastava.foi.hr";
-        lozinka = "123456";
+        ServletContext sc = SlusacAplikacije.servletContext;
+        Konfiguracija k = (Konfiguracija) sc.getAttribute("MAIL_Konfig");       
+        posluzitelj = k.dajPostavku("mail.server");
+        korIme = k.dajPostavku("mail.usernameThread");
+        lozinka = k.dajPostavku("mail.passwordThread");
+        posebnaMapa = k.dajPostavku("mail.folderNWTiS");
 
         preuzmiMape();
         preuzmiPoruke();
@@ -37,8 +50,28 @@ public class PregledPoruka {
     private void preuzmiMape() {
         popisMapa = new ArrayList<>();
         popisMapa.add(new Izbornik("INBOX", "INBOX"));
-        //TODO provjeri da li postoji trazena mapa u sanducicu prema nazivu iz datoteke postavki
-        popisMapa.add(new Izbornik("NWTiS damdrempe poruke", "NWTiS damdrempe poruke"));
+        
+        try { 
+            java.util.Properties properties = System.getProperties();
+            properties.put("mail.smtp.host", posluzitelj);
+            Session session = Session.getInstance(properties, null);
+            Store store = session.getStore("imap");
+            store.connect(posluzitelj, korIme, lozinka);
+            Folder[] sveMape = store.getDefaultFolder().list();            
+            store.close();
+            
+            for (Folder folder : sveMape) {
+                if(posebnaMapa.equals(folder.getName())){
+                    popisMapa.add(new Izbornik(posebnaMapa, posebnaMapa));
+                    break;
+                }
+            }
+            
+        } catch (NoSuchProviderException ex) {
+            Logger.getLogger(PregledPoruka.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(PregledPoruka.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void preuzmiPoruke() {

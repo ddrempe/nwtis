@@ -31,8 +31,7 @@ public class Lokalizacija implements Serializable {
     
     public Object odaberiJezik(String jezik) {
         Locale locale = new Locale(jezik);
-        FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
-        
+        FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);        
         return "";
     } 
     
