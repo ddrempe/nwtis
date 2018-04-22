@@ -28,6 +28,7 @@ public class ObradaPoruka extends Thread {
     private int spavanje;
     private boolean radi = true;    
     private int brojMailovaZaCitanje;
+    private String posebnaMapa;
     
     @Override
     public void interrupt() {
@@ -58,6 +59,11 @@ public class ObradaPoruka extends Thread {
                 // Open the INBOX folder
                 folder = store.getFolder("INBOX");
                 folder.open(Folder.READ_ONLY);
+                
+                Folder nwtisFolder = store.getFolder(posebnaMapa);
+                if(!nwtisFolder.exists()){
+                    nwtisFolder.create(Folder.HOLDS_MESSAGES);
+                }                
                 
                 Message[] messages = null;
                 
@@ -93,6 +99,7 @@ public class ObradaPoruka extends Thread {
         lozinka = k.dajPostavku("mail.passwordThread");
         spavanje = Integer.parseInt(k.dajPostavku("mail.timeSecThreadCycle")) * 1000;
         brojMailovaZaCitanje = Integer.parseInt(k.dajPostavku("mail.numMessagesToRead"));
+        posebnaMapa = k.dajPostavku("mail.folderNWTiS");
         
         super.start();
     }   

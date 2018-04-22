@@ -5,6 +5,7 @@
  */
 package org.foi.nwtis.damdrempe.web.zrna;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,10 +14,12 @@ import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
 import javax.mail.Folder;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.web.kontrole.Izbornik;
@@ -34,6 +37,7 @@ public class PregledPoruka {
     private String odabranaMapa;
     private List<Poruka> popisPoruka;
     private String posebnaMapa;
+    private int ukupnoPoruka;
 
     public PregledPoruka() {
         ServletContext sc = SlusacAplikacije.servletContext;
@@ -42,7 +46,8 @@ public class PregledPoruka {
         korIme = k.dajPostavku("mail.usernameThread");
         lozinka = k.dajPostavku("mail.passwordThread");
         posebnaMapa = k.dajPostavku("mail.folderNWTiS");
-
+        odabranaMapa = "INBOX";
+        
         preuzmiMape();
         preuzmiPoruke();
     }
@@ -75,11 +80,58 @@ public class PregledPoruka {
     }
     
     private void preuzmiPoruke() {
-        //TODO tu preuzmi stvarne poruke
         popisPoruka = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            popisPoruka.add(new Poruka(Integer.toString(i), new Date(), new Date(), "damdrempe@foi.hr", "Poruka " + i, "{}", Poruka.VrstaPoruka.NWTiS_poruka));
+        try {
+            java.util.Properties properties = System.getProperties();
+            properties.put("mail.smtp.host", posluzitelj);
+            Session session = Session.getInstance(properties, null);
+            Store store = session.getStore("imap");
+            store.connect(posluzitelj, korIme, lozinka);
+            Folder folder = store.getFolder(odabranaMapa);
+            folder.open(Folder.READ_ONLY);
+            
+            ukupnoPoruka = folder.getMessageCount();
+            
+            if(ukupnoPoruka == 0){
+                return;
+            }
+            
+            //TODO dohvati samo n najsvjezijih, sortirati
+            Message[] messages = folder.getMessages();
+            
+            for (Message m : messages) {
+                MimeMessage message = (MimeMessage) m;       
+                String id = message.getMessageID();                
+                Date vrijemeSlanja = message.getSentDate();             
+                Date vrijemePrijema = message.getReceivedDate();
+                String salje = message.getFrom()[0].toString();
+                String predmet = message.getSubject();
+                String privitak = message.getContent().toString();
+                Poruka.VrstaPoruka vrsta = Poruka.VrstaPoruka.neNWTiS_poruka;
+                if(false){   //TODO provjeri vrstu
+                    vrsta = Poruka.VrstaPoruka.NWTiS_poruka;
+                }
+                Poruka poruka = new Poruka(id, vrijemeSlanja, vrijemePrijema, salje, predmet, privitak, vrsta);
+                popisPoruka.add(poruka);
+            }
+        } catch (NoSuchProviderException ex) {
+            Logger.getLogger(PregledPoruka.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException | IOException ex) {
+            Logger.getLogger(PregledPoruka.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }   
+    
+    public String promjenaMape(){
+        preuzmiPoruke();
+        return "pregledPoruka";
+    }
+    
+    public String prethodnePoruke(){
+        return "";
+    }
+    
+    public String sljedecePoruke(){
+        return "";
     }
 
     public String getPosluzitelj() {
@@ -130,12 +182,16 @@ public class PregledPoruka {
         this.popisPoruka = popisPoruka;
     }
     
+    public int getUkupnoPoruka() {
+        return ukupnoPoruka;
+    }
+    
     public String promjeniJezik() {
         return "promjeniJezik";
     }
     
-    public String slanjePoruke() {
-        return "slanjePoruke";
+    public String slanjePoruka() {
+        return "slanjePoruka";
     }
         
     public String pregledDnevnika() {

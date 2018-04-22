@@ -20,19 +20,19 @@
         <h1>#{p["index.veza_slanjePoruke"]}</h1>
         
         <h:form>
-            <h:outputLabel value="#{p['index.labela_prima']}"/>
+            <h:outputLabel value="#{p['slanje.labela_prima']}"/>
             <h:inputText value="#{slanjePoruka.prima}" />
             <br/>
             
-            <h:outputLabel value="#{p['index.labela_salje']}"/>
+            <h:outputLabel value="#{p['slanje.labela_salje']}"/>
             <h:inputText value="#{slanjePoruka.salje}" />
             <br/>
             
-            <h:outputLabel value="#{p['index.labela_predmet']}"/>
+            <h:outputLabel value="#{p['slanje.labela_predmet']}"/>
             <h:inputText value="#{slanjePoruka.predmet}" />
             <br/>
             
-            <h:outputLabel value="#{p['index.labela_poruka']}"/><br/> 
+            <h:outputLabel value="#{p['slanje.labela_poruka']}"/><br/> 
             <h:panelGrid columns="2">
             <h:inputTextarea rows="10" cols="50"
                 value="#{slanjePoruka.privitakSadrzaj}" />
@@ -42,11 +42,11 @@
                                var="d" itemLabel="#{d}" itemValue="#{d}"/>
             </h:selectOneListbox>
             
-            <h:commandButton value="#{p['index.gumb_saljiPoruku']}"
+            <h:commandButton value="#{p['slanje.gumb_saljiPoruku']}"
                              action="#{slanjePoruka.saljiPoruku()}" />
-            <h:commandButton value="#{p['index.gumb_preuzmiSadrzaj']}"
+            <h:commandButton value="#{p['slanje.gumb_preuzmiSadrzaj']}"
                              action="#{slanjePoruka.preuzmiSadrzaj()}" /> 
-            <h:commandButton value="#{p['index.gumb_obrisiPoruku']}"
+            <h:commandButton value="#{p['slanje.gumb_obrisiPoruku']}"
                              action="#{slanjePoruka.obrisiPoruku()}" />
             </h:panelGrid>
         </h:form>

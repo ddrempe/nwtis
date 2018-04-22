@@ -3,19 +3,60 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <f:view locale="#{lokalizacija.odabraniJezik}">   
-        <h:head>
-            <title>Pregled poruka</title>
-        </h:head>
-        <h:body>
-            Pregled poruka
-            <h:form>
-                <h:selectOneListbox size="5" value="#{pregledPoruka.odabranaMapa}">
-                    <f:selectItems value="#{pregledPoruka.popisPoruka}" 
-                                   var="poruka" itemLabel="#{poruka.salje}-#{poruka.predmet}" itemValue="#{poruka.id}"/>
-                </h:selectOneListbox>
-            </h:form>
-        </h:body>
-    </f:view>
+    <h:head>
+        <title>Pregled poruka</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <h:commandLink action="#{pregledPoruka.promjeniJezik()}" 
+                           value="#{p['index.naslov']}" />
+            &nbsp;
+            <h:commandLink action="#{pregledPoruka.slanjePoruka()}" 
+                           value="#{p['index.veza_slanjePoruke']}" />
+            &nbsp;
+            <h:commandLink action="#{pregledPoruka.pregledDnevnika()}" 
+                           value="#{p['index.veza_pregledDnevnika']}" />
+        </h:form>
+        <h1>#{p["index.veza_pregledPoruka"]}</h1>
+
+        <h:form>
+
+            <h:selectOneMenu value="#{pregledPoruka.odabranaMapa}">
+                <f:selectItems value="#{pregledPoruka.popisMapa}" 
+                               var="mapa" itemLabel="#{mapa.labela}" itemValue="#{mapa.vrijednost}"/>
+            </h:selectOneMenu>
+            <h:commandButton value="#{p['pregled.gumb_promijeniMapu']}" action="#{pregledPoruka.promjenaMape()}"/> <br/>
+
+            <h:dataTable value="#{pregledPoruka.popisPoruka}" var="por" >
+                <h:column>
+                    <f:facet name="header">#{p['pregled.naslov_posiljatelj']}</f:facet>
+                    <h:outputText value="#{por.salje}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#{p['pregled.naslov_vrijemeSlanja']}</f:facet>
+                    <h:outputText value="#{por.vrijemeSlanja}">
+                        <f:convertDateTime dateStyle="full" timeZone="Europe/Zagreb" type="both" />
+                    </h:outputText>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#{p['pregled.naslov_predmet']}</f:facet>
+                    <h:outputText value="#{por.predmet}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#{p['pregled.naslov_vrsta']}</f:facet>
+                    <h:outputText value="#{por.vrsta}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#{p['pregled.naslov_sadrzajPrivitka']}</f:facet>
+                    <h:outputText value="#{por.privitak}"/>
+                </h:column>
+            </h:dataTable> <br/>
+
+            <h:outputText value="#{p['pregled.labela_ukupnoPoruka']}"/>
+            <h:outputText value="#{pregledPoruka.ukupnoPoruka}"/> 
+            <h:commandButton value="#{p['pregled.gumb_prethodne']}" action="#{pregledPoruka.prethodnePoruke()}"/> 
+            <h:commandButton value="#{p['pregled.gumb_sljedece']}" action="#{pregledPoruka.sljedecePoruke()}"/> 
+        </h:form>
+    </h:body>
 </html>
 
