@@ -8,7 +8,6 @@ package org.foi.nwtis.damdrempe.web.zrna;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,10 +19,10 @@ import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.web.kontrole.Izbornik;
+import org.foi.nwtis.damdrempe.web.kontrole.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.web.kontrole.Poruka;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
@@ -111,7 +110,6 @@ public class PregledPoruka {
             Folder folder = store.getFolder(odabranaMapa);
             folder.open(Folder.READ_ONLY);
             
-            //TODO dohvati samo n
             ukupnoPoruka = folder.getMessageCount();
             if(pomak == 0){
                 zavrsnaPoruka = ukupnoPoruka;
@@ -123,23 +121,8 @@ public class PregledPoruka {
             }
             Message[] messages = folder.getMessages(pocetnaPoruka, zavrsnaPoruka);
             
-            for (Message m : messages) {
-                MimeMessage message = (MimeMessage) m;       
-                String id = message.getMessageID();  
-                
-                Date vrijemeSlanja = message.getSentDate();
-                if(vrijemeSlanja == null) vrijemeSlanja = new Date(0);
-                
-                Date vrijemePrijema = message.getReceivedDate();
-                String salje = message.getFrom()[0].toString();
-                String predmet = message.getSubject();
-                String privitak = message.getContent().toString();
-                Poruka.VrstaPoruka vrsta = Poruka.VrstaPoruka.neNWTiS_poruka;
-                if(false){   //TODO provjeri vrstu
-                    vrsta = Poruka.VrstaPoruka.NWTiS_poruka;
-                }
-                Poruka poruka = new Poruka(id, vrijemeSlanja, vrijemePrijema, salje, predmet, privitak, vrsta);
-                popisPoruka.add(poruka);
+            for (Message message : messages) {
+                popisPoruka.add(PomocnaKlasa.ProcitajPoruku(message));
             }
             
             brojPorukaDohvaceno = popisPoruka.size();

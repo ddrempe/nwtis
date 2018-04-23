@@ -15,17 +15,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
 import javax.mail.Address;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
+import org.foi.nwtis.damdrempe.web.kontrole.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 /**
@@ -40,7 +48,7 @@ public class SlanjePoruka {
     private String prima;
     private String salje;
     private String predmet;
-    private String privitak;
+    private String trazeniNazivPrivitka;
     private List<String> popisDatoteka;
     private String odabranaDatoteka;
     private String privitakSadrzaj = "";
@@ -52,7 +60,7 @@ public class SlanjePoruka {
         prima = k.dajPostavku("mail.usernameThread");
         salje = k.dajPostavku("mail.usernameEmailAddress");
         predmet = k.dajPostavku("mail.subjectEmail");
-        privitak = k.dajPostavku("mail.attachmentFilename");        
+        trazeniNazivPrivitka = k.dajPostavku("mail.attachmentFilename");        
         
         String [] webInfDatoteke = new File(sc.getRealPath("WEB-INF")).list();         
         popisDatoteka = new ArrayList<>();
@@ -133,6 +141,9 @@ public class SlanjePoruka {
     }
     
     public String saljiPoruku(){
+        ServletContext sc = SlusacAplikacije.servletContext;
+        String putanja = sc.getRealPath("/WEB-INF/" + odabranaDatoteka);
+        
         try {
             java.util.Properties properties = System.getProperties();
             properties.put("mail.smtp.host", posluzitelj);
@@ -148,8 +159,21 @@ public class SlanjePoruka {
             message.setRecipients(Message.RecipientType.TO, toAddresses);
 
             message.setSubject(predmet);
-            message.setText(privitakSadrzaj);
             message.setSentDate(new Date(System.currentTimeMillis()));
+            
+            //dodano
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText("");
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            
+            messageBodyPart = new MimeBodyPart();            
+            String filename = putanja;  //TODO umjesto postojece datoteke, stvori datoteku od sadrzaja
+            DataSource source = new FileDataSource(filename);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(odabranaDatoteka);
+            multipart.addBodyPart(messageBodyPart); 
+            message.setContent(multipart);            
 
             Transport.send(message);
         } catch (MessagingException e) {
@@ -160,33 +184,13 @@ public class SlanjePoruka {
         return "";
     }
     
+    public void preuzmiSadrzaj(){
+        ServletContext sc = SlusacAplikacije.servletContext;        
+        String putanja = sc.getRealPath("/WEB-INF/") + File.separator + odabranaDatoteka;
+        privitakSadrzaj = PomocnaKlasa.procitajSadrzajJsonDatoteke(putanja);
+    }
+    
     public String obrisiPoruku(){
         return "";
     }
-    
-    public void preuzmiSadrzaj(){        
-        if (odabranaDatoteka == null || odabranaDatoteka.length() == 0) {
-            System.out.println("Ne postoji datoteka.");
-        }
-        
-        ServletContext sc = SlusacAplikacije.servletContext;
-        String putanja = sc.getRealPath("/WEB-INF/" + odabranaDatoteka);
-
-        File dat = new File(putanja);
-
-        if (!dat.exists() || dat.isDirectory()) {
-            System.out.println("Ne postoji datoteka ili je mapa.");
-        }   
-
-        Gson gson = new Gson();
-        String sadrzaj = "";
-        try {
-            JsonElement json = gson.fromJson(new FileReader(dat), JsonElement.class);
-            sadrzaj = gson.toJson(json);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SlanjePoruka.class.getName()).log(Level.SEVERE, null, ex);
-        }     
-        
-        privitakSadrzaj = sadrzaj;
-    } 
 }
