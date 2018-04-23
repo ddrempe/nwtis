@@ -7,6 +7,7 @@ package org.foi.nwtis.damdrempe.web.zrna;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,16 +38,23 @@ public class PregledPoruka {
     private String odabranaMapa;
     private List<Poruka> popisPoruka;
     private String posebnaMapa;
+    private int brojPorukaDohvaceno;
+    private int brojPorukaZaPrikaz;
+    
+    private int pocetnaPoruka;
+    private int zavrsnaPoruka;
     private int ukupnoPoruka;
+    private int pomak = 0;
 
     public PregledPoruka() {
-        ServletContext sc = SlusacAplikacije.servletContext;
+        ServletContext sc = SlusacAplikacije.servletContext;       
         Konfiguracija k = (Konfiguracija) sc.getAttribute("MAIL_Konfig");       
         posluzitelj = k.dajPostavku("mail.server");
         korIme = k.dajPostavku("mail.usernameThread");
         lozinka = k.dajPostavku("mail.passwordThread");
         posebnaMapa = k.dajPostavku("mail.folderNWTiS");
         odabranaMapa = "INBOX";
+        brojPorukaZaPrikaz = Integer.parseInt(k.dajPostavku("mail.numMessagesToShow"));
         
         preuzmiMape();
         preuzmiPoruke();
@@ -71,7 +79,6 @@ public class PregledPoruka {
                     break;
                 }
             }
-            
         } catch (NoSuchProviderException ex) {
             Logger.getLogger(PregledPoruka.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MessagingException ex) {
@@ -79,7 +86,21 @@ public class PregledPoruka {
         }
     }
     
+    private void sortirajPoruke(){
+        Collections.sort(popisPoruka, (Poruka p1, Poruka p2) -> {
+            return p2.getVrijemeSlanja().compareTo(p1.getVrijemeSlanja());
+        });       
+    }
+    
     private void preuzmiPoruke() {
+        ServletContext sc = SlusacAplikacije.servletContext;
+        
+        if(sc.getAttribute("zavrsnaPoruka") != null && sc.getAttribute("pomak") != null){
+            zavrsnaPoruka = Integer.parseInt(sc.getAttribute("zavrsnaPoruka").toString());
+            pocetnaPoruka = Integer.parseInt(sc.getAttribute("pocetnaPoruka").toString());
+            pomak = Integer.parseInt(sc.getAttribute("pomak").toString());
+        }
+        
         popisPoruka = new ArrayList<>();
         try {
             java.util.Properties properties = System.getProperties();
@@ -90,19 +111,25 @@ public class PregledPoruka {
             Folder folder = store.getFolder(odabranaMapa);
             folder.open(Folder.READ_ONLY);
             
+            //TODO dohvati samo n
             ukupnoPoruka = folder.getMessageCount();
-            
-            if(ukupnoPoruka == 0){
-                return;
+            if(pomak == 0){
+                zavrsnaPoruka = ukupnoPoruka;
+                pocetnaPoruka = zavrsnaPoruka - brojPorukaZaPrikaz + 1;                  
             }
-            
-            //TODO dohvati samo n najsvjezijih, sortirati
-            Message[] messages = folder.getMessages();
+            if(ukupnoPoruka < brojPorukaZaPrikaz){
+                zavrsnaPoruka=ukupnoPoruka;
+                pocetnaPoruka=1;
+            }
+            Message[] messages = folder.getMessages(pocetnaPoruka, zavrsnaPoruka);
             
             for (Message m : messages) {
                 MimeMessage message = (MimeMessage) m;       
-                String id = message.getMessageID();                
-                Date vrijemeSlanja = message.getSentDate();             
+                String id = message.getMessageID();  
+                
+                Date vrijemeSlanja = message.getSentDate();
+                if(vrijemeSlanja == null) vrijemeSlanja = new Date(0);
+                
                 Date vrijemePrijema = message.getReceivedDate();
                 String salje = message.getFrom()[0].toString();
                 String predmet = message.getSubject();
@@ -114,6 +141,11 @@ public class PregledPoruka {
                 Poruka poruka = new Poruka(id, vrijemeSlanja, vrijemePrijema, salje, predmet, privitak, vrsta);
                 popisPoruka.add(poruka);
             }
+            
+            brojPorukaDohvaceno = popisPoruka.size();
+            if(brojPorukaDohvaceno > 0){
+                sortirajPoruke();
+            }            
         } catch (NoSuchProviderException ex) {
             Logger.getLogger(PregledPoruka.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MessagingException | IOException ex) {
@@ -122,16 +154,44 @@ public class PregledPoruka {
     }   
     
     public String promjenaMape(){
+        ServletContext sc = SlusacAplikacije.servletContext;
+        sc.removeAttribute("zavrsnaPoruka");
+        sc.removeAttribute("pocetnaPoruka");
+        sc.removeAttribute("pomak");
         preuzmiPoruke();
         return "pregledPoruka";
     }
     
     public String prethodnePoruke(){
-        return "";
+        pomak--;
+        zavrsnaPoruka = zavrsnaPoruka + brojPorukaZaPrikaz;
+        pocetnaPoruka = zavrsnaPoruka - brojPorukaZaPrikaz + 1; 
+        
+        ServletContext sc = SlusacAplikacije.servletContext;
+        sc.setAttribute("zavrsnaPoruka", zavrsnaPoruka);
+        sc.setAttribute("pocetnaPoruka", pocetnaPoruka);
+        sc.setAttribute("pomak", pomak);
+
+        preuzmiPoruke();
+        return "pregledPoruka";
     }
     
     public String sljedecePoruke(){
-        return "";
+        pomak++;
+        zavrsnaPoruka = zavrsnaPoruka - brojPorukaZaPrikaz;        
+        pocetnaPoruka = zavrsnaPoruka - brojPorukaZaPrikaz + 1;
+        
+        if(pocetnaPoruka<1){
+            pocetnaPoruka = 1;
+        }
+        
+        ServletContext sc = SlusacAplikacije.servletContext;
+        sc.setAttribute("zavrsnaPoruka", zavrsnaPoruka);
+        sc.setAttribute("pocetnaPoruka", pocetnaPoruka);
+        sc.setAttribute("pomak", pomak);
+        
+        preuzmiPoruke();
+        return "pregledPoruka";
     }
 
     public String getPosluzitelj() {
@@ -182,9 +242,25 @@ public class PregledPoruka {
         this.popisPoruka = popisPoruka;
     }
     
+    public int getBrojPorukaDohvaceno() {
+        return brojPorukaDohvaceno;
+    }
+
+    public int getPocetnaPoruka() {
+        return pocetnaPoruka;
+    } 
+
     public int getUkupnoPoruka() {
         return ukupnoPoruka;
-    }
+    }   
+
+    public int getBrojPorukaZaPrikaz() {
+        return brojPorukaZaPrikaz;
+    }  
+
+    public int getZavrsnaPoruka() {
+        return zavrsnaPoruka;
+    }   
     
     public String promjeniJezik() {
         return "promjeniJezik";

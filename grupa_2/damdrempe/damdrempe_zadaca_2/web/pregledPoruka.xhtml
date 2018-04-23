@@ -29,6 +29,10 @@
 
             <h:dataTable value="#{pregledPoruka.popisPoruka}" var="por" >
                 <h:column>
+                    <f:facet name="header">ID</f:facet>
+                    <h:outputText value="#{por.id}"/>
+                </h:column>
+                <h:column>
                     <f:facet name="header">#{p['pregled.naslov_posiljatelj']}</f:facet>
                     <h:outputText value="#{por.salje}"/>
                 </h:column>
@@ -53,9 +57,13 @@
             </h:dataTable> <br/>
 
             <h:outputText value="#{p['pregled.labela_ukupnoPoruka']}"/>
-            <h:outputText value="#{pregledPoruka.ukupnoPoruka}"/> 
-            <h:commandButton value="#{p['pregled.gumb_prethodne']}" action="#{pregledPoruka.prethodnePoruke()}"/> 
-            <h:commandButton value="#{p['pregled.gumb_sljedece']}" action="#{pregledPoruka.sljedecePoruke()}"/> 
+            <h:outputText value="#{pregledPoruka.brojPorukaDohvaceno}"/> 
+            <h:commandButton value="#{p['pregled.gumb_prethodne']}" 
+                             action="#{pregledPoruka.prethodnePoruke()}"
+                             rendered="#{pregledPoruka.zavrsnaPoruka ne pregledPoruka.ukupnoPoruka}"/> 
+            <h:commandButton value="#{p['pregled.gumb_sljedece']}" 
+                             action="#{pregledPoruka.sljedecePoruke()}"
+                             rendered="#{pregledPoruka.pocetnaPoruka ne 1}"/> 
         </h:form>
     </h:body>
 </html>
