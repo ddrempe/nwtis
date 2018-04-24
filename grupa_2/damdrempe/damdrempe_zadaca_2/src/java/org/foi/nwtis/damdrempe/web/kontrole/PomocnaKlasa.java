@@ -22,7 +22,6 @@ import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletContext;
-import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.web.dretve.ObradaPoruka;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 import org.foi.nwtis.damdrempe.web.zrna.SlanjePoruka;
@@ -89,7 +88,7 @@ public class PomocnaKlasa {
             if (contentType.contains("multipart")) {
                 // content may contain attachments
                 if(message.getContent() instanceof Multipart == false){
-                    System.out.println("Nije moguce citati privitak.");
+                    System.out.println("Nije moguce citati privitak za poruku " + message.getMessageNumber());
                     return "";
                 }
                 Multipart multiPart = (Multipart) message.getContent();
@@ -180,5 +179,12 @@ public class PomocnaKlasa {
         } catch (IOException ex) {
             Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static Komanda ParsirajJsonKomande(String tekstJson){
+        Gson gson = new Gson();
+        Komanda komanda = gson.fromJson(tekstJson, Komanda.class); 
+        
+        return komanda;
     }
 }

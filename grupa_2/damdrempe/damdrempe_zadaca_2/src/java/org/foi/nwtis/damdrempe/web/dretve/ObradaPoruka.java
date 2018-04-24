@@ -6,6 +6,11 @@
 package org.foi.nwtis.damdrempe.web.dretve;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.Flags;
@@ -16,6 +21,8 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
+import org.foi.nwtis.damdrempe.web.kontrole.BazaPodatakaOperacije;
+import org.foi.nwtis.damdrempe.web.kontrole.Komanda;
 import org.foi.nwtis.damdrempe.web.kontrole.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.web.kontrole.Poruka;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
@@ -42,8 +49,15 @@ public class ObradaPoruka extends Thread {
         //TODO Svaka primljena poruka upisuje se u tablicu DNEVNIK bez obzira na status prethodne akcije.
         
         String tekstPrivitka = poruka.getPrivitak();
-        if(tekstPrivitka.contains("dodaj")){
-            return true;            
+        if(tekstPrivitka.contains("test")){
+            Komanda komanda = PomocnaKlasa.ParsirajJsonKomande(tekstPrivitka);
+            try {
+                BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();    //TODO optimalniji rad s bazom
+                bpo.UredajiInsert(komanda, tekstPrivitka);
+                bpo.ZatvoriVezu();
+            } catch (SQLException | ParseException | ClassNotFoundException ex) {
+                Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } 
 //        else if(tekstPrivitka.contains("azuriraj")){
 //            
@@ -104,7 +118,7 @@ public class ObradaPoruka extends Thread {
                         Poruka poruka = PomocnaKlasa.ProcitajPoruku(message, trazeniNazivPrivitka);
                         if (poruka.getVrsta() == Poruka.VrstaPoruka.NWTiS_poruka) {
                             if(ObradaNwtisPoruke(poruka) == true){
-                                //TODO baca exception kada postoje neobradene poruke kod prvog deploya tj. pokretanja
+                                //TODO baca exception kada postoje neobradene poruke kod prvog deploya tj. pokretanja?
                                 System.out.println(brojacObrada + " | Poruka premjestena u posebnu mapu.");
                                 
                                 Message[] poruke = new Message[1];
