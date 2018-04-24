@@ -24,7 +24,7 @@ import org.foi.nwtis.damdrempe.web.dretve.ObradaPoruka;
  */
 public class SlusacAplikacije implements ServletContextListener {
     ObradaPoruka obrada;
-    public static ServletContext servletContext;
+    public static ServletContext servletContext;    
     
     @Override
     public void contextInitialized(ServletContextEvent sce) {

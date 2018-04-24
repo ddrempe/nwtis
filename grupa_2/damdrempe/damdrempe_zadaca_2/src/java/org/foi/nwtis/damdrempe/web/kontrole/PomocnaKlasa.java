@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Level;
@@ -32,7 +33,7 @@ import org.foi.nwtis.damdrempe.web.zrna.SlanjePoruka;
  */
 public class PomocnaKlasa {
     
-    public static String procitajSadrzajJsonDatoteke(String putanja){        
+    public static String ProcitajSadrzajJsonDatoteke(String putanja){        
         File dat = new File(putanja);
 
         if (!dat.exists() || dat.isDirectory()) {
@@ -60,16 +61,15 @@ public class PomocnaKlasa {
     
     private static boolean ProvjeriSintaksuPrivitka(String tekstPrivitka){
         //TODO napraviti regex za provjeru sintakse i validirati tekst prema njemu
+        //TODO provjeriti "text/json" ili "application/json"
         if(tekstPrivitka.contains("komanda")){
             return true;
         }
         else return false;
     }
     
-    public static String IspitajDatotekuPrivitka(Message message) { 
+    public static String IspitajDatotekuPrivitka(Message message, String trazeniNazivPrivitka) { 
         ServletContext sc = SlusacAplikacije.servletContext;
-        Konfiguracija k = (Konfiguracija) sc.getAttribute("MAIL_Konfig");
-        String trazeniNazivPrivitka = k.dajPostavku("mail.attachmentFilename");
         String webInfPutanja = sc.getRealPath("/WEB-INF/");
         String putanjaPrivitaka = webInfPutanja + File.separator + "privici";
         
@@ -88,6 +88,10 @@ public class PomocnaKlasa {
             String messageContent = "";
             if (contentType.contains("multipart")) {
                 // content may contain attachments
+                if(message.getContent() instanceof Multipart == false){
+                    System.out.println("Nije moguce citati privitak.");
+                    return "";
+                }
                 Multipart multiPart = (Multipart) message.getContent();
                 int numberOfParts = multiPart.getCount();
                 for (int partCount = 0; partCount < numberOfParts; partCount++) {
@@ -97,6 +101,10 @@ public class PomocnaKlasa {
                         fileName = part.getFileName();
                         attachFiles += fileName + ", ";
                         saveDirectory = putanjaPrivitaka + File.separator + fileName;
+                        
+                        if(fileName.contains(":")){
+                            continue;
+                        }
                         
                         part.saveFile(saveDirectory);
                         brojPrivitaka++;
@@ -121,7 +129,7 @@ public class PomocnaKlasa {
         }
         
         if(brojPrivitaka == 1 && fileName.equalsIgnoreCase(trazeniNazivPrivitka)){
-            String sadrzajPrivitka = PomocnaKlasa.procitajSadrzajJsonDatoteke(saveDirectory);
+            String sadrzajPrivitka = PomocnaKlasa.ProcitajSadrzajJsonDatoteke(saveDirectory);
             
             if(ProvjeriSintaksuPrivitka(sadrzajPrivitka) == true){
                 return sadrzajPrivitka;                
@@ -131,11 +139,11 @@ public class PomocnaKlasa {
         return "";
     } 
 
-    public static Poruka ProcitajPoruku(Message poruka) throws MessagingException, IOException {
+    public static Poruka ProcitajPoruku(Message poruka, String trazeniNazivPrivitka) throws MessagingException, IOException {
         MimeMessage message = (MimeMessage) poruka;
         String id = message.getMessageID();
 
-        Date vrijemeSlanja = message.getSentDate();  //TODO nešto sa tim vremenom vidjeti
+        Date vrijemeSlanja = message.getSentDate();
         if (vrijemeSlanja == null) {
             vrijemeSlanja = new Date(0);
         }
@@ -143,9 +151,34 @@ public class PomocnaKlasa {
         Date vrijemePrijema = message.getReceivedDate();
         String salje = message.getFrom()[0].toString();
         String predmet = message.getSubject();
-        String privitak = PomocnaKlasa.IspitajDatotekuPrivitka(poruka);
+        String privitak = PomocnaKlasa.IspitajDatotekuPrivitka(poruka, trazeniNazivPrivitka);
         Poruka.VrstaPoruka vrsta = OdrediVrstuPoruke(privitak);
         
         return new Poruka(id, vrijemeSlanja, vrijemePrijema, salje, predmet, privitak, vrsta);
-    }   
+    }  
+    
+    public static void ZapisiTekstUDatoteku(String putanja, String tekst){
+        try {
+            File file = new File(putanja);
+            
+            String parent = file.getParent();
+            File directory = new File(parent);
+            if(!directory.exists()){
+                directory.mkdir();
+            }
+            
+            // creates the file
+            file.createNewFile();
+            
+            // creates a FileWriter Object
+            FileWriter writer = new FileWriter(file);
+            
+            // Writes the content to the file
+            writer.write(tekst);
+            writer.flush();
+            writer.close();
+        } catch (IOException ex) {
+            Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

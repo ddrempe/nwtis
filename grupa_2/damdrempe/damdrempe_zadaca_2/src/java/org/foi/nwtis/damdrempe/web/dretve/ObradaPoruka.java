@@ -8,6 +8,7 @@ package org.foi.nwtis.damdrempe.web.dretve;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -32,9 +33,22 @@ public class ObradaPoruka extends Thread {
     private boolean radi = true;
     private String posebnaMapa;
     private int brojPorukaZaCitanje;
+    private String trazeniNazivPrivitka;
 
-    private void ObradaPoruke(Poruka poruka) {
+    private boolean ObradaNwtisPoruke(Poruka poruka) {
         //TODO obraditi poruku
+        //TODO ako se radi o komandi "dodaj" tada treba dodati zapis u tablicu UREDAJI u bazi podataka, s time da ako već postoji takav id, onda je pogreška.
+        //TODO Ako se radi o komandi "azuriraj" tada se provjerava zapis u tablici UREDAJI za zadani id IoT i ako postoji, ažurira se u tablici.  Ako ne postoji, onda je pogreška.
+        //TODO Svaka primljena poruka upisuje se u tablicu DNEVNIK bez obzira na status prethodne akcije.
+        
+        String tekstPrivitka = poruka.getPrivitak();
+        if(tekstPrivitka.contains("dodaj")){
+            return true;            
+        } 
+//        else if(tekstPrivitka.contains("azuriraj")){
+//            
+//        }
+        return false;
     }
 
     @Override
@@ -52,7 +66,7 @@ public class ObradaPoruka extends Thread {
                 String defaultFrom;
                 Session session;
                 Store store;
-                Folder folder;
+                Folder folderInbox;
 
                 // Start the session
                 java.util.Properties properties = System.getProperties();
@@ -63,16 +77,16 @@ public class ObradaPoruka extends Thread {
                 store = session.getStore("imap");
                 store.connect(posluzitelj, korIme, lozinka);
 
-                // Open the INBOX folder
-                folder = store.getFolder("INBOX");
-                folder.open(Folder.READ_ONLY);
+                // Open the INBOX folderInbox
+                folderInbox = store.getFolder("INBOX");
+                folderInbox.open(Folder.READ_ONLY);
 
-                Folder nwtisFolder = store.getFolder(posebnaMapa);
-                if (!nwtisFolder.exists()) {
-                    nwtisFolder.create(Folder.HOLDS_MESSAGES);
+                Folder folderNwtis = store.getFolder(posebnaMapa);
+                if (!folderNwtis.exists()) {
+                    folderNwtis.create(Folder.HOLDS_MESSAGES);
                 }
 
-                int ukupnoPoruka = folder.getMessageCount();
+                int ukupnoPoruka = folderInbox.getMessageCount();
                 System.out.println(brojacObrada + " | Imamo trenutno " + ukupnoPoruka + " poruka u sanducicu!");
 
                 int pocetnaPoruka = 1;
@@ -84,14 +98,22 @@ public class ObradaPoruka extends Thread {
                     }
 
                     System.out.println(brojacObrada + " | Obrada poruka od broja " + pocetnaPoruka + " do broja " + zavrsnaPoruka + ".");
-                    Message[] messages = folder.getMessages(pocetnaPoruka, zavrsnaPoruka);
+                    Message[] messages = folderInbox.getMessages(pocetnaPoruka, zavrsnaPoruka);
 
                     for (Message message : messages) {
-                        //TODO pretraziti tzv. NWTIS poruke i s njima obavi potrebne radnje
-                        //Poruka poruka = PomocnaKlasa.ProcitajPoruku(message);
-//                        if (poruka.getVrsta() == Poruka.VrstaPoruka.NWTiS_poruka) {
-//                            ObradaPoruke(poruka);
-//                        }
+                        Poruka poruka = PomocnaKlasa.ProcitajPoruku(message, trazeniNazivPrivitka);
+                        if (poruka.getVrsta() == Poruka.VrstaPoruka.NWTiS_poruka) {
+                            if(ObradaNwtisPoruke(poruka) == true){
+                                //TODO baca exception kada postoje neobradene poruke kod prvog deploya tj. pokretanja
+                                System.out.println(brojacObrada + " | Poruka premjestena u posebnu mapu.");
+                                
+                                Message[] poruke = new Message[1];
+                                poruke[0] = message;
+                                folderInbox.copyMessages(poruke, folderNwtis);
+                                message.setFlag(Flags.Flag.DELETED, true);
+                                folderInbox.expunge(); 
+                            }                            
+                        }
                     }
 
                     pocetnaPoruka = zavrsnaPoruka + 1;
@@ -103,13 +125,13 @@ public class ObradaPoruka extends Thread {
                     }
                 }
 
-                folder.close(false);
+                folderInbox.close(false);
                 store.close();
 
                 System.out.println("KRAJ! Završila obrada: " + (brojacObrada++) + ".");
 
                 sleep(spavanje);
-            } catch (MessagingException | InterruptedException ex) {
+            } catch (MessagingException | InterruptedException | IOException ex) {
                 Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -125,6 +147,7 @@ public class ObradaPoruka extends Thread {
         spavanje = Integer.parseInt(k.dajPostavku("mail.timeSecThreadCycle")) * 1000;
         brojPorukaZaCitanje = Integer.parseInt(k.dajPostavku("mail.numMessagesToRead"));
         posebnaMapa = k.dajPostavku("mail.folderNWTiS");
+        trazeniNazivPrivitka = k.dajPostavku("mail.attachmentFilename");        
 
         super.start();
     }

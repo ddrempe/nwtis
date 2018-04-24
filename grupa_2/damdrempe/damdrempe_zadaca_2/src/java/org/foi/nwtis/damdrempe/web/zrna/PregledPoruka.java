@@ -44,6 +44,7 @@ public class PregledPoruka {
     private int zavrsnaPoruka;
     private int ukupnoPoruka;
     private int pomak = 0;
+    private String trazeniNazivPrivitka;
 
     public PregledPoruka() {
         ServletContext sc = SlusacAplikacije.servletContext;       
@@ -54,6 +55,7 @@ public class PregledPoruka {
         posebnaMapa = k.dajPostavku("mail.folderNWTiS");
         odabranaMapa = "INBOX";
         brojPorukaZaPrikaz = Integer.parseInt(k.dajPostavku("mail.numMessagesToShow"));
+        trazeniNazivPrivitka = k.dajPostavku("mail.attachmentFilename"); 
         
         preuzmiMape();
         preuzmiPoruke();
@@ -122,7 +124,7 @@ public class PregledPoruka {
             Message[] messages = folder.getMessages(pocetnaPoruka, zavrsnaPoruka);
             
             for (Message message : messages) {
-                popisPoruka.add(PomocnaKlasa.ProcitajPoruku(message));
+                popisPoruka.add(PomocnaKlasa.ProcitajPoruku(message, trazeniNazivPrivitka));
             }
             
             brojPorukaDohvaceno = popisPoruka.size();

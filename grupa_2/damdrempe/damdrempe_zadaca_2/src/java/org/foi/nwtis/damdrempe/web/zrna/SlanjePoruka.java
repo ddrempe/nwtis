@@ -142,7 +142,10 @@ public class SlanjePoruka {
     
     public String saljiPoruku(){
         ServletContext sc = SlusacAplikacije.servletContext;
-        String putanja = sc.getRealPath("/WEB-INF/" + odabranaDatoteka);
+        String webInfPutanja = sc.getRealPath("/WEB-INF/");
+        String putanja = webInfPutanja + File.separator + "poslano" + File.separator + odabranaDatoteka;
+        
+        PomocnaKlasa.ZapisiTekstUDatoteku(putanja, privitakSadrzaj);
         
         try {
             java.util.Properties properties = System.getProperties();
@@ -168,7 +171,7 @@ public class SlanjePoruka {
             multipart.addBodyPart(messageBodyPart);
             
             messageBodyPart = new MimeBodyPart();            
-            String filename = putanja;  //TODO umjesto postojece datoteke, stvori datoteku od sadrzaja
+            String filename = putanja;
             DataSource source = new FileDataSource(filename);
             messageBodyPart.setDataHandler(new DataHandler(source));
             messageBodyPart.setFileName(odabranaDatoteka);
@@ -184,10 +187,12 @@ public class SlanjePoruka {
         return "";
     }
     
-    public void preuzmiSadrzaj(){
+    public String preuzmiSadrzaj(){
         ServletContext sc = SlusacAplikacije.servletContext;        
         String putanja = sc.getRealPath("/WEB-INF/") + File.separator + odabranaDatoteka;
-        privitakSadrzaj = PomocnaKlasa.procitajSadrzajJsonDatoteke(putanja);
+        privitakSadrzaj = PomocnaKlasa.ProcitajSadrzajJsonDatoteke(putanja);
+        
+        return "";
     }
     
     public String obrisiPoruku(){
