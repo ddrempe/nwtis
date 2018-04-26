@@ -5,9 +5,12 @@
         <group>
             <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/src/java/org/foi/nwtis/damdrempe/web/dretve/ObradaPoruka.java</file>
             <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/src/java/org/foi/nwtis/damdrempe/web/kontrole/PomocnaKlasa.java</file>
-            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/build/web/WEB-INF/NWTiS.db.config_1.xml</file>
             <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/src/java/org/foi/nwtis/damdrempe/web/kontrole/Komanda.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/web/pregledPoruka.xhtml</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/src/java/org/foi/nwtis/damdrempe/web/zrna/PregledPoruka.java</file>
             <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/src/java/org/foi/nwtis/damdrempe/web/kontrole/BazaPodatakaOperacije.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/src/java/org/foi/nwtis/damdrempe/web/zrna/SlanjePoruka.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_zadaca_2/src/java/org/foi/nwtis/damdrempe/web/slusaci/SlusacAplikacije.java</file>
         </group>
     </open-files>
 </project-private>

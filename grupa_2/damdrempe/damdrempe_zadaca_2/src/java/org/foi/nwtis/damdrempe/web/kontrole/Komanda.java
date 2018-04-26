@@ -5,8 +5,6 @@
  */
 package org.foi.nwtis.damdrempe.web.kontrole;
 
-import java.util.Date;
-
 /**
  *
  * @author ddrempetic

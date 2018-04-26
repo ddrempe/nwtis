@@ -6,11 +6,8 @@
 package org.foi.nwtis.damdrempe.web.dretve;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.Flags;
@@ -41,28 +38,24 @@ public class ObradaPoruka extends Thread {
     private String posebnaMapa;
     private int brojPorukaZaCitanje;
     private String trazeniNazivPrivitka;
+    private BazaPodatakaOperacije bpo;
 
-    private boolean ObradaNwtisPoruke(Poruka poruka) {
-        //TODO obraditi poruku
-        //TODO ako se radi o komandi "dodaj" tada treba dodati zapis u tablicu UREDAJI u bazi podataka, s time da ako već postoji takav id, onda je pogreška.
-        //TODO Ako se radi o komandi "azuriraj" tada se provjerava zapis u tablici UREDAJI za zadani id IoT i ako postoji, ažurira se u tablici.  Ako ne postoji, onda je pogreška.
-        //TODO Svaka primljena poruka upisuje se u tablicu DNEVNIK bez obzira na status prethodne akcije.
-        
+    private void ObradaNwtisPoruke(Poruka poruka) throws SQLException {        
         String tekstPrivitka = poruka.getPrivitak();
-        if(tekstPrivitka.contains("test")){
-            Komanda komanda = PomocnaKlasa.ParsirajJsonKomande(tekstPrivitka);
-            try {
-                BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();    //TODO optimalniji rad s bazom
-                bpo.UredajiInsert(komanda, tekstPrivitka);
-                bpo.ZatvoriVezu();
-            } catch (SQLException | ParseException | ClassNotFoundException ex) {
-                Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
+        Komanda komanda = PomocnaKlasa.ParsirajJsonKomande(tekstPrivitka);
+        if(komanda.komanda.equalsIgnoreCase("dodaj")){
+            if(!bpo.UredajiInsert(komanda, tekstPrivitka)){
+                System.out.println("Nije moguc INSERT. Vec postoji uredaj s id: " + komanda.id);
+            }
+        }
+        else if(komanda.komanda.equalsIgnoreCase("azuriraj")){
+            if(!bpo.UredajiUpdate(komanda, tekstPrivitka)){
+                System.out.println("Nije moguc UPDATE. Ne postoji uredaj s id: " + komanda.id);
             }
         } 
-//        else if(tekstPrivitka.contains("azuriraj")){
-//            
-//        }
-        return false;
+        else {
+            System.out.println("Neispravna komanda: " + komanda.komanda);
+        }
     }
 
     @Override
@@ -77,6 +70,8 @@ public class ObradaPoruka extends Thread {
         int brojacObrada = 1;
         while (radi) {
             try {
+                bpo = new BazaPodatakaOperacije();
+                
                 String defaultFrom;
                 Session session;
                 Store store;
@@ -106,30 +101,26 @@ public class ObradaPoruka extends Thread {
                 int pocetnaPoruka = 1;
                 int zavrsnaPoruka = pocetnaPoruka + brojPorukaZaCitanje - 1;
 
+                ArrayList<Message> porukeZaPrebacivanje = new ArrayList<>();
+                
                 while (true) {
                     if (zavrsnaPoruka > ukupnoPoruka) {
                         zavrsnaPoruka = ukupnoPoruka;
                     }
 
                     System.out.println(brojacObrada + " | Obrada poruka od broja " + pocetnaPoruka + " do broja " + zavrsnaPoruka + ".");
-                    Message[] messages = folderInbox.getMessages(pocetnaPoruka, zavrsnaPoruka);
-
+                    Message[] messages = folderInbox.getMessages(pocetnaPoruka, zavrsnaPoruka);                   
+                    
                     for (Message message : messages) {
                         Poruka poruka = PomocnaKlasa.ProcitajPoruku(message, trazeniNazivPrivitka);
                         if (poruka.getVrsta() == Poruka.VrstaPoruka.NWTiS_poruka) {
-                            if(ObradaNwtisPoruke(poruka) == true){
-                                //TODO baca exception kada postoje neobradene poruke kod prvog deploya tj. pokretanja?
-                                System.out.println(brojacObrada + " | Poruka premjestena u posebnu mapu.");
-                                
-                                Message[] poruke = new Message[1];
-                                poruke[0] = message;
-                                folderInbox.copyMessages(poruke, folderNwtis);
-                                message.setFlag(Flags.Flag.DELETED, true);
-                                folderInbox.expunge(); 
-                            }                            
+                            ObradaNwtisPoruke(poruka);
+                            porukeZaPrebacivanje.add(message);
+                                    
+                            //TODO dodaj u dnevnik                          
                         }
                     }
-
+                    
                     pocetnaPoruka = zavrsnaPoruka + 1;
                     zavrsnaPoruka = pocetnaPoruka + brojPorukaZaCitanje - 1;
 
@@ -138,14 +129,27 @@ public class ObradaPoruka extends Thread {
                         break;
                     }
                 }
+                
+//                for (Message message : porukeZaPrebacivanje) {
+//                        //TODO baca exception kada postoje neobradene poruke kod prvog deploya tj. pokretanja?
+//                      System.out.println(brojacObrada + " | Poruka premjestena u posebnu mapu.");
+//
+//                      Message[] poruke = new Message[1];
+//                      poruke[0] = message;
+//                      folderInbox.copyMessages(poruke, folderNwtis);
+//                      message.setFlag(Flags.Flag.DELETED, true);
+//                      folderInbox.expunge();  
+//                }
 
                 folderInbox.close(false);
                 store.close();
+                
+                bpo.ZatvoriVezu();
 
                 System.out.println("KRAJ! Završila obrada: " + (brojacObrada++) + ".");
 
                 sleep(spavanje);
-            } catch (MessagingException | InterruptedException | IOException ex) {
+            } catch (MessagingException | InterruptedException | IOException | SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
