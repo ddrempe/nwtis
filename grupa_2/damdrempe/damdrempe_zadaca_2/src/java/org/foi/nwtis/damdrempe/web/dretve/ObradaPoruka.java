@@ -117,7 +117,7 @@ public class ObradaPoruka extends Thread {
                             ObradaNwtisPoruke(poruka);
                             porukeZaPrebacivanje.add(message);
                                     
-                            //TODO dodaj u dnevnik                          
+                            bpo.DnevnikInsert(poruka.getPrivitak());                         
                         }
                     }
                     

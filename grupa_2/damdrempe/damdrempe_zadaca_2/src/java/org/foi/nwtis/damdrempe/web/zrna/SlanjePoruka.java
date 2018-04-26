@@ -5,16 +5,10 @@
  */
 package org.foi.nwtis.damdrempe.web.zrna;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;

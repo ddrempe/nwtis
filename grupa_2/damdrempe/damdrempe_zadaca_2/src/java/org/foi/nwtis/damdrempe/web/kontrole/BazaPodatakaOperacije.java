@@ -15,7 +15,9 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
@@ -94,6 +96,57 @@ public class BazaPodatakaOperacije {
         ResultSet rs = preparedStmt.getResultSet();
         
         return rs.next();
+    }
+    
+    public int DnevnikSelectCount() throws SQLException{
+        String upitSelect = "SELECT COUNT(*) AS ukupno FROM dnevnik";
+        
+        Statement stmt = veza.createStatement();
+        ResultSet rs = stmt.executeQuery(upitSelect);
+        rs.next();
+        int ukupno = rs.getInt("ukupno");
+        
+        return ukupno;        
+    }
+    
+    public List<Dnevnik> DnevnikSelectPeriod(Timestamp vrijemeOd, Timestamp vrijemeDo, int pomak, int brojZapisa) 
+            throws SQLException{
+        
+        List<Dnevnik> listaZapisa = new ArrayList<>();
+        int offset = pomak * brojZapisa;
+        
+        String upitSelect = "SELECT * FROM dnevnik WHERE vrijeme>=? AND vrijeme<=? ORDER BY vrijeme DESC LIMIT ? OFFSET ?";
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
+        preparedStmt.setTimestamp(1, vrijemeOd);
+        preparedStmt.setTimestamp(2, vrijemeDo);
+        preparedStmt.setInt(3, brojZapisa);
+        preparedStmt.setInt(4, offset);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.getResultSet();
+        
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String sadrzaj = rs.getString("sadrzaj");
+            Date vrijemeZapisa = rs.getDate("vrijeme");
+            
+            Dnevnik dnevnik = new Dnevnik(id, sadrzaj, vrijemeZapisa);            
+            listaZapisa.add(dnevnik);
+        }
+        rs.close();
+        preparedStmt.close();
+        
+        return listaZapisa;
+    }
+    
+    public void DnevnikInsert(String sadrzaj) throws SQLException{       
+        String upitDnevnikInsert = "INSERT INTO dnevnik (sadrzaj,vrijeme) values(?,?)";
+        Timestamp trenutnoVrijeme = new Timestamp(System.currentTimeMillis());
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upitDnevnikInsert);
+        preparedStmt.setString(1, sadrzaj);
+        preparedStmt.setTimestamp(2, trenutnoVrijeme);
+        preparedStmt.execute();
     }
         
     public Date ParsirajDatum(String vrijemeTekst) throws ParseException{//TODO ne koristi se 

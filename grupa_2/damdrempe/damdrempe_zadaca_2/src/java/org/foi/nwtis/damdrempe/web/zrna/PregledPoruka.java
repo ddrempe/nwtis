@@ -141,7 +141,6 @@ public class PregledPoruka {
         zavrsnaPoruka = zavrsnaPoruka + brojPorukaZaPrikaz;
         pocetnaPoruka = zavrsnaPoruka - brojPorukaZaPrikaz + 1; 
         
-        azurirajAtributeStranicenja();
         preuzmiPoruke();
         
         return "pregledPoruka";
@@ -156,17 +155,9 @@ public class PregledPoruka {
             pocetnaPoruka = 1;
         }
         
-        azurirajAtributeStranicenja();        
         preuzmiPoruke();
         
         return "pregledPoruka";
-    }
-    
-    public void azurirajAtributeStranicenja(){
-        ServletContext sc = SlusacAplikacije.servletContext;
-        sc.setAttribute("zavrsnaPoruka", zavrsnaPoruka);
-        sc.setAttribute("pocetnaPoruka", pocetnaPoruka);
-        sc.setAttribute("pomak", pomak);
     }
 
     public String getPosluzitelj() {
