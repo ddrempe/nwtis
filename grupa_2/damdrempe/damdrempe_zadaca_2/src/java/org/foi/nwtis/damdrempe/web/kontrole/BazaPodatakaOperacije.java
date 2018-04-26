@@ -41,7 +41,7 @@ public class BazaPodatakaOperacije {
         this.lozinka = bpk.getAdminPassword();
         this.klasaDrivera = bpk.getDriverDatabase();
         
-        Class.forName(klasaDrivera); //TODO vidjeti sto s tim
+        Class.forName(klasaDrivera); //TODO vidjeti da li je u redu dodana mysql biblioteka
         veza = DriverManager.getConnection(url, korisnik, lozinka);
     }
     

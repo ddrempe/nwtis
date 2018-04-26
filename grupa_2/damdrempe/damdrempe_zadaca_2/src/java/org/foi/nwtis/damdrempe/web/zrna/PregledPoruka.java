@@ -34,16 +34,16 @@ public class PregledPoruka {
     private String korIme;
     private String lozinka;
     private List<Izbornik> popisMapa;
-    private String odabranaMapa;
-    private List<Poruka> popisPoruka;
+    private static String odabranaMapa = "INBOX";
+    private List<Poruka> popisPoruka = new ArrayList<>();
     private String posebnaMapa;
-    private int brojPorukaDohvaceno;
-    private int brojPorukaZaPrikaz;
+    private static int brojPorukaDohvaceno;
+    private static int brojPorukaZaPrikaz;
     
-    private int pocetnaPoruka;
-    private int zavrsnaPoruka;
-    private int ukupnoPoruka;
-    private int pomak = 0;
+    private static int pocetnaPoruka;
+    private static int zavrsnaPoruka;
+    private static int ukupnoPoruka;
+    private static int pomak = 0;
     private String trazeniNazivPrivitka;
 
     public PregledPoruka() {
@@ -53,7 +53,6 @@ public class PregledPoruka {
         korIme = k.dajPostavku("mail.usernameThread");
         lozinka = k.dajPostavku("mail.passwordThread");
         posebnaMapa = k.dajPostavku("mail.folderNWTiS");
-        odabranaMapa = "INBOX";
         brojPorukaZaPrikaz = Integer.parseInt(k.dajPostavku("mail.numMessagesToShow"));
         trazeniNazivPrivitka = k.dajPostavku("mail.attachmentFilename"); 
         
@@ -94,15 +93,7 @@ public class PregledPoruka {
     }
     
     private void preuzmiPoruke() {
-        ServletContext sc = SlusacAplikacije.servletContext;
-        
-        if(sc.getAttribute("zavrsnaPoruka") != null && sc.getAttribute("pomak") != null){
-            zavrsnaPoruka = Integer.parseInt(sc.getAttribute("zavrsnaPoruka").toString());
-            pocetnaPoruka = Integer.parseInt(sc.getAttribute("pocetnaPoruka").toString());
-            pomak = Integer.parseInt(sc.getAttribute("pomak").toString());
-        }
-        
-        popisPoruka = new ArrayList<>();
+        popisPoruka.clear();
         try {
             java.util.Properties properties = System.getProperties();
             properties.put("mail.smtp.host", posluzitelj);
@@ -113,7 +104,7 @@ public class PregledPoruka {
             folder.open(Folder.READ_ONLY);
             
             ukupnoPoruka = folder.getMessageCount();
-            if(pomak == 0){
+            if(pomak == 0 || zavrsnaPoruka >= ukupnoPoruka){
                 zavrsnaPoruka = ukupnoPoruka;
                 pocetnaPoruka = zavrsnaPoruka - brojPorukaZaPrikaz + 1;                  
             }
@@ -139,11 +130,9 @@ public class PregledPoruka {
     }   
     
     public String promjenaMape(){
-        ServletContext sc = SlusacAplikacije.servletContext;
-        sc.removeAttribute("zavrsnaPoruka");
-        sc.removeAttribute("pocetnaPoruka");
-        sc.removeAttribute("pomak");
+        pomak=0;
         preuzmiPoruke();
+        
         return "pregledPoruka";
     }
     
@@ -152,12 +141,9 @@ public class PregledPoruka {
         zavrsnaPoruka = zavrsnaPoruka + brojPorukaZaPrikaz;
         pocetnaPoruka = zavrsnaPoruka - brojPorukaZaPrikaz + 1; 
         
-        ServletContext sc = SlusacAplikacije.servletContext;
-        sc.setAttribute("zavrsnaPoruka", zavrsnaPoruka);
-        sc.setAttribute("pocetnaPoruka", pocetnaPoruka);
-        sc.setAttribute("pomak", pomak);
-
+        azurirajAtributeStranicenja();
         preuzmiPoruke();
+        
         return "pregledPoruka";
     }
     
@@ -170,13 +156,17 @@ public class PregledPoruka {
             pocetnaPoruka = 1;
         }
         
+        azurirajAtributeStranicenja();        
+        preuzmiPoruke();
+        
+        return "pregledPoruka";
+    }
+    
+    public void azurirajAtributeStranicenja(){
         ServletContext sc = SlusacAplikacije.servletContext;
         sc.setAttribute("zavrsnaPoruka", zavrsnaPoruka);
         sc.setAttribute("pocetnaPoruka", pocetnaPoruka);
         sc.setAttribute("pomak", pomak);
-        
-        preuzmiPoruke();
-        return "pregledPoruka";
     }
 
     public String getPosluzitelj() {

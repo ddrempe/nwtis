@@ -6,8 +6,7 @@ public class Poruka {
     public static enum VrstaPoruka {  
         NWTiS_poruka,
         neNWTiS_poruka
-    }
-    
+    }    
 
     private String id;
     private Date vrijemeSlanja;

@@ -130,16 +130,15 @@ public class ObradaPoruka extends Thread {
                     }
                 }
                 
-//                for (Message message : porukeZaPrebacivanje) {
-//                        //TODO baca exception kada postoje neobradene poruke kod prvog deploya tj. pokretanja?
-//                      System.out.println(brojacObrada + " | Poruka premjestena u posebnu mapu.");
-//
-//                      Message[] poruke = new Message[1];
-//                      poruke[0] = message;
-//                      folderInbox.copyMessages(poruke, folderNwtis);
-//                      message.setFlag(Flags.Flag.DELETED, true);
-//                      folderInbox.expunge();  
-//                }
+                for (Message message : porukeZaPrebacivanje) {
+                      Message[] poruke = new Message[1];
+                      poruke[0] = message;
+                      folderInbox.copyMessages(poruke, folderNwtis);
+                      message.setFlag(Flags.Flag.DELETED, true);
+                      folderInbox.expunge();  
+                      
+                      System.out.println(brojacObrada + " | Poruka premjestena u posebnu mapu.");
+                }
 
                 folderInbox.close(false);
                 store.close();

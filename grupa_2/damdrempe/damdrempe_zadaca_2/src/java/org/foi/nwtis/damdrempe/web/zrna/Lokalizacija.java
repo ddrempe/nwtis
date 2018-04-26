@@ -34,6 +34,7 @@ public class Lokalizacija implements Serializable {
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);        
         return "";
     } 
+    //TODO: vidjeti zasto se jezik promijeni akcijama na stranici
     
     public String slanjePoruka() {
         return "slanjePoruka";
