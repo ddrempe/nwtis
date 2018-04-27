@@ -98,11 +98,14 @@ public class BazaPodatakaOperacije {
         return rs.next();
     }
     
-    public int DnevnikSelectCount() throws SQLException{
-        String upitSelect = "SELECT COUNT(*) AS ukupno FROM dnevnik";
+    public int DnevnikSelectCount(Timestamp vrijemeOd, Timestamp vrijemeDo) throws SQLException{
+        String upitSelect = "SELECT COUNT(*) AS ukupno FROM dnevnik WHERE vrijeme>=? AND vrijeme<=?";
         
-        Statement stmt = veza.createStatement();
-        ResultSet rs = stmt.executeQuery(upitSelect);
+        PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
+        preparedStmt.setTimestamp(1, vrijemeOd);
+        preparedStmt.setTimestamp(2, vrijemeDo);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.getResultSet();
         rs.next();
         int ukupno = rs.getInt("ukupno");
         
@@ -128,7 +131,7 @@ public class BazaPodatakaOperacije {
         while (rs.next()) {
             int id = rs.getInt("id");
             String sadrzaj = rs.getString("sadrzaj");
-            Date vrijemeZapisa = rs.getDate("vrijeme");
+            Date vrijemeZapisa = rs.getTimestamp("vrijeme");
             
             Dnevnik dnevnik = new Dnevnik(id, sadrzaj, vrijemeZapisa);            
             listaZapisa.add(dnevnik);

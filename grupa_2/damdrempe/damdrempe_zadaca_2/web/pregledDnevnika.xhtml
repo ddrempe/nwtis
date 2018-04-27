@@ -22,13 +22,13 @@
         <h:form>
             <h:outputLabel value="#{p['pregled.labela_od']}"/>
             <h:inputText value="#{pregledDnevnika.datumOd}">
-                <f:convertDateTime pattern="dd.MM.yyyy" />
+                <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" />
             </h:inputText>
             <br/>
             
             <h:outputLabel value="#{p['pregled.labela_do']}"/>
             <h:inputText value="#{pregledDnevnika.datumDo}">
-                <f:convertDateTime pattern="dd.MM.yyyy" />
+                <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" />
             </h:inputText>
             <br/>
             <h:commandButton value="#{p['pregled.gumb_preuzmiZapise']}" action="#{pregledDnevnika.promjenaIntervala()}"/> <br/>
@@ -41,7 +41,7 @@
                 <h:column>
                     <f:facet name="header">#{p['pregled.naslov_vrijeme']}</f:facet>
                     <h:outputText value="#{zap.vrijemeZapisa}">
-                        <f:convertDateTime dateStyle="full" timeZone="Europe/Zagreb" type="both" />
+                        <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" type="both" />
                     </h:outputText>
                 </h:column>
                 <h:column>

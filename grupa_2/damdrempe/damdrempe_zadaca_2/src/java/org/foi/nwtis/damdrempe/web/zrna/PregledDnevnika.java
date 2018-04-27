@@ -30,7 +30,7 @@ import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 public class PregledDnevnika {
     
     private List<Dnevnik> popisZapisa = new ArrayList<>();
-    private int ukupnoZapisa;
+    private static int ukupnoZapisa;
     
     private static int brojZapisaZaPrikaz;    
     private static int pomak = 0;
@@ -50,10 +50,10 @@ public class PregledDnevnika {
         PreuzmiZapise();
     }
     
-    public void PreuzmiZapise(){
+    private void PreuzmiZapise(){
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
-            ukupnoZapisa = bpo.DnevnikSelectCount(); 
+            ukupnoZapisa = bpo.DnevnikSelectCount(new Timestamp(datumOd.getTime()), new Timestamp(datumDo.getTime())); 
             
             maksPomak = ukupnoZapisa / brojZapisaZaPrikaz;
             

@@ -88,7 +88,7 @@ public class PregledPoruka {
     
     private void sortirajPoruke(){
         Collections.sort(popisPoruka, (Poruka p1, Poruka p2) -> {
-            return p2.getVrijemeSlanja().compareTo(p1.getVrijemeSlanja());
+            return p2.getVrijemePrijema().compareTo(p1.getVrijemePrijema());
         });       
     }
     

@@ -35,7 +35,7 @@
                 <h:column>
                     <f:facet name="header">#{p['pregled.naslov_vrijemePrijema']}</f:facet>
                     <h:outputText value="#{por.vrijemePrijema}">
-                        <f:convertDateTime dateStyle="full" timeZone="Europe/Zagreb" type="both" />
+                        <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" type="both" />
                     </h:outputText>
                 </h:column>
                 <h:column>

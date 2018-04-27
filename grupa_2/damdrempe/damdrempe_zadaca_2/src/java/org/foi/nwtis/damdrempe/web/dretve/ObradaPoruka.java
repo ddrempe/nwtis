@@ -8,6 +8,7 @@ package org.foi.nwtis.damdrempe.web.dretve;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.Flags;
@@ -19,6 +20,7 @@ import javax.mail.Store;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.web.kontrole.BazaPodatakaOperacije;
+import org.foi.nwtis.damdrempe.web.kontrole.Evidencija;
 import org.foi.nwtis.damdrempe.web.kontrole.Komanda;
 import org.foi.nwtis.damdrempe.web.kontrole.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.web.kontrole.Poruka;
@@ -39,6 +41,10 @@ public class ObradaPoruka extends Thread {
     private int brojPorukaZaCitanje;
     private String trazeniNazivPrivitka;
     private BazaPodatakaOperacije bpo;
+    private String datotekaEvidencijeRada;
+    private int brojDodanihIot;
+    private int brojAzuriranihIot;
+    private int brojNeispravnihPoruka;
 
     private void ObradaNwtisPoruke(Poruka poruka) throws SQLException {        
         String tekstPrivitka = poruka.getPrivitak();
@@ -46,15 +52,21 @@ public class ObradaPoruka extends Thread {
         if(komanda.komanda.equalsIgnoreCase("dodaj")){
             if(!bpo.UredajiInsert(komanda, tekstPrivitka)){
                 System.out.println("Nije moguc INSERT. Vec postoji uredaj s id: " + komanda.id);
+                return;
             }
+            
+            brojDodanihIot++;
         }
         else if(komanda.komanda.equalsIgnoreCase("azuriraj")){
             if(!bpo.UredajiUpdate(komanda, tekstPrivitka)){
                 System.out.println("Nije moguc UPDATE. Ne postoji uredaj s id: " + komanda.id);
             }
+            
+            brojAzuriranihIot++;
         } 
         else {
             System.out.println("Neispravna komanda: " + komanda.komanda);
+            brojNeispravnihPoruka++;
         }
     }
 
@@ -70,6 +82,13 @@ public class ObradaPoruka extends Thread {
         int brojacObrada = 1;
         while (radi) {
             try {
+                brojDodanihIot = 0;
+                brojAzuriranihIot = 0;
+                brojNeispravnihPoruka = 0;
+                Evidencija evidencija = new Evidencija();
+                evidencija.setPocetakObrade();
+                evidencija.redniBrojObrade = brojacObrada;
+                
                 bpo = new BazaPodatakaOperacije();
                 
                 String defaultFrom;
@@ -146,6 +165,15 @@ public class ObradaPoruka extends Thread {
                 bpo.ZatvoriVezu();
 
                 System.out.println("KRAJ! Završila obrada: " + (brojacObrada++) + ".");
+                
+                evidencija.setZavrsetakObrade();
+                evidencija.setTrajanjeObrade();
+                evidencija.brojPoruka = ukupnoPoruka;
+                evidencija.brojDodanihIot = brojDodanihIot;
+                evidencija.brojAzuriranihIot = brojAzuriranihIot;
+                evidencija.brojNeispravnihPoruka = brojNeispravnihPoruka;
+                
+                PomocnaKlasa.ZapisiEvidencijuUDatoteku(evidencija);
 
                 sleep(spavanje);
             } catch (MessagingException | InterruptedException | IOException | SQLException | ClassNotFoundException ex) {
@@ -165,6 +193,7 @@ public class ObradaPoruka extends Thread {
         brojPorukaZaCitanje = Integer.parseInt(k.dajPostavku("mail.numMessagesToRead"));
         posebnaMapa = k.dajPostavku("mail.folderNWTiS");
         trazeniNazivPrivitka = k.dajPostavku("mail.attachmentFilename");        
+        datotekaEvidencijeRada = k.dajPostavku("mail.threadCycleLogFilename"); 
 
         super.start();
     }
