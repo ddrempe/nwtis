@@ -58,19 +58,22 @@ public class ObradaPoruka extends Thread {
         }
         
         if(komanda.komanda.equalsIgnoreCase("dodaj")){
-            if(!bpo.UredajiInsert(komanda, tekstPrivitka)){
-                System.out.println("Nije moguc INSERT. Vec postoji uredaj s id: " + komanda.id);
-                return;
+            if(bpo.UredajiInsert(komanda, tekstPrivitka) == true){
+                brojDodanihIot++;
             }
-            bpo.DnevnikInsert(poruka.getPrivitak());                    
-            brojDodanihIot++;
+            else{
+                System.out.println("Nije moguc INSERT. Vec postoji uredaj s id: " + komanda.id);      
+            }
+            bpo.DnevnikInsert(tekstPrivitka);                    
         }
         else if(komanda.komanda.equalsIgnoreCase("azuriraj")){
-            if(!bpo.UredajiUpdate(komanda, tekstPrivitka)){
+            if(bpo.UredajiUpdate(komanda, tekstPrivitka) == true){
+                brojAzuriranihIot++;
+            }
+            else{
                 System.out.println("Nije moguc UPDATE. Ne postoji uredaj s id: " + komanda.id);
             }
-            bpo.DnevnikInsert(poruka.getPrivitak()); 
-            brojAzuriranihIot++;
+            bpo.DnevnikInsert(tekstPrivitka);                 
         } 
         else {
             System.out.println("Neispravna komanda: " + komanda.komanda);
@@ -89,7 +92,7 @@ public class ObradaPoruka extends Thread {
         super.run(); //To change body of generated methods, choose Tools | Templates.
         int brojacObrada = 1;
         try {
-            PomocnaKlasa.ObrisiSadrzajDatoteke(lozinka);
+            PomocnaKlasa.ObrisiSadrzajDatoteke(datotekaEvidencijeRada);
         } catch (IOException ex) {
             Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
         }

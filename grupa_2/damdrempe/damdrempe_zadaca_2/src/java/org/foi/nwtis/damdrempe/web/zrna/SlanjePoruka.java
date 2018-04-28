@@ -45,7 +45,7 @@ public class SlanjePoruka {
     private String trazeniNazivPrivitka;
     private List<String> popisDatoteka;
     private String odabranaDatoteka;
-    private String privitakSadrzaj = "";
+    private String privitakSadrzaj = "{}";
     
     public SlanjePoruka() {        
         ServletContext sc = SlusacAplikacije.servletContext;
@@ -190,6 +190,8 @@ public class SlanjePoruka {
     }
     
     public String obrisiPoruku(){
+        privitakSadrzaj = "{}";
+        
         return "";
     }
 }

@@ -7,6 +7,7 @@ package org.foi.nwtis.damdrempe.web.kontrole;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,10 +18,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -58,11 +58,11 @@ public class PomocnaKlasa {
     }
 
     public static boolean ProvjeriSintaksuPrivitka(String tekstPrivitka) {
-        String pattern = "{(\"id\"): (\\d{1,4}), (\"komanda\"): (\"dodaj\"|\"azuriraj\"), ((?:\"[a-zA-Z ]{1,30}\": (?:[0-9]{1,3}|[0-9]{1,3}\\.[0-9]{1,2}|\"[a-zA-Z ]{1,30}\"),\\s?){1,5}) (\"vrijeme\"): \"([0-9]{4}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}){1,3}\"}";
+        String pattern = "\\{(\"id\"): ?(\\d{1,4}), ?(\"komanda\"): ?(\"dodaj\"|\"azuriraj\"), ?((?:\"[a-zA-Z ]{1,30}\": ?(?:[0-9]{1,3}|[0-9]{1,3}\\.[0-9]{1,2}|\"[a-zA-Z ]{1,30}\"),\\s?){1,5}) ?(\"vrijeme\"): ?\"([0-9]{4}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}){1,3}\"\\}";
         boolean rezultat;
-        //rezultat = tekstPrivitka.matches(pattern);
+        rezultat = tekstPrivitka.matches(pattern);
         //TODO odkomentirati provjeru regexa
-        rezultat = true;
+        //rezultat = true;
         
         return rezultat;
     }
@@ -227,6 +227,24 @@ public class PomocnaKlasa {
         PrintWriter writer = new PrintWriter(file);
         writer.print("");
         writer.close();
+    }
+    
+    public static boolean ValidirajJsonIzStringa(String sadrzaj){ 
+        boolean ispravnost = true;
+        Gson gson = new Gson();
+        Properties postavke = new Properties();
+        
+        try {
+            postavke = gson.fromJson(sadrzaj, Properties.class);
+        } catch (JsonSyntaxException e) {
+            ispravnost = false;
+        }        
+        
+        if(postavke == null){
+            ispravnost = false;
+        }
+        
+        return ispravnost;
     }
 }
 

@@ -3,63 +3,69 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <h:head>
-        <title>#{p["index.veza_pregledDnevnika"]}</title>
-    </h:head>
-    <h:body>
-        <h:form>
-            <h:commandLink action="#{pregledDnevnika.promjeniJezik()}" 
-                           value="#{p['index.naslov']}" />
-            &nbsp;
-            <h:commandLink action="#{pregledDnevnika.slanjePoruka()}" 
-                           value="#{p['index.veza_slanjePoruke']}" />
-            &nbsp;
-            <h:commandLink action="#{pregledDnevnika.pregledPoruka()}" 
-                           value="#{p['index.veza_pregledPoruka']}" />
-        </h:form>
-        <h1>#{p["index.veza_pregledDnevnika"]}</h1>
+    <f:view locale="#{lokalizacija.odabraniJezik}">
+        <h:head>
+            <title>#{p["index.veza_pregledDnevnika"]}</title>
+        </h:head>
+        <h:body>
+            <h:form>
+                <h:commandLink action="#{pregledDnevnika.promjeniJezik()}" 
+                               value="#{p['index.naslov']}" />
+                &nbsp;
+                <h:commandLink action="#{pregledDnevnika.slanjePoruka()}" 
+                               value="#{p['index.veza_slanjePoruke']}" />
+                &nbsp;
+                <h:commandLink action="#{pregledDnevnika.pregledPoruka()}" 
+                               value="#{p['index.veza_pregledPoruka']}" />
+            </h:form>
+            <h1>#{p["index.veza_pregledDnevnika"]}</h1>
 
-        <h:form>
-            <h:outputLabel value="#{p['pregled.labela_od']}"/>
-            <h:inputText value="#{pregledDnevnika.datumOd}">
-                <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" />
-            </h:inputText>
-            <br/>
-            
-            <h:outputLabel value="#{p['pregled.labela_do']}"/>
-            <h:inputText value="#{pregledDnevnika.datumDo}">
-                <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" />
-            </h:inputText>
-            <br/>
-            <h:commandButton value="#{p['pregled.gumb_preuzmiZapise']}" action="#{pregledDnevnika.promjenaIntervala()}"/> <br/>
+            <h:form>
+                <h:outputLabel value="#{p['pregled.labela_od']}"/>
+                <h:inputText value="#{pregledDnevnika.datumOd}"
+                             converterMessage="#{p['pregled.validacija_datumOd']}">
+                    <f:convertDateTime timeZone="Europe/Zagreb" 
+                                       pattern="dd.MM.yyyy HH:mm:ss" />
+                </h:inputText>
+                <br/>
 
-            <h:dataTable value="#{pregledDnevnika.popisZapisa}" var="zap" >
-                <h:column>
-                    <f:facet name="header">#{p['pregled.naslov_id']}</f:facet>
-                    <h:outputText value="#{zap.id}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">#{p['pregled.naslov_vrijeme']}</f:facet>
-                    <h:outputText value="#{zap.vrijemeZapisa}">
-                        <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" type="both" />
-                    </h:outputText>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">#{p['pregled.naslov_sadrzaj']}</f:facet>
-                    <h:outputText value="#{zap.sadrzaj}"/>
-                </h:column>
-            </h:dataTable> <br/>
+                <h:outputLabel value="#{p['pregled.labela_do']}"/>
+                <h:inputText value="#{pregledDnevnika.datumDo}"
+                             converterMessage="#{p['pregled.validacija_datumDo']}">
+                    <f:convertDateTime timeZone="Europe/Zagreb" 
+                                       pattern="dd.MM.yyyy HH:mm:ss" />
+                </h:inputText>
+                <br/>
+                <h:commandButton value="#{p['pregled.gumb_preuzmiZapise']}" action="#{pregledDnevnika.promjenaIntervala()}"/> <br/>
 
-            <h:outputText value="#{p['pregled.labela_ukupnoZapisa']}"/>
-            <h:outputText value="#{pregledDnevnika.ukupnoZapisa}"/> 
-            <h:commandButton value="#{p['pregled.gumb_prethodni']}" 
-                             action="#{pregledDnevnika.prethodniZapisi()}"
-                             rendered="#{pregledDnevnika.pomak ne 0}"/> 
-            <h:commandButton value="#{p['pregled.gumb_sljedeci']}" 
-                             action="#{pregledDnevnika.sljedeciZapisi()}"
-                             rendered="#{pregledDnevnika.pomak ne pregledDnevnika.maksPomak}"/> 
-        </h:form>
+                <h:dataTable value="#{pregledDnevnika.popisZapisa}" var="zap" >
+                    <h:column>
+                        <f:facet name="header">#{p['pregled.naslov_id']}</f:facet>
+                        <h:outputText value="#{zap.id}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">#{p['pregled.naslov_vrijeme']}</f:facet>
+                        <h:outputText value="#{zap.vrijemeZapisa}">
+                            <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" type="both" />
+                        </h:outputText>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">#{p['pregled.naslov_sadrzaj']}</f:facet>
+                        <h:outputText value="#{zap.sadrzaj}"/>
+                    </h:column>
+                </h:dataTable> <br/>
 
-    </h:body>
+                <h:outputText value="#{p['pregled.labela_ukupnoZapisa']}"/>
+                <h:outputText value="#{pregledDnevnika.ukupnoZapisa}"/> 
+                <h:commandButton value="#{p['pregled.gumb_prethodni']}" 
+                                 action="#{pregledDnevnika.prethodniZapisi()}"
+                                 rendered="#{pregledDnevnika.pomak ne 0}"/> 
+                <h:commandButton value="#{p['pregled.gumb_sljedeci']}" 
+                                 action="#{pregledDnevnika.sljedeciZapisi()}"
+                                 rendered="#{pregledDnevnika.pomak ne pregledDnevnika.maksPomak}"/> 
+            </h:form>
+
+        </h:body>
+    </f:view>
 </html>
 

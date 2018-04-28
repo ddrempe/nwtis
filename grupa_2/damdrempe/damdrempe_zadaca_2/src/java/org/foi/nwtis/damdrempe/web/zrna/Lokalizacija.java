@@ -19,22 +19,21 @@ import javax.faces.context.FacesContext;
 @SessionScoped
 public class Lokalizacija implements Serializable {
     
-    private String odabraniJezik;
+    private String odabraniJezik = "hr";
 
     public Lokalizacija() {
     }
     
     public String getOdabraniJezik() {
-        odabraniJezik = FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage();
         return odabraniJezik;
-    }
+    } 
     
     public Object odaberiJezik(String jezik) {
         Locale locale = new Locale(jezik);
-        FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);        
+        FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+        odabraniJezik = jezik;   
         return "";
     } 
-    //TODO vidjeti zasto se jezik promijeni akcijama na stranici
     
     public String slanjePoruka() {
         return "slanjePoruka";
