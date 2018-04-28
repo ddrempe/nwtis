@@ -178,7 +178,7 @@ public class SlanjePoruka {
             return "";
         }   
         
-        return "";
+        return "slanjePoruka";
     }
     
     public String preuzmiSadrzaj(){
@@ -186,12 +186,12 @@ public class SlanjePoruka {
         String putanja = sc.getRealPath("/WEB-INF/") + File.separator + odabranaDatoteka;
         privitakSadrzaj = PomocnaKlasa.ProcitajSadrzajJsonDatoteke(putanja);
         
-        return "";
+        return "slanjePoruka";
     }
     
     public String obrisiPoruku(){
         privitakSadrzaj = "{}";
         
-        return "";
+        return "slanjePoruka";
     }
 }

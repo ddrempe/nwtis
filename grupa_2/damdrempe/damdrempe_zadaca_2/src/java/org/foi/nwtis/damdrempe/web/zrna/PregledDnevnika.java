@@ -72,21 +72,21 @@ public class PregledDnevnika {
         pomak=0;
         PreuzmiZapise();
         
-        return "pregledDnevnika";   //TODO promjenaIntervala
+        return "promjenaIntervala";
     }
     
     public String prethodniZapisi() {
         pomak--;        
         PreuzmiZapise();
         
-        return "pregledDnevnika";   //TOOD prethodniZapisi
+        return "prethodniZapisi";
     }
     
     public String sljedeciZapisi() {
         pomak++;
         PreuzmiZapise();
         
-        return "pregledDnevnika";    //TODO sljedeciZapisi
+        return "sljedeciZapisi";
     }
     
     public String promjeniJezik() {
