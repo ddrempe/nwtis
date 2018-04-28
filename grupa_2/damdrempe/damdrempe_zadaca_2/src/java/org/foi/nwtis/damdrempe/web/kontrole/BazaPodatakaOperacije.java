@@ -141,13 +141,14 @@ public class BazaPodatakaOperacije {
         return listaZapisa;
     }
     
-    public void DnevnikInsert(String sadrzaj) throws SQLException{       
-        String upitDnevnikInsert = "INSERT INTO dnevnik (sadrzaj,vrijeme) values(?,?)";
+    public void DnevnikInsert(String sadrzaj, int id) throws SQLException{       
+        String upitDnevnikInsert = "INSERT INTO dnevnik (id,sadrzaj,vrijeme) values(?,?,?)";
         Timestamp trenutnoVrijeme = new Timestamp(System.currentTimeMillis());
         
         PreparedStatement preparedStmt = veza.prepareStatement(upitDnevnikInsert);
-        preparedStmt.setString(1, sadrzaj);
-        preparedStmt.setTimestamp(2, trenutnoVrijeme);
+        preparedStmt.setInt(1, id);
+        preparedStmt.setString(2, sadrzaj);
+        preparedStmt.setTimestamp(3, trenutnoVrijeme);
         preparedStmt.execute();
     }
         

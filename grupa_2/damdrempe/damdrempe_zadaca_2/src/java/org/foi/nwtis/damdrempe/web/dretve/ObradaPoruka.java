@@ -64,7 +64,7 @@ public class ObradaPoruka extends Thread {
             else{
                 System.out.println("Nije moguc INSERT. Vec postoji uredaj s id: " + komanda.id);      
             }
-            bpo.DnevnikInsert(tekstPrivitka);                    
+            bpo.DnevnikInsert(tekstPrivitka, komanda.id);                    
         }
         else if(komanda.komanda.equalsIgnoreCase("azuriraj")){
             if(bpo.UredajiUpdate(komanda, tekstPrivitka) == true){
@@ -73,7 +73,7 @@ public class ObradaPoruka extends Thread {
             else{
                 System.out.println("Nije moguc UPDATE. Ne postoji uredaj s id: " + komanda.id);
             }
-            bpo.DnevnikInsert(tekstPrivitka);                 
+            bpo.DnevnikInsert(tekstPrivitka, komanda.id);                 
         } 
         else {
             System.out.println("Neispravna komanda: " + komanda.komanda);
@@ -191,8 +191,12 @@ public class ObradaPoruka extends Thread {
                 PomocnaKlasa.ZapisiEvidencijuUDatoteku(evidencija, datotekaEvidencijeRada);
 
                 sleep(spavanje);
-            } catch (MessagingException | InterruptedException | IOException | SQLException | ClassNotFoundException ex) {
+            } catch (MessagingException | IOException | SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                System.out.println("Dretva je zaustavljena prilikom spavanja");
+            } catch (IllegalStateException ex) {
+                
             }
         }
     }
