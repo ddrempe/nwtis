@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.kontrole;
 
 import java.sql.Connection;
@@ -11,9 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +14,7 @@ import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 /**
- *
+ * Klasa za sve operacije nad bazom podataka.
  * @author ddrempetic
  */
 public class BazaPodatakaOperacije {
@@ -34,6 +26,13 @@ public class BazaPodatakaOperacije {
     private Connection veza;
     private String klasaDrivera;
 
+    /**
+     * Konstrktor klase.
+     * Učitava potrebne postavke iz konfiguracije i otvara vezu nad bazom.
+     * Registrira driver.
+     * @throws SQLException
+     * @throws ClassNotFoundException 
+     */
     public BazaPodatakaOperacije() throws SQLException, ClassNotFoundException {
         ServletContext sc = SlusacAplikacije.servletContext;
         this.bpk = (BP_Konfiguracija) sc.getAttribute("BP_Konfig");
@@ -46,10 +45,21 @@ public class BazaPodatakaOperacije {
         veza = DriverManager.getConnection(url, korisnik, lozinka);
     }
     
+    /**
+     * Zatvara vezu nad bazom podataka.
+     * @throws SQLException 
+     */
     public void ZatvoriVezu() throws SQLException{
         veza.close();
     }
     
+    /**
+     * Ubacuje novi uređaj ovisno o komandi u tablicu uredaji.
+     * @param komanda
+     * @param sadrzaj
+     * @return true ako je uspješno ubačen uređaj, false ako uređaj s tim id već postoji
+     * @throws SQLException 
+     */
     public boolean UredajiInsert(Komanda komanda, String sadrzaj) throws SQLException{  
         if(UredajiSelectId(komanda.id)){
             return false;
@@ -68,6 +78,13 @@ public class BazaPodatakaOperacije {
         return true;
     }
     
+    /**
+     * Ažurira uređaj u tablici uredaji prema traženom id.
+     * @param komanda
+     * @param sadrzaj
+     * @return true ako je ažurirano, false ako ne postoji uređaj s traženim id
+     * @throws SQLException 
+     */
     public boolean UredajiUpdate(Komanda komanda, String sadrzaj) throws SQLException{  
         if(!UredajiSelectId(komanda.id)){
             return false;
@@ -86,6 +103,12 @@ public class BazaPodatakaOperacije {
         return true;
     }
     
+    /**
+     * Provjerava da li uređaj s traženim id postoji
+     * @param id
+     * @return true ako postoji, inače false
+     * @throws SQLException 
+     */
     public boolean UredajiSelectId(int id) throws SQLException{
         String upitSelect = "SELECT * FROM uredaji WHERE id = ?";
         
@@ -97,6 +120,13 @@ public class BazaPodatakaOperacije {
         return rs.next();
     }
     
+    /**
+     * Dohvaća broj zapisa za traženi vremenski period u tablici dnevnik.
+     * @param vrijemeOd
+     * @param vrijemeDo
+     * @return
+     * @throws SQLException 
+     */
     public int DnevnikSelectCount(Timestamp vrijemeOd, Timestamp vrijemeDo) throws SQLException{
         String upitSelect = "SELECT COUNT(*) AS ukupno FROM dnevnik WHERE vrijeme>=? AND vrijeme<=?";
         
@@ -111,14 +141,20 @@ public class BazaPodatakaOperacije {
         return ukupno;        
     }
     
+    /**
+     * Vraća zapise za određeni vremenski period iz tablice dnevnik.
+     * @param vrijemeOd
+     * @param vrijemeDo
+     * @param pomak
+     * @param brojZapisa
+     * @return popis zapisa
+     * @throws SQLException 
+     */
     public List<Dnevnik> DnevnikSelectPeriod(Timestamp vrijemeOd, Timestamp vrijemeDo, int pomak, int brojZapisa) 
-            throws SQLException{
-        
+            throws SQLException{        
         List<Dnevnik> listaZapisa = new ArrayList<>();
-        int offset = pomak * brojZapisa;
-        
-        String upitSelect = "SELECT * FROM dnevnik WHERE vrijeme>=? AND vrijeme<=? ORDER BY vrijeme DESC LIMIT ? OFFSET ?";
-        
+        int offset = pomak * brojZapisa;        
+        String upitSelect = "SELECT * FROM dnevnik WHERE vrijeme>=? AND vrijeme<=? ORDER BY vrijeme DESC LIMIT ? OFFSET ?";        
         PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
         preparedStmt.setTimestamp(1, vrijemeOd);
         preparedStmt.setTimestamp(2, vrijemeDo);
@@ -130,8 +166,7 @@ public class BazaPodatakaOperacije {
         while (rs.next()) {
             int id = rs.getInt("id");
             String sadrzaj = rs.getString("sadrzaj");
-            Date vrijemeZapisa = rs.getTimestamp("vrijeme");
-            
+            Date vrijemeZapisa = rs.getTimestamp("vrijeme");            
             Dnevnik dnevnik = new Dnevnik(id, sadrzaj, vrijemeZapisa);            
             listaZapisa.add(dnevnik);
         }
@@ -141,6 +176,12 @@ public class BazaPodatakaOperacije {
         return listaZapisa;
     }
     
+    /**
+     * Ubacuje u tablicu dnevnik novi zapis.
+     * @param sadrzaj
+     * @param id
+     * @throws SQLException 
+     */
     public void DnevnikInsert(String sadrzaj, int id) throws SQLException{       
         String upitDnevnikInsert = "INSERT INTO dnevnik (id,sadrzaj,vrijeme) values(?,?,?)";
         Timestamp trenutnoVrijeme = new Timestamp(System.currentTimeMillis());
@@ -150,12 +191,5 @@ public class BazaPodatakaOperacije {
         preparedStmt.setString(2, sadrzaj);
         preparedStmt.setTimestamp(3, trenutnoVrijeme);
         preparedStmt.execute();
-    }
-        
-    public Date ParsirajDatum(String vrijemeTekst) throws ParseException{//TODO ne koristi se 
-        DateFormat df = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");
-        Date vrijeme =  df.parse(vrijemeTekst); 
-        
-        return vrijeme;        
-    }   
+    }  
 }

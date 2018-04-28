@@ -1,9 +1,18 @@
 package org.foi.nwtis.damdrempe.web.kontrole;
 
+/**
+ * Klasa izbornika.
+ * @author ddrempetic
+ */
 public class Izbornik {
     private String labela;
     private String vrijednost;
-
+    
+    /**
+     * Konstruktor klase.
+     * @param labela
+     * @param vrijednost 
+     */
     public Izbornik(String labela, String vrijednost) {
         this.labela = labela;
         this.vrijednost = vrijednost;

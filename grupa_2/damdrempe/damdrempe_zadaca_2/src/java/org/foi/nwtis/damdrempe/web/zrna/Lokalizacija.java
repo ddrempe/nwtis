@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.zrna;
 
 import javax.inject.Named;
@@ -12,8 +7,8 @@ import java.util.Locale;
 import javax.faces.context.FacesContext;
 
 /**
- *
- * @author grupa_2
+ * Klasa za lokalizaciju.
+ * @author ddrempetic
  */
 @Named(value = "lokalizacija")
 @SessionScoped
@@ -21,13 +16,17 @@ public class Lokalizacija implements Serializable {
     
     private String odabraniJezik = "hr";
 
+    /**
+     * Konstruktor klase.
+     */
     public Lokalizacija() {
-    }
+    }  
     
-    public String getOdabraniJezik() {
-        return odabraniJezik;
-    } 
-    
+    /**
+     * Mijenja trenutno odabrani jezik.
+     * @param jezik
+     * @return odredište za navigaciju
+     */
     public Object odaberiJezik(String jezik) {
         Locale locale = new Locale(jezik);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
@@ -35,15 +34,38 @@ public class Lokalizacija implements Serializable {
         return "";
     } 
     
+    /**
+     * Metoda za navigacijsko pravilo.
+     *
+     * @return odredište za navigaciju
+     */
     public String slanjePoruka() {
         return "slanjePoruka";
     }
-
+    
+    /**
+     * Metoda za navigacijsko pravilo.
+     *
+     * @return odredište za navigaciju
+     */
     public String pregledPoruka() {
         return "pregledPoruka";
     }
-
+    
+    /**
+     * Metoda za navigacijsko pravilo.
+     *
+     * @return odredište za navigaciju
+     */
     public String pregledDnevnika() {
         return "pregledDnevnika";
     }
+    
+    /**
+     * Getter za odabrani jezik
+     * @return odabrani jezik (hr, de, en)
+     */
+    public String getOdabraniJezik() {
+        return odabraniJezik;
+    } 
 }

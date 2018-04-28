@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.zrna;
 
 import java.sql.SQLException;
@@ -22,7 +17,7 @@ import org.foi.nwtis.damdrempe.web.kontrole.Dnevnik;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 /**
- *
+ * Klasa za pregled zapisa iz dnevnika uz straničenje.
  * @author ddrempetic
  */
 @Named(value = "pregledDnevnika")
@@ -30,17 +25,15 @@ import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 public class PregledDnevnika {
     
     private List<Dnevnik> popisZapisa = new ArrayList<>();
-    private static int ukupnoZapisa;
-    
+    private static int ukupnoZapisa;    
     private static int brojZapisaZaPrikaz;    
     private static int pomak = 0;
-    private static int maksPomak = 0;
-    
+    private static int maksPomak = 0;    
     private Date datumOd = Date.from(ZonedDateTime.now().minusMonths(1).toInstant());
     private Date datumDo = Date.from(ZonedDateTime.now().toInstant());
 
     /**
-     * Creates a new instance of PregledDnevnika
+     * Konstruktor klase.
      */
     public PregledDnevnika() {
         ServletContext sc = SlusacAplikacije.servletContext;       
@@ -50,12 +43,19 @@ public class PregledDnevnika {
         PreuzmiZapise();
     }
     
+    /**
+     * Dohvaća zapise iz dnevnika za određeni datumski period.
+     * Podržava stranićenje.
+     */
     private void PreuzmiZapise(){
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
-            ukupnoZapisa = bpo.DnevnikSelectCount(new Timestamp(datumOd.getTime()), new Timestamp(datumDo.getTime())); 
+            ukupnoZapisa = bpo.DnevnikSelectCount(new Timestamp(datumOd.getTime()), new Timestamp(datumDo.getTime()));             
             
             maksPomak = ukupnoZapisa / brojZapisaZaPrikaz;
+            if(ukupnoZapisa % brojZapisaZaPrikaz == 0){
+                maksPomak--;
+            }
             
             popisZapisa = bpo.DnevnikSelectPeriod(
                     new Timestamp(datumOd.getTime()), 
@@ -68,6 +68,11 @@ public class PregledDnevnika {
         }
     }
     
+    /**
+     * Ponovno preuzima zapise nakon promjene intervala datuma za prikaz.
+     * Vraća pomak na početnu vrijednost.
+     * @return odredište za navigaciju
+     */
     public String promjenaIntervala() {
         pomak=0;
         PreuzmiZapise();
@@ -75,6 +80,11 @@ public class PregledDnevnika {
         return "promjenaIntervala";
     }
     
+    /**
+     * Mijenja pomak u odnosu na prvu stranicu i ponovno preuzima zapise.
+     *
+     * @return odredište za navigaciju
+     */
     public String prethodniZapisi() {
         pomak--;        
         PreuzmiZapise();
@@ -82,6 +92,11 @@ public class PregledDnevnika {
         return "prethodniZapisi";
     }
     
+    /**
+     * Mijenja pomak u odnosu na prvu stranicu i ponovno preuzima zapise.
+     *
+     * @return odredište za navigaciju
+     */
     public String sljedeciZapisi() {
         pomak++;
         PreuzmiZapise();
@@ -89,18 +104,36 @@ public class PregledDnevnika {
         return "sljedeciZapisi";
     }
     
+    /**
+     * Metoda za navigacijsko pravilo.
+     *
+     * @return odredište za navigaciju
+     */
     public String promjeniJezik() {
         return "promjeniJezik";
     }
     
+    /**
+     * Metoda za navigacijsko pravilo.
+     *
+     * @return odredište za navigaciju
+     */
     public String slanjePoruka() {
         return "slanjePoruka";
     }
     
+    /**
+     * Metoda za navigacijsko pravilo.
+     *
+     * @return odredište za navigaciju
+     */
     public String pregledPoruka() {
         return "pregledPoruka";
     }    
 
+    /* Nadalje slijede standardni getteri i setteri */
+    /*------------------------------------------------*/
+    
     public List<Dnevnik> getPopisZapisa() {
         return popisZapisa;
     }

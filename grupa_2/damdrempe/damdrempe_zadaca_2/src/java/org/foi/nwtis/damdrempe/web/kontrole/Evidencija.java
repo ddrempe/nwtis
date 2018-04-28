@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.kontrole;
 
 import java.util.Date;
 
 /**
- *
+ * Klasa za spremanje svih podataka o radu tijekom obrade dretve.
  * @author ddrempetic
  */
 public class Evidencija {
@@ -24,7 +19,6 @@ public class Evidencija {
     public void setPocetakObrade() {
         this.pocetakObrade = new Date(System.currentTimeMillis());
     }
-
 
     public void setZavrsetakObrade() {
         this.zavrsetakObrade = new Date(System.currentTimeMillis());
