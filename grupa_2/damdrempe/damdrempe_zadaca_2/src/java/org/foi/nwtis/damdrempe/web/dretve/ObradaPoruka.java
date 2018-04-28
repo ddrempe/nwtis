@@ -49,19 +49,27 @@ public class ObradaPoruka extends Thread {
     private void ObradaNwtisPoruke(Poruka poruka) throws SQLException {        
         String tekstPrivitka = poruka.getPrivitak();
         Komanda komanda = PomocnaKlasa.ParsirajJsonKomande(tekstPrivitka);
+        boolean ispravnostSintakse = PomocnaKlasa.ProvjeriSintaksuPrivitka(tekstPrivitka);
+                
+        if(komanda.komanda == null || ispravnostSintakse == false){
+            System.out.println("Neispravna komanda ili sintaksa: " + komanda.komanda);
+            brojNeispravnihPoruka++;
+            return;
+        }
+        
         if(komanda.komanda.equalsIgnoreCase("dodaj")){
             if(!bpo.UredajiInsert(komanda, tekstPrivitka)){
                 System.out.println("Nije moguc INSERT. Vec postoji uredaj s id: " + komanda.id);
                 return;
             }
-            
+            bpo.DnevnikInsert(poruka.getPrivitak());                    
             brojDodanihIot++;
         }
         else if(komanda.komanda.equalsIgnoreCase("azuriraj")){
             if(!bpo.UredajiUpdate(komanda, tekstPrivitka)){
                 System.out.println("Nije moguc UPDATE. Ne postoji uredaj s id: " + komanda.id);
             }
-            
+            bpo.DnevnikInsert(poruka.getPrivitak()); 
             brojAzuriranihIot++;
         } 
         else {
@@ -80,6 +88,11 @@ public class ObradaPoruka extends Thread {
     public void run() {
         super.run(); //To change body of generated methods, choose Tools | Templates.
         int brojacObrada = 1;
+        try {
+            PomocnaKlasa.ObrisiSadrzajDatoteke(lozinka);
+        } catch (IOException ex) {
+            Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
+        }
         while (radi) {
             try {
                 brojDodanihIot = 0;
@@ -136,7 +149,6 @@ public class ObradaPoruka extends Thread {
                             ObradaNwtisPoruke(poruka);
                             porukeZaPrebacivanje.add(message);
                                     
-                            bpo.DnevnikInsert(poruka.getPrivitak());                         
                         }
                     }
                     
@@ -173,7 +185,7 @@ public class ObradaPoruka extends Thread {
                 evidencija.brojAzuriranihIot = brojAzuriranihIot;
                 evidencija.brojNeispravnihPoruka = brojNeispravnihPoruka;
                 
-                PomocnaKlasa.ZapisiEvidencijuUDatoteku(evidencija);
+                PomocnaKlasa.ZapisiEvidencijuUDatoteku(evidencija, datotekaEvidencijeRada);
 
                 sleep(spavanje);
             } catch (MessagingException | InterruptedException | IOException | SQLException | ClassNotFoundException ex) {

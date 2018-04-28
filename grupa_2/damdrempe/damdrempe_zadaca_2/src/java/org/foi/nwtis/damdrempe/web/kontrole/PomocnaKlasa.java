@@ -7,7 +7,6 @@ package org.foi.nwtis.damdrempe.web.kontrole;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,11 +14,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -56,25 +57,18 @@ public class PomocnaKlasa {
         return sadrzaj;
     }
 
-    private static Poruka.VrstaPoruka OdrediVrstuPoruke(String privitak) {
-        if (privitak.equalsIgnoreCase("")) {
-            return Poruka.VrstaPoruka.neNWTiS_poruka;
-        } else {
-            return Poruka.VrstaPoruka.NWTiS_poruka;
-        }
+    public static boolean ProvjeriSintaksuPrivitka(String tekstPrivitka) {
+        String pattern = "{(\"id\"): (\\d{1,4}), (\"komanda\"): (\"dodaj\"|\"azuriraj\"), ((?:\"[a-zA-Z ]{1,30}\": (?:[0-9]{1,3}|[0-9]{1,3}\\.[0-9]{1,2}|\"[a-zA-Z ]{1,30}\"),\\s?){1,5}) (\"vrijeme\"): \"([0-9]{4}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}){1,3}\"}";
+        boolean rezultat;
+        //rezultat = tekstPrivitka.matches(pattern);
+        //TODO odkomentirati provjeru regexa
+        rezultat = true;
+        
+        return rezultat;
     }
 
-    private static boolean ProvjeriSintaksuPrivitka(String tekstPrivitka) {
-        //TODO napraviti regex za provjeru sintakse i validirati tekst prema njemu
+    public static PrivitakInformacije IspitajDatotekuPrivitka(Message message, String trazeniNazivPrivitka) {
         //TODO provjeriti "text/json" ili "application/json"
-        if (tekstPrivitka.contains("komanda")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static String IspitajDatotekuPrivitka(Message message, String trazeniNazivPrivitka) {
         ServletContext sc = SlusacAplikacije.servletContext;
         String webInfPutanja = sc.getRealPath("/WEB-INF/");
         String putanjaPrivitaka = webInfPutanja + File.separator + "privici";
@@ -87,6 +81,9 @@ public class PomocnaKlasa {
         String saveDirectory = "";
         int brojPrivitaka = 0;
         String fileName = "";
+        PrivitakInformacije privitakInformacije = new PrivitakInformacije();
+        privitakInformacije.nwtisPoruka = Poruka.VrstaPoruka.neNWTiS_poruka;
+        privitakInformacije.privitakSadrzaj = "";
 
         try {
             String attachFiles = "";
@@ -96,7 +93,8 @@ public class PomocnaKlasa {
                 // content may contain attachments
                 if (message.getContent() instanceof Multipart == false) {
                     System.out.println("Nije moguce citati privitak za poruku " + message.getMessageNumber());
-                    return "";
+                    
+                    return privitakInformacije;
                 }
                 Multipart multiPart = (Multipart) message.getContent();
                 int numberOfParts = multiPart.getCount();
@@ -135,14 +133,11 @@ public class PomocnaKlasa {
         }
 
         if (brojPrivitaka == 1 && fileName.equalsIgnoreCase(trazeniNazivPrivitka)) {
-            String sadrzajPrivitka = PomocnaKlasa.ProcitajSadrzajJsonDatoteke(saveDirectory);
-
-            if (ProvjeriSintaksuPrivitka(sadrzajPrivitka) == true) {
-                return sadrzajPrivitka;
-            }
+            privitakInformacije.privitakSadrzaj = PomocnaKlasa.ProcitajSadrzajJsonDatoteke(saveDirectory);
+            privitakInformacije.nwtisPoruka =  Poruka.VrstaPoruka.NWTiS_poruka;
         }
 
-        return "";
+        return privitakInformacije;
     }
 
     public static Poruka ProcitajPoruku(Message poruka, String trazeniNazivPrivitka) throws MessagingException, IOException {
@@ -153,12 +148,14 @@ public class PomocnaKlasa {
         if (vrijemeSlanja == null) {
             vrijemeSlanja = new Date(0);
         }
+        
+        PrivitakInformacije privitakInformacije = IspitajDatotekuPrivitka(poruka, trazeniNazivPrivitka);
 
         Date vrijemePrijema = message.getReceivedDate();
         String salje = message.getFrom()[0].toString();
         String predmet = message.getSubject();
-        String privitak = PomocnaKlasa.IspitajDatotekuPrivitka(poruka, trazeniNazivPrivitka);
-        Poruka.VrstaPoruka vrsta = OdrediVrstuPoruke(privitak);
+        String privitak = privitakInformacije.privitakSadrzaj;
+        Poruka.VrstaPoruka vrsta = privitakInformacije.nwtisPoruka;
 
         return new Poruka(id, vrijemeSlanja, vrijemePrijema, salje, predmet, privitak, vrsta);
     }
@@ -195,15 +192,10 @@ public class PomocnaKlasa {
         return komanda;
     }
 
-    public static void ZapisiEvidencijuUDatoteku(Evidencija evidencija) throws IOException {
+    public static void ZapisiEvidencijuUDatoteku(Evidencija evidencija, String nazivDatoteke) throws IOException {
         ServletContext sc = SlusacAplikacije.servletContext;
         String webInfPutanja = sc.getRealPath("/WEB-INF/");
-        String putanjaDatoteke = webInfPutanja + File.separator + "evidencija.txt";
-        
-        File file = new File(putanjaDatoteke);
-        if(!file.exists()){
-            file.createNewFile();
-        }
+        String putanjaDatoteke = webInfPutanja + File.separator + nazivDatoteke;
         
         String newLine = System.getProperty("line.separator");
 
@@ -220,24 +212,25 @@ public class PomocnaKlasa {
         osw.write(newLine);
         
         osw.close();
+    } 
+    
+    public static void ObrisiSadrzajDatoteke(String nazivDatoteke) throws FileNotFoundException, IOException{
+        ServletContext sc = SlusacAplikacije.servletContext;
+        String webInfPutanja = sc.getRealPath("/WEB-INF/");
+        String putanjaDatoteke = webInfPutanja + File.separator + nazivDatoteke;
         
+        File file = new File(putanjaDatoteke);
+        if(!file.exists()){
+            file.createNewFile();
+        }
         
-        
-//        Writer fileWriter;
-//        BufferedWriter bw;
-//        fileWriter = new FileWriter(putanjaDatoteke);
-//        String newLine = System.getProperty("line.separator");
-//        
-//        fileWriter.write("Obrada poruka broj: " + evidencija.redniBrojObrade + newLine);
-//        fileWriter.write("Obrada započela u: " + evidencija.pocetakObrade + newLine);
-//        fileWriter.write("Obrada završila u: " + evidencija.zavrsetakObrade + newLine);
-//        fileWriter.write("Trajanje obrade u ms: " + evidencija.trajanjeObrade + newLine);
-//        fileWriter.write("Broj poruka: " + evidencija.brojPoruka + newLine);
-//        fileWriter.write("Broj dodanih IOT: " + evidencija.brojDodanihIot + newLine);
-//        fileWriter.write("Broj ažuriranih IOT: " + evidencija.brojAzuriranihIot + newLine);
-//        fileWriter.write("Broj neispravnih poruka: " + evidencija.brojNeispravnihPoruka + newLine);
-//        fileWriter.write(newLine);
-//
-//        fileWriter.close();
+        PrintWriter writer = new PrintWriter(file);
+        writer.print("");
+        writer.close();
     }
+}
+
+class PrivitakInformacije{
+    String privitakSadrzaj;
+    Poruka.VrstaPoruka nwtisPoruka;
 }
