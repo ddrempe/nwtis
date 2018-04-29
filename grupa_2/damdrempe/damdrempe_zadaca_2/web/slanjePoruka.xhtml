@@ -6,68 +6,108 @@
     <f:view locale="#{lokalizacija.odabraniJezik}">
         <h:head>
             <title>#{p['index.veza_slanjePoruke']}</title>
+            <h:outputStylesheet library="css" name="bootstrap.css" />
         </h:head>
-        <h:body>        
-            <h:form>
-                <h:commandLink action="#{slanjePoruka.promjeniJezik()}" 
-                               value="#{p['index.naslov']}" />
-                &nbsp;
-                <h:commandLink action="#{slanjePoruka.pregledPoruka()}" 
-                               value="#{p['index.veza_pregledPoruka']}" />
-                &nbsp;
-                <h:commandLink action="#{slanjePoruka.pregledDnevnika()}" 
-                               value="#{p['index.veza_pregledDnevnika']}" />
-            </h:form>
-            <h1>#{p["index.veza_slanjePoruke"]}</h1>
+        <div class="container-fluid">
+            <h:body>        
+                <h:form>
+                    <h:commandLink action="#{slanjePoruka.promjeniJezik()}" 
+                                   value="#{p['index.naslov']}" />
+                    &nbsp;
+                    <h:commandLink action="#{slanjePoruka.pregledPoruka()}" 
+                                   value="#{p['index.veza_pregledPoruka']}" />
+                    &nbsp;
+                    <h:commandLink action="#{slanjePoruka.pregledDnevnika()}" 
+                                   value="#{p['index.veza_pregledDnevnika']}" />
+                </h:form>
+                <h1>#{p["index.veza_slanjePoruke"]}</h1>
 
-            <h:form>
-                <h:outputLabel value="#{p['slanje.labela_prima']}"/>
-                <h:inputText value="#{slanjePoruka.prima}"
-                             validatorMessage="#{p['slanje.validacija_prima']}"
-                             required="true"
-                             requiredMessage="#{p['slanje.validacija_obaveznoPrima']}" >
-                    <f:validateRegex pattern=".+\@.+\..+"/>
-                </h:inputText>
-                <br/>
+                <h:form class="form-horizontal">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <h:outputLabel value="#{p['slanje.labela_prima']}"
+                                               class="col-md-2 control-label"/>
+                                <div class="col-md-6">
+                                    <h:inputText value="#{slanjePoruka.prima}"
+                                                 validatorMessage="#{p['slanje.validacija_prima']}"
+                                                 required="true"
+                                                 requiredMessage="#{p['slanje.validacija_obaveznoPrima']}"
+                                                 class="form-control">
+                                        <f:validateRegex pattern=".+\@.+\..+"/>
+                                    </h:inputText>
+                                </div>
+                                <div class="col-md-10">
+                                </div>
+                            </div> 
+                            <div class="form-group">
+                                <h:outputLabel value="#{p['slanje.labela_salje']}"
+                                               class="col-md-2 control-label"/>
+                                <div class="col-md-6">
+                                    <h:inputText value="#{slanjePoruka.salje}" 
+                                                 validatorMessage="#{p['slanje.validacija_salje']}"
+                                                 required="true"
+                                                 requiredMessage="#{p['slanje.validacija_obaveznoSalje']}"
+                                                 class="form-control">
+                                        <f:validateRegex pattern=".+\@.+\..+"/>
+                                    </h:inputText> 
+                                </div>
+                                <div class="col-md-10">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <h:outputLabel value="#{p['slanje.labela_predmet']}"
+                                               class="col-md-2 control-label"/>
+                                <div class="col-md-6">
+                                    <h:inputText value="#{slanjePoruka.predmet}"
+                                                 validatorMessage="#{p['slanje.validacija_predmet']}"
+                                                 class="form-control">
+                                        <f:validateLength minimum="10"/>
+                                    </h:inputText>
+                                    <br/>
+                                </div>
+                                <div class="col-md-10">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <h:outputLabel value="#{p['slanje.labela_salje']}"/>
-                <h:inputText value="#{slanjePoruka.salje}" 
-                             validatorMessage="#{p['slanje.validacija_salje']}"
-                             required="true"
-                             requiredMessage="#{p['slanje.validacija_obaveznoSalje']}" >
-                    <f:validateRegex pattern=".+\@.+\..+"/>
-                </h:inputText> 
-                <br/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h:outputLabel value="#{p['slanje.labela_poruka']}"/><br/> 
+                            <h:panelGrid columns="2">
+                                <h:inputTextarea rows="10" cols="50"
+                                                 value="#{slanjePoruka.privitakSadrzaj}"
+                                                 validatorMessage="#{p['slanje.validacija_poruka']}"
+                                                 class="form-control">
+                                    <f:validator validatorId="org.foi.nwtis.damdrempe.web.kontrole.JsonValidator" />
+                                </h:inputTextarea>
 
-                <h:outputLabel value="#{p['slanje.labela_predmet']}"/>
-                <h:inputText value="#{slanjePoruka.predmet}"
-                             validatorMessage="#{p['slanje.validacija_predmet']}" >
-                    <f:validateLength minimum="10"/>
-                </h:inputText>
-                <br/>
+                                <h:selectOneListbox size="5" 
+                                                    value="#{slanjePoruka.odabranaDatoteka}"
+                                                    class="form-control">
+                                    <f:selectItems value="#{slanjePoruka.popisDatoteka}"
+                                                   var="d" itemLabel="#{d}" itemValue="#{d}"/>
+                                </h:selectOneListbox>
 
-                <h:outputLabel value="#{p['slanje.labela_poruka']}"/><br/> 
-                <h:panelGrid columns="2">
-                    <h:inputTextarea rows="10" cols="50"
-                                     value="#{slanjePoruka.privitakSadrzaj}"
-                                     validatorMessage="#{p['slanje.validacija_poruka']}" >
-                        <f:validator validatorId="org.foi.nwtis.damdrempe.web.kontrole.JsonValidator" />
-                    </h:inputTextarea>
+                                <h:commandButton value="#{p['slanje.gumb_saljiPoruku']}"
+                                                 action="#{slanjePoruka.saljiPoruku()}"
+                                                 class="btn btn-primary" />
+                                <h:commandButton value="#{p['slanje.gumb_preuzmiSadrzaj']}"
+                                                 action="#{slanjePoruka.preuzmiSadrzaj()}"
+                                                 class="btn btn-default"/> 
+                                <h:commandButton value="#{p['slanje.gumb_obrisiPoruku']}"
+                                                 action="#{slanjePoruka.obrisiPoruku()}" 
+                                                 class="btn btn-danger" />
+                            </h:panelGrid>
+                        </div>
 
-                    <h:selectOneListbox size="5" value="#{slanjePoruka.odabranaDatoteka}">
-                        <f:selectItems value="#{slanjePoruka.popisDatoteka}"
-                                       var="d" itemLabel="#{d}" itemValue="#{d}"/>
-                    </h:selectOneListbox>
+                    </div>
 
-                    <h:commandButton value="#{p['slanje.gumb_saljiPoruku']}"
-                                     action="#{slanjePoruka.saljiPoruku()}" />
-                    <h:commandButton value="#{p['slanje.gumb_preuzmiSadrzaj']}"
-                                     action="#{slanjePoruka.preuzmiSadrzaj()}" /> 
-                    <h:commandButton value="#{p['slanje.gumb_obrisiPoruku']}"
-                                     action="#{slanjePoruka.obrisiPoruku()}" />
-                </h:panelGrid>
-            </h:form>
-        </h:body>
+
+                </h:form>
+            </h:body>
+        </div>
     </f:view>
 </html>
 

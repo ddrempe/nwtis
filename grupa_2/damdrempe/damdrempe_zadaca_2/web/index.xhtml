@@ -6,38 +6,42 @@
     <f:view locale="#{lokalizacija.odabraniJezik}">
         <h:head>
             <title>#{p["index.naslov"]}</title>
-            <h:outputStylesheet library="css" name="osnovna.css" />
+            <h:outputStylesheet library="css" name="bootstrap.css" />
         </h:head>
-        <h:body>
-            <h:form>
-                <h:commandLink action="#{lokalizacija.slanjePoruka()}" 
-                               value="#{p['index.veza_slanjePoruke']}" />
-                &nbsp;
-                <h:commandLink action="#{lokalizacija.pregledPoruka()}" 
-                               value="#{p['index.veza_pregledPoruka']}" />
-                &nbsp;
-                <h:commandLink action="#{lokalizacija.pregledDnevnika()}" 
-                               value="#{p['index.veza_pregledDnevnika']}" />
-            </h:form>
-            <h1>#{p["index.naslov"]}</h1>
+        <div class="container-fluid">
+            <h:body>
+                <h:form>
+                    <h:commandLink action="#{lokalizacija.slanjePoruka()}" 
+                                   value="#{p['index.veza_slanjePoruke']}" />
+                    &nbsp;
+                    <h:commandLink action="#{lokalizacija.pregledPoruka()}" 
+                                   value="#{p['index.veza_pregledPoruka']}" />
+                    &nbsp;
+                    <h:commandLink action="#{lokalizacija.pregledDnevnika()}" 
+                                   value="#{p['index.veza_pregledDnevnika']}" />
+                </h:form>
+                <h1>#{p["index.naslov"]}</h1>
 
-            <h:form>
-                <h:commandButton value="#{p['index.hr_jezik']}"
-                                 action="#{lokalizacija.odaberiJezik('hr')}"
-                                 rendered="#{lokalizacija.odabraniJezik ne 'hr'}"/>
-                <h:outputText value="&nbsp;"
-                              rendered="#{lokalizacija.odabraniJezik ne 'hr'}"/>
-                <h:commandButton value="#{p['index.en_jezik']}"
-                                 action="#{lokalizacija.odaberiJezik('en')}"
-                                 rendered="#{lokalizacija.odabraniJezik ne 'en'}"/>
-                <h:outputText value="&nbsp;"
-                              rendered="#{lokalizacija.odabraniJezik ne 'en'}"/>
-                <h:commandButton value="#{p['index.de_jezik']}"
-                                 action="#{lokalizacija.odaberiJezik('de')}"
-                                 rendered="#{lokalizacija.odabraniJezik ne 'de'}"/>            
-            </h:form>
-
-        </h:body>
+                <h:form>
+                    <h:commandButton value="#{p['index.hr_jezik']}"
+                                     action="#{lokalizacija.odaberiJezik('hr')}"
+                                     rendered="#{lokalizacija.odabraniJezik ne 'hr'}"
+                                     class="btn btn-default"/>
+                    <h:outputText value="&nbsp;"
+                                  rendered="#{lokalizacija.odabraniJezik ne 'hr'}"/>
+                    <h:commandButton value="#{p['index.en_jezik']}"
+                                     action="#{lokalizacija.odaberiJezik('en')}"
+                                     rendered="#{lokalizacija.odabraniJezik ne 'en'}"
+                                     class="btn btn-default"/>
+                    <h:outputText value="&nbsp;"
+                                  rendered="#{lokalizacija.odabraniJezik ne 'en'}"/>
+                    <h:commandButton value="#{p['index.de_jezik']}"
+                                     action="#{lokalizacija.odaberiJezik('de')}"
+                                     rendered="#{lokalizacija.odabraniJezik ne 'de'}"
+                                     class="btn btn-default"/>            
+                </h:form>
+            </h:body>
+        </div>
     </f:view>
 </html>
 
