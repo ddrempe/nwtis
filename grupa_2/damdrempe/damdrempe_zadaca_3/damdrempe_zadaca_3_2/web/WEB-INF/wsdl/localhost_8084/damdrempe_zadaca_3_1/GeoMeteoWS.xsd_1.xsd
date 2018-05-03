@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2.6-1b01  svn-revision#13094. --><xs:schema xmlns:tns="http://serveri.ws.damdrempe.nwtis.foi.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://serveri.ws.damdrempe.nwtis.foi.org/">
+
+<xs:element name="dajSvaParkiralista" type="tns:dajSvaParkiralista"/>
+
+<xs:element name="dajSvaParkiralistaResponse" type="tns:dajSvaParkiralistaResponse"/>
+
+<xs:element name="dodajParkiraliste" type="tns:dodajParkiraliste"/>
+
+<xs:element name="dodajParkiralisteResponse" type="tns:dodajParkiralisteResponse"/>
+
+<xs:complexType name="dajSvaParkiralista">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="dajSvaParkiralistaResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:parkiraliste" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="parkiraliste">
+<xs:sequence>
+<xs:element name="adresa" type="xs:string" minOccurs="0"/>
+<xs:element name="geoloc" type="tns:lokacija" minOccurs="0"/>
+<xs:element name="id" type="xs:int"/>
+<xs:element name="naziv" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="lokacija">
+<xs:sequence>
+<xs:element name="latitude" type="xs:string" minOccurs="0"/>
+<xs:element name="longitude" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="dodajParkiraliste">
+<xs:sequence>
+<xs:element name="arg0" type="tns:parkiraliste" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="dodajParkiralisteResponse">
+<xs:sequence/>
+</xs:complexType>
+</xs:schema>
