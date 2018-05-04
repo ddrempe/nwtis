@@ -4,30 +4,83 @@
     Author     : grupa_2
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Dodavanje parkirališta</title>
+        <title>Dodavanje parkiralista</title>
     </head>
     <body>
-        <h1>Dodavanje parkirališta</h1>
-    </body>
+        <h1>Dodavanje parkiralista</h1>
 
-    <form action="${pageContext.servletContext.contextPath}/DodajParkiraliste" method="post">
-<!--        TODO prepisati-->
-        Naziv i adresa:<br>
-        <input type="text" name="naziv"><br>
-        <input type="text" name="adresa"><br>
-        Geo lokacija:<br>
-        <input type="text" name="geolokacija"><br><br>
-        <button type="button">Geo lokacija</button> 
-        <input type="submit" value="Spremi">
-        <button type="button">Meteo podaci</button> 
-            
-        Temp: <label></label>
-        Vlaga: <label></label>
-        Tlak: <label></label>
-    </form> 
+        <% String geolokacija = (String) request.getAttribute("geolokacija");%>
+        <% String naziv = (String) request.getAttribute("naziv");%>
+        <% String adresa = (String) request.getAttribute("adresa");%>
+        <form method="POST" 
+              action="${pageContext.servletContext.contextPath}/DodajParkiraliste">
+            <table>
+                <tr>
+                    <td>Naziv i adresa: 
+                        <input name="naziv" placeholder="Upisi naziv"
+                               value="<%
+                                   if (naziv != null) {
+                                       out.println(naziv);
+                                   } else {
+                                       out.println("");
+                                   }
+                               %>"/> 
+                    </td>
+                    <td><input name="adresa" placeholder="Upisi adresu"
+                               value="<%
+                                   if (adresa != null) {
+                                       out.println(adresa);
+                                   } else {
+                                       out.println("");
+                                   }
+                               %>"/> 
+                    </td>
+                    <td><input type="submit" name="geolokacija" value="Geo lokacija"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2">Geo lokacija
+                        <input name="lokacija" 
+                               readonly="readonly" 
+                               size="60"
+                               value="<%
+                                   if (geolokacija != null) {
+                                       out.println(geolokacija);
+                                   } else {
+                                       out.println("");
+                                   }
+                               %>"/> 
+                    </td>
+                    <td><input type="submit" name="spremi" value="Spremi"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td><input type="submit" name="meteo" value="Meteo podaci"/></td>
+                </tr>
+            </table>
+            <div>
+                <% String meteo = (String) request.getAttribute("meteo");%>
+                <%
+                    if (meteo != null) {
+                        out.println(meteo);
+                    } else {
+                        out.println("");
+                    }
+                %>
+            </div>
+
+
+            <% String obavijest = (String) request.getAttribute("obavijest");%>
+            <%
+                if (obavijest != null) {
+                    out.println(obavijest);
+                } else {
+                    out.println("");
+                }
+            %>
+        </form>
+    </body>
 </html>
+

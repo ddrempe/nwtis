@@ -5,10 +5,15 @@
  */
 package org.foi.nwtis.damdrempe.ws.serveri;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.jws.Oneway;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
+import org.foi.nwtis.damdrempe.web.BazaPodatakaOperacije;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 
@@ -21,22 +26,35 @@ public class GeoMeteoWS {
 
     /**
      * Web service operation
+     * @return 
      */
     @WebMethod(operationName = "dajSvaParkiralista")
     public java.util.List<Parkiraliste> dajSvaParkiralista() {
         List<Parkiraliste> svaParkiralista = new ArrayList<>();
         
-        Lokacija lokacija = new Lokacija("46.3089756802915", "16.3396055802915");
-        
-        for (int i = 0; i < 10; i++) {
-            Parkiraliste parkiraliste = new Parkiraliste(i, "Parkiraliste"+i, "Varaždin,Pavlinska 2", lokacija);
-            svaParkiralista.add(parkiraliste);
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            svaParkiralista = bpo.parkiralistaSelect();
+            bpo.zatvoriVezu();
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return svaParkiralista;
     }
-    
-    public void dodajParkiraliste(Parkiraliste parkiraliste){//TODO napraviti korak 42
+
+    /**
+     * Web service operation
+     * @param parkiraliste
+     */
+    @WebMethod(operationName = "dodajParkiraliste")
+    @Oneway
+    public void dodajParkiraliste(Parkiraliste parkiraliste) {
+        
         
     }
+    
+    
+    
+    
 }
