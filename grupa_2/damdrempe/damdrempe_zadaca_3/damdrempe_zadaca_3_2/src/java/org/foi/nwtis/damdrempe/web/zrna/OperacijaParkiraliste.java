@@ -5,11 +5,13 @@
  */
 package org.foi.nwtis.damdrempe.web.zrna;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ValueChangeEvent;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
@@ -23,8 +25,8 @@ import org.foi.nwtis.damdrempe.ws.serveri.Parkiraliste;
  * @author grupa_2
  */
 @Named(value = "operacijaParkiraliste")
-@RequestScoped  //TODO vidjeti da li request ili session, korak 65
-public class OperacijaParkiraliste {
+@SessionScoped
+public class OperacijaParkiraliste implements Serializable {
     
     private String naziv;
     private String adresa;
@@ -34,13 +36,14 @@ public class OperacijaParkiraliste {
     private String poruka = "";
     
     private Map<String, Object> popisParkiralistaPrikaz; //todo rename    
-    private int brojParkiralistaPrikaz;
+    private boolean viseOdabrano = false;
+    private boolean jedanOdabran = false;
 
     /**
      * Creates a new instance of OperacijaParkiraliste
      */
     public OperacijaParkiraliste() {
-        dohvatiSvaParkiralistaSOAP();
+        preuzmiSvaParkiralistaSOAP();
     }
     
     public String upisiSOAP() {        
@@ -65,7 +68,7 @@ public class OperacijaParkiraliste {
         return "";
     }
     
-    private void dohvatiSvaParkiralistaSOAP(){
+    private void preuzmiSvaParkiralistaSOAP(){
         List<Parkiraliste> svaParkiralista = MeteoWSKlijent.dajSvaParkiralista();
         popisParkiralistaPrikaz = new LinkedHashMap<>();
 
@@ -76,7 +79,31 @@ public class OperacijaParkiraliste {
     
     public void promjena(ValueChangeEvent e) {
         odabranaParkiralista = (List<String>) e.getNewValue();
-        brojParkiralistaPrikaz = odabranaParkiralista.size();
+        if(odabranaParkiralista.size() == 1){
+            jedanOdabran = true;
+            viseOdabrano = false;
+        }
+        else if (odabranaParkiralista.size() > 1){
+            jedanOdabran = false;
+            viseOdabrano = true;
+        }
+    }
+    
+    public String preuzmiParkiralisteSOAP(){
+        List<Parkiraliste> svaParkiralista = MeteoWSKlijent.dajSvaParkiralista();
+        int odabranoParkiralisteId = Integer.parseInt(odabranaParkiralista.get(0));
+        Parkiraliste odabranoParkiraliste = new Parkiraliste();
+        
+        for (Parkiraliste parkiraliste : svaParkiralista) {
+            if(parkiraliste.getId() == odabranoParkiralisteId){
+                odabranoParkiraliste = parkiraliste;
+            }
+        }
+        
+        naziv = odabranoParkiraliste.getNaziv();
+        adresa = odabranoParkiraliste.getAdresa();
+        
+        return "";
     }
     
     public String getNaziv() {
@@ -127,13 +154,22 @@ public class OperacijaParkiraliste {
         this.poruka = poruka;
     }
 
-    public int getBrojParkiralistaPrikaz() {
-        return brojParkiralistaPrikaz;
+    public boolean isViseOdabrano() {
+        return viseOdabrano;
     }
 
-    public void setBrojParkiralistaPrikaz(int brojParkiralistaPrikaz) {
-        this.brojParkiralistaPrikaz = brojParkiralistaPrikaz;
+    public void setViseOdabrano(boolean viseOdabrano) {
+        this.viseOdabrano = viseOdabrano;
     }
+
+    public boolean isJedanOdabran() {
+        return jedanOdabran;
+    }
+
+    public void setJedanOdabran(boolean jedanOdabran) {
+        this.jedanOdabran = jedanOdabran;
+    }
+    
     
     
     

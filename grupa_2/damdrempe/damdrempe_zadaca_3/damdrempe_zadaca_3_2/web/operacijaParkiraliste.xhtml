@@ -28,19 +28,20 @@
             </h:selectManyListbox><br/>
 
             <h:commandButton value="Preuzmi REST" 
-                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz != 1}"
+                             disabled="#{operacijaParkiraliste.viseOdabrano || !operacijaParkiraliste.jedanOdabran}"
                              /><br/>
             <h:commandButton value="Ažuriraj REST" 
-                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz != 1}"
+                             disabled="#{operacijaParkiraliste.viseOdabrano || !operacijaParkiraliste.jedanOdabran}"
                              /><br/>
             <h:commandButton value="Briši REST"
-                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz != 1}"
+                             disabled="#{operacijaParkiraliste.viseOdabrano || !operacijaParkiraliste.jedanOdabran}"
                              /><br/>
             <h:commandButton value="Preuzmi meteo"
-                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz &lt; 2}"
+                             disabled="#{!operacijaParkiraliste.viseOdabrano}"
                              /><br/>
             <h:commandButton value="Preuzmi SOAP" 
-                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz != 1}"
+                             action="#{operacijaParkiraliste.preuzmiParkiralisteSOAP()}"
+                             disabled="#{operacijaParkiraliste.viseOdabrano || !operacijaParkiraliste.jedanOdabran}"                             
                              /><br/>
 
 

@@ -125,6 +125,7 @@ public class BazaPodatakaOperacije {
             lokacija.setLatitude(odgovor.getString("LATITUDE"));
             lokacija.setLongitude(odgovor.getString("LONGITUDE"));
             p.setGeoloc(lokacija);
+            p.setAdresa(odgovor.getString("ADRESA"));
             
             dohvacenaParkiralista.add(p);
         }     
