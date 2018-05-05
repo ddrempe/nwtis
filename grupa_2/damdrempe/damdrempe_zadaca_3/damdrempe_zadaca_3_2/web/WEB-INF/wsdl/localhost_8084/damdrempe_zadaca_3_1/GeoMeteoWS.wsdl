@@ -4,31 +4,31 @@
 <xsd:import namespace="http://serveri.ws.damdrempe.nwtis.foi.org/" schemaLocation="http://localhost:8084/damdrempe_zadaca_3_1/GeoMeteoWS?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="dajSvaParkiralista">
-<part name="parameters" element="tns:dajSvaParkiralista"/>
-</message>
-<message name="dajSvaParkiralistaResponse">
-<part name="parameters" element="tns:dajSvaParkiralistaResponse"/>
-</message>
 <message name="dodajParkiraliste">
 <part name="parameters" element="tns:dodajParkiraliste"/>
 </message>
 <message name="dodajParkiralisteResponse">
 <part name="parameters" element="tns:dodajParkiralisteResponse"/>
 </message>
+<message name="dajSvaParkiralista">
+<part name="parameters" element="tns:dajSvaParkiralista"/>
+</message>
+<message name="dajSvaParkiralistaResponse">
+<part name="parameters" element="tns:dajSvaParkiralistaResponse"/>
+</message>
 <portType name="GeoMeteoWS">
-<operation name="dajSvaParkiralista">
-<input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSvaParkiralistaRequest" message="tns:dajSvaParkiralista"/>
-<output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSvaParkiralistaResponse" message="tns:dajSvaParkiralistaResponse"/>
-</operation>
 <operation name="dodajParkiraliste">
 <input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dodajParkiralisteRequest" message="tns:dodajParkiraliste"/>
 <output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dodajParkiralisteResponse" message="tns:dodajParkiralisteResponse"/>
 </operation>
+<operation name="dajSvaParkiralista">
+<input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSvaParkiralistaRequest" message="tns:dajSvaParkiralista"/>
+<output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSvaParkiralistaResponse" message="tns:dajSvaParkiralistaResponse"/>
+</operation>
 </portType>
 <binding name="GeoMeteoWSPortBinding" type="tns:GeoMeteoWS">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="dajSvaParkiralista">
+<operation name="dodajParkiraliste">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -37,7 +37,7 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="dodajParkiraliste">
+<operation name="dajSvaParkiralista">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>

@@ -1,20 +1,52 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>Facelet Title</title>
+        <title>Operacija parkiraliste</title>
     </h:head>
     <h:body>
+        <h1>Operacija parkiraliste</h1>
+
         <h:form>
-            <h:outputLabel value="naziv"></h:outputLabel>
+            <h:outputLabel value="Naziv: "></h:outputLabel>
             <h:inputText value="#{operacijaParkiraliste.naziv}" maxlength="50" />
-            <h:outputLabel value="adresa"></h:outputLabel>
+            <h:outputLabel value="Adresa: "></h:outputLabel>
             <h:inputText value="#{operacijaParkiraliste.adresa}" maxlength="50" />
             <h:commandButton value="Upiši REST" 
                              action="#{operacijaParkiraliste.upisiREST()}" />
             <h:commandButton value="Upiši SOAP" 
                              action="#{operacijaParkiraliste.upisiSOAP()}" />
+            <br/><br/>
+
+            <h:outputLabel value="Parkirališta: "></h:outputLabel><br/>
+            <h:selectManyListbox value="#{operacijaParkiraliste.odabranaParkiralista}" 
+                                 valueChangeListener="#{operacijaParkiraliste.promjena}"
+                                 onchange="submit()" >
+                <f:selectItems value="#{operacijaParkiraliste.popisParkiralistaPrikaz}" />
+            </h:selectManyListbox><br/>
+
+            <h:commandButton value="Preuzmi REST" 
+                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz != 1}"
+                             /><br/>
+            <h:commandButton value="Ažuriraj REST" 
+                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz != 1}"
+                             /><br/>
+            <h:commandButton value="Briši REST"
+                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz != 1}"
+                             /><br/>
+            <h:commandButton value="Preuzmi meteo"
+                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz &lt; 2}"
+                             /><br/>
+            <h:commandButton value="Preuzmi SOAP" 
+                             disabled="#{operacijaParkiraliste.brojParkiralistaPrikaz != 1}"
+                             /><br/>
+
+
+            <h2>
+                <h:outputText value="#{operacijaParkiraliste.poruka}" />
+            </h2>
         </h:form>
     </h:body>
 </html>
