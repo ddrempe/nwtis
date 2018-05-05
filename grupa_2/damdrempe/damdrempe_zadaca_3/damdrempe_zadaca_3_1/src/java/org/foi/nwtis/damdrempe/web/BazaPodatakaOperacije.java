@@ -73,6 +73,43 @@ public class BazaPodatakaOperacije {
         veza.close();
     } 
     
+    //TODO moglo bi se umjesto 4 argumenta staviti objekt Parkiraliste
+    public boolean parkiralistaInsert(String naziv, String adresa, String latitude, String longitude) throws SQLException{
+        if(parkiralistaSelectNaziv(naziv)){
+            return false;
+        }   
+        
+        String upit = "INSERT INTO parkiralista(naziv, adresa, latitude, longitude) VALUES (?, ?, ?, ?)";        
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);        
+
+        preparedStmt.setString(1, naziv);
+        preparedStmt.setString(2, adresa);
+        preparedStmt.setString(3, latitude);
+        preparedStmt.setString(4, longitude);
+
+        preparedStmt.execute(); 
+        
+        return true;
+    }
+    
+    /**
+     * Provjerava da li parkiralište s traženim nazivom postoji
+     * @param naziv
+     * @return true ako postoji, inače false
+     * @throws SQLException 
+     */
+    public boolean parkiralistaSelectNaziv(String naziv) throws SQLException{
+        String upitSelect = "SELECT * FROM parkiralista WHERE naziv = ?";
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
+        preparedStmt.setString(1, naziv);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.getResultSet();
+        
+        return rs.next();
+    }
+    
     public ArrayList<Parkiraliste> parkiralistaSelect() throws SQLException {
         ArrayList<Parkiraliste> dohvacenaParkiralista = new ArrayList<>();
         String upit = "SELECT * FROM PARKIRALISTA";

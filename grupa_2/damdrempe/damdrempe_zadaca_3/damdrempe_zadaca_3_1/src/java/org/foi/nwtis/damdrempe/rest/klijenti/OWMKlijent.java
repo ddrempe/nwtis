@@ -82,9 +82,12 @@ public class OWMKlijent {
             mp.setLastUpdate(new Date(jo.getJsonNumber("dt").bigDecimalValue().longValue()*1000));
             return mp;
             
+        } catch (NullPointerException ex) {
+            Logger.getLogger("Nije moguće dohvatiti sve meteo podatke!");
+            return null;
         } catch (Exception ex) {
             Logger.getLogger(OWMKlijent.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
         return null;
     }
 }

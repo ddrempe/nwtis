@@ -6,18 +6,15 @@
 package org.foi.nwtis.damdrempe.web;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
 import org.foi.nwtis.damdrempe.rest.klijenti.GMKlijent;
 import org.foi.nwtis.damdrempe.rest.klijenti.OWMKlijent;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
@@ -107,37 +104,23 @@ public class DodajParkiraliste extends HttpServlet {
             return;
         }
         
-        BP_Konfiguracija bpk = (BP_Konfiguracija) this.getServletContext().getAttribute("BP_Konfig");
-
-        if (bpk == null) {
-            System.err.println("Problem s konfiguracijom!");
-            return;
-        }
-
-        String url = bpk.getServerDatabase() + bpk.getUserDatabase();
-        String korisnik = bpk.getUserUsername();
-        String lozinka = bpk.getUserPassword();
-        String upit = "INSERT INTO parkiralista(naziv, adresa, latitude, longitude)"
-                + "VALUES('" + naziv + "','" + adresa + "',"
-                + lokacija.getLatitude() + "," + lokacija.getLongitude() + ")";
+        boolean rezultat = false;
+        
         try {
-            Class.forName(bpk.getDriverDatabase());
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-            return;
+            BazaPodatakaOperacije bpo;
+            bpo = new BazaPodatakaOperacije();
+            rezultat = bpo.parkiralistaInsert(naziv, adresa, lokacija.getLatitude(), lokacija.getLongitude());
+            bpo.zatvoriVezu();
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(DodajParkiraliste.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        try (
-                Connection con = DriverManager.getConnection(url, korisnik, lozinka);
-                Statement stmt = con.createStatement();) {
-            stmt.execute(upit);
-            stmt.close();
-            con.close();
-        } catch (SQLException ex) {
-            System.err.println("SQLException: " + ex.getMessage());
+        if(rezultat){
+            obavijest = "Podaci su spremljeni u bazu podataka";        
         }
-
-        obavijest = "Podaci su spremljeni u bazu podataka";
+        else {
+            obavijest = "Greška kod spremanja u bazu podataka";
+        }
     }
 
     private void meteo() {
@@ -148,6 +131,11 @@ public class DodajParkiraliste extends HttpServlet {
         
         OWMKlijent owmk = new OWMKlijent("eeab428a2e33536c5bb6deb266b37fcd"); //TODO iz konfiga
         MeteoPodaci mp = owmk.getRealTimeWeather(lokacija.getLatitude(), lokacija.getLongitude());
+        
+        if(mp == null){
+            obavijest = "Nije moguce dohvatiti meteo podatke!";
+            return;
+        }
         
         meteo = "Temp: " + mp.getTemperatureValue().toString() + mp.getTemperatureUnit() + "<br/>" +
                 "Vlaga: " + mp.getHumidityValue().toString() + mp.getHumidityUnit() + "<br/>" +
