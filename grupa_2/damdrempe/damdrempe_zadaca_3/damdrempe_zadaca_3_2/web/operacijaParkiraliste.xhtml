@@ -11,43 +11,61 @@
 
         <h:form>
             <h:outputLabel value="Naziv: "></h:outputLabel>
-            <h:inputText value="#{operacijaParkiraliste.naziv}" maxlength="50" />
+            <h:inputText value="#{operacijaParkiraliste.naziv}" 
+                         maxlength="50"
+                         id="naziv"
+                         required="true"
+                         requiredMessage="Niste unijeli naziv!"
+                         >
+                <f:ajax render="naziv" />
+            </h:inputText>
             <h:outputLabel value="Adresa: "></h:outputLabel>
-            <h:inputText value="#{operacijaParkiraliste.adresa}" maxlength="50" />
+            <h:inputText value="#{operacijaParkiraliste.adresa}" 
+                         maxlength="50"
+                         id="adresa"
+                         required="true"
+                         requiredMessage="Niste unijeli adresu!" >
+                <f:ajax render="adresa" />
+            </h:inputText>
             <h:commandButton value="Upiši REST" 
                              action="#{operacijaParkiraliste.upisiREST()}" />
             <h:commandButton value="Upiši SOAP" 
                              action="#{operacijaParkiraliste.upisiSOAP()}" />
             <br/><br/>
+        </h:form>
 
+        <h:form>
             <h:outputLabel value="Parkirališta: "></h:outputLabel><br/>
-            <h:selectManyListbox value="#{operacijaParkiraliste.odabranaParkiralista}" 
-                                 valueChangeListener="#{operacijaParkiraliste.promjena}"
-                                 onchange="submit()" >
+            <h:selectManyListbox value="#{operacijaParkiraliste.odabranaParkiralista}"
+                                 valueChangeListener="#{operacijaParkiraliste.promjena}" 
+                                 onchange="submit()">
                 <f:selectItems value="#{operacijaParkiraliste.popisParkiralistaPrikaz}" />
             </h:selectManyListbox><br/>
 
-            <h:commandButton value="Preuzmi REST" 
-                             disabled="#{operacijaParkiraliste.viseOdabrano || !operacijaParkiraliste.jedanOdabran}"
+            <h:commandButton value="Preuzmi REST"
+                             action="#{operacijaParkiraliste.preuzmiParkiralisteREST()}"
+                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
                              /><br/>
             <h:commandButton value="Ažuriraj REST" 
-                             disabled="#{operacijaParkiraliste.viseOdabrano || !operacijaParkiraliste.jedanOdabran}"
+                             action="#{operacijaParkiraliste.azurirajREST()}"
+                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
                              /><br/>
             <h:commandButton value="Briši REST"
-                             disabled="#{operacijaParkiraliste.viseOdabrano || !operacijaParkiraliste.jedanOdabran}"
+                             action="#{operacijaParkiraliste.brisiREST()}"
+                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
                              /><br/>
             <h:commandButton value="Preuzmi meteo"
-                             disabled="#{!operacijaParkiraliste.viseOdabrano}"
+                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista &lt; 2}"
                              /><br/>
             <h:commandButton value="Preuzmi SOAP" 
                              action="#{operacijaParkiraliste.preuzmiParkiralisteSOAP()}"
-                             disabled="#{operacijaParkiraliste.viseOdabrano || !operacijaParkiraliste.jedanOdabran}"                             
+                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"                             
                              /><br/>
 
+            <h:message for="naziv" style="color:red" /><br/>
+            <h:message for="adresa" style="color:red" />
 
-            <h2>
-                <h:outputText value="#{operacijaParkiraliste.poruka}" />
-            </h2>
+            <h:outputText value="#{operacijaParkiraliste.poruka}" />
         </h:form>
     </h:body>
 </html>

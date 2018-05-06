@@ -19,7 +19,7 @@ import javax.ws.rs.client.WebTarget;
  *        client.close();
  * </pre>
  *
- * @author grupa_2
+ * @author ddrempetic
  */
 public class MeteoRESTKlijentId {
 
@@ -42,8 +42,16 @@ public class MeteoRESTKlijentId {
      * @param responseType Class representing the response
      * @param requestEntity request data@return response object (instance of responseType class)
      */
-    public <T> T postJson(Object requestEntity, Class<T> responseType) throws ClientErrorException {
-        return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), responseType);
+    public <T> T putJson(Object requestEntity, Class<T> responseType) throws ClientErrorException {
+        return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), responseType);
+    }
+
+    /**
+     * @param responseType Class representing the response
+     * @return response object (instance of responseType class)
+     */
+    public <T> T deleteJson(Class<T> responseType) throws ClientErrorException {
+        return webTarget.request().delete(responseType);
     }
 
     /**
@@ -52,14 +60,6 @@ public class MeteoRESTKlijentId {
      */
     public <T> T getJson(Class<T> responseType) throws ClientErrorException {
         return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
-    }
-
-    /**
-     * @param responseType Class representing the response
-     * @param requestEntity request data@return response object (instance of responseType class)
-     */
-    public <T> T putJson(Object requestEntity, Class<T> responseType) throws ClientErrorException {
-        return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), responseType);
     }
 
     public void close() {

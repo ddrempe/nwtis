@@ -12,11 +12,17 @@ import java.util.Map;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import org.foi.nwtis.damdrempe.rest.klijenti.MeteoRESTKlijent;
+import org.foi.nwtis.damdrempe.rest.klijenti.MeteoRESTKlijentId;
+import org.foi.nwtis.damdrempe.web.PomocnaKlasa;
+import org.foi.nwtis.damdrempe.web.ProcitaniJsonOdgovor;
 import org.foi.nwtis.damdrempe.ws.klijenti.MeteoWSKlijent;
 import org.foi.nwtis.damdrempe.ws.serveri.Parkiraliste;
 
@@ -38,6 +44,8 @@ public class OperacijaParkiraliste implements Serializable {
     private Map<String, Object> popisParkiralistaPrikaz; //todo rename    
     private boolean viseOdabrano = false;
     private boolean jedanOdabran = false;
+    
+    private int brojOdabranihParkiralista;
 
     /**
      * Creates a new instance of OperacijaParkiraliste
@@ -53,20 +61,10 @@ public class OperacijaParkiraliste implements Serializable {
             poruka = "Greska kod dodavanja parkiralista putem SOAP zahtjeva!";
         }
         
-        return "";
-    }
-    
-    public String upisiREST() {
-        MeteoRESTKlijent klijent = new MeteoRESTKlijent();
-        String novoParkiraliste = "{\"naziv\": \"" + naziv + "\","
-            + "\"adresa\": \"" + adresa + "\"}";
-        String odgovor = klijent.postJson(novoParkiraliste, String.class);
-        System.out.println(odgovor);
-        //TODO moglo bi se sa gsonom napraviti objekt parkiraliste i onda prebaciti u string
+        preuzmiSvaParkiralistaSOAP();
         
-        //TODO tu smo stali sa klijentom
         return "";
-    }
+    }   
     
     private void preuzmiSvaParkiralistaSOAP(){
         List<Parkiraliste> svaParkiralista = MeteoWSKlijent.dajSvaParkiralista();
@@ -79,14 +77,7 @@ public class OperacijaParkiraliste implements Serializable {
     
     public void promjena(ValueChangeEvent e) {
         odabranaParkiralista = (List<String>) e.getNewValue();
-        if(odabranaParkiralista.size() == 1){
-            jedanOdabran = true;
-            viseOdabrano = false;
-        }
-        else if (odabranaParkiralista.size() > 1){
-            jedanOdabran = false;
-            viseOdabrano = true;
-        }
+        brojOdabranihParkiralista = odabranaParkiralista.size();
     }
     
     public String preuzmiParkiralisteSOAP(){
@@ -102,6 +93,61 @@ public class OperacijaParkiraliste implements Serializable {
         
         naziv = odabranoParkiraliste.getNaziv();
         adresa = odabranoParkiraliste.getAdresa();
+        
+        return "";
+    }
+    
+    public String upisiREST() {
+        MeteoRESTKlijent klijent = new MeteoRESTKlijent();
+        String novoParkiraliste = PomocnaKlasa.napraviJsonZaSlanjeParkiraliste(naziv, adresa);        
+        String odgovor = klijent.postJson(novoParkiraliste, String.class);
+        
+        poruka = odgovor; //TODO parsati poruku iz odgovora
+        
+        preuzmiSvaParkiralistaSOAP();
+        
+        return "";
+    }
+    
+    public String preuzmiParkiralisteREST() {
+        String odabranoParkiralisteId = odabranaParkiralista.get(0);
+        MeteoRESTKlijentId klijent = new MeteoRESTKlijentId(odabranoParkiralisteId); 
+        String odgovor = klijent.getJson(String.class);        
+        
+        //TODO bolje organizirati kod za odgovor
+        ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovor);
+        JsonArray odgovorDio = procitaniJsonOdgovor.getOdgovor();
+        JsonObject odgovorObjekt = odgovorDio.getJsonObject(0);
+        adresa = odgovorObjekt.getString("adresa");
+        naziv = odgovorObjekt.getString("naziv");
+        
+        poruka = procitaniJsonOdgovor.getStatus() + " " + procitaniJsonOdgovor.getPoruka();
+        
+        return "";
+    }
+    
+    public String azurirajREST() {
+        String odabranoParkiralisteId = odabranaParkiralista.get(0);
+        MeteoRESTKlijentId klijent = new MeteoRESTKlijentId(odabranoParkiralisteId); 
+        String novoParkiraliste = PomocnaKlasa.napraviJsonZaSlanjeParkiraliste(naziv, adresa); 
+        String odgovor = klijent.putJson(novoParkiraliste, String.class);
+        //TODO ne dohvacaju se dobro naziv i adresa i ne osvjezavaju na promjenu vrijednosti
+        poruka = odgovor; //TODO parsati poruku iz odgovora
+        
+        preuzmiSvaParkiralistaSOAP();
+        
+        return "";
+    }
+    
+    public String brisiREST() {
+        String odabranoParkiralisteId = odabranaParkiralista.get(0);
+        MeteoRESTKlijentId klijent = new MeteoRESTKlijentId(odabranoParkiralisteId); 
+        String odgovor = klijent.deleteJson(String.class);
+        
+        poruka = odgovor; //TODO parsati poruku iz odgovora
+        
+        preuzmiSvaParkiralistaSOAP();
+        brojOdabranihParkiralista = 0;
         
         return "";
     }
@@ -168,6 +214,14 @@ public class OperacijaParkiraliste implements Serializable {
 
     public void setJedanOdabran(boolean jedanOdabran) {
         this.jedanOdabran = jedanOdabran;
+    }
+
+    public int getBrojOdabranihParkiralista() {
+        return brojOdabranihParkiralista;
+    }
+
+    public void setBrojOdabranihParkiralista(int brojOdabranihParkiralista) {
+        this.brojOdabranihParkiralista = brojOdabranihParkiralista;
     }
     
     

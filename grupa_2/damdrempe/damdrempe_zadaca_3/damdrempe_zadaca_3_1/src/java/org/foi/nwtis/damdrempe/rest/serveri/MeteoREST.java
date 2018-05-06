@@ -120,6 +120,7 @@ public class MeteoREST {
         int idParkiralista = Integer.parseInt(id);
         MeteoPodaci meteo = new MeteoPodaci();
 
+        Parkiraliste p = new Parkiraliste();
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             if (!bpo.parkiralistaSelectId(idParkiralista)) {
@@ -127,7 +128,7 @@ public class MeteoREST {
                 poruka = "Parkiraliste s id " + id + " ne postoji!";
 
             } else {
-                Parkiraliste p = bpo.parkiralistaSelectIdVrati(idParkiralista);
+                p = bpo.parkiralistaSelectIdVrati(idParkiralista);
                 meteo = PomocnaKlasa.dohvatiOWMMeteo(p.getGeoloc().getLatitude(), p.getGeoloc().getLongitude());
             }
             bpo.zatvoriVezu();
@@ -136,10 +137,15 @@ public class MeteoREST {
             poruka = ex.toString();
             Logger.getLogger(MeteoREST.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        if(meteo == null){
+            uspjesno = false;
+            poruka = "Za parkiraliste s id " + id + " nije moguce dohvatiti meteopodatke!";
+        }
 
         if (uspjesno) {
             JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
-            JsonArray meteoJsonDio = jsonOdgovor.postaviMeteoJsonDio(meteo);
+            JsonArray meteoJsonDio = jsonOdgovor.postaviMeteoJsonDio(meteo, p);
             return jsonOdgovor.vratiKompletanJsonOdgovor(meteoJsonDio);
         } else {
             JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);

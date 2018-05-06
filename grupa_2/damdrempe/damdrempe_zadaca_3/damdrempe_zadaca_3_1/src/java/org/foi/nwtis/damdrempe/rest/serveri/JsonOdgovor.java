@@ -43,13 +43,15 @@ public class JsonOdgovor {
         return jsonBuilder.build();
     }
     
-    public JsonArray postaviMeteoJsonDio(MeteoPodaci meteo){
+    public JsonArray postaviMeteoJsonDio(MeteoPodaci meteo, Parkiraliste parkiraliste){
         JsonArrayBuilder jsonBuilder = Json.createArrayBuilder();
         
         jsonBuilder.add(Json.createObjectBuilder()
                 .add("temp", meteo.getTemperatureValue())
                 .add("vlaga", meteo.getHumidityValue())
-                .add("tlak", meteo.getPressureValue()));        
+                .add("tlak", meteo.getPressureValue())
+                .add("naziv", parkiraliste.getNaziv())
+                .add("adresa", parkiraliste.getAdresa()));        
         
         return jsonBuilder.build();
     }
