@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
+import org.foi.nwtis.damdrempe.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.rest.klijenti.OWMKlijent;
 import org.foi.nwtis.damdrempe.web.BazaPodatakaOperacije;
@@ -67,12 +68,11 @@ public class PozadinskaDretva extends Thread {
             try {                
                 ArrayList<Parkiraliste> dohvacenaParkiralista = bpo.parkiralistaSelect();
                 for(Parkiraliste parkiraliste : dohvacenaParkiralista){
-                    OWMKlijent owmk = new OWMKlijent("eeab428a2e33536c5bb6deb266b37fcd"); //TODO iz konfiga
-                    MeteoPodaci meteo = owmk.getRealTimeWeather(parkiraliste.getGeoloc().getLatitude(), parkiraliste.getGeoloc().getLongitude());
+                    MeteoPodaci meteo = PomocnaKlasa.dohvatiOWMMeteo(parkiraliste.getGeoloc().getLatitude(), parkiraliste.getGeoloc().getLongitude());
                     if(meteo != null){
                         bpo.meteoInsert(meteo, parkiraliste);
                     }
-                    else System.out.println("Nije moguce ubaciti trenutne meteopodatke!");
+                    else System.out.println("Nije moguce dohvatiti trenutne meteopodatke za parkiraliste " + parkiraliste.getNaziv() + " na adresi " + parkiraliste.getAdresa());
                 }                
                               
                 System.out.println("KRAJ! Završila obrada: " + (brojacObrada++) + ".");

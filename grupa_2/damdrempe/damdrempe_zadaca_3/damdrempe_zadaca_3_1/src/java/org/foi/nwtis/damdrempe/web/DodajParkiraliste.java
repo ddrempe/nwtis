@@ -15,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.foi.nwtis.damdrempe.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.rest.klijenti.GMKlijent;
 import org.foi.nwtis.damdrempe.rest.klijenti.OWMKlijent;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
@@ -90,9 +91,7 @@ public class DodajParkiraliste extends HttpServlet {
             return;
         }
         
-        GMKlijent gmk = new GMKlijent("AIzaSyB1My2HHb8rRuQ35EUnPbwM2LOM1D5eItg");   //TODO u konfig
-        lokacija = gmk.getGeoLocation(adresa);
-
+        lokacija = PomocnaKlasa.dohvatiGMLokaciju(adresa);
         geolokacija = lokacija.getLatitude() + "," + lokacija.getLongitude();
 
         obavijest = "Geolokacija je uspjesno dohvacena i prikazana u polju!";
@@ -129,8 +128,7 @@ public class DodajParkiraliste extends HttpServlet {
             return;
         }
         
-        OWMKlijent owmk = new OWMKlijent("eeab428a2e33536c5bb6deb266b37fcd"); //TODO iz konfiga
-        MeteoPodaci mp = owmk.getRealTimeWeather(lokacija.getLatitude(), lokacija.getLongitude());
+        MeteoPodaci mp = PomocnaKlasa.dohvatiOWMMeteo(lokacija.getLatitude(), lokacija.getLongitude());
         
         if(mp == null){
             obavijest = "Nije moguce dohvatiti meteo podatke!";

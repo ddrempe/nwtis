@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import org.foi.nwtis.damdrempe.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.rest.klijenti.GMKlijent;
 import org.foi.nwtis.damdrempe.web.BazaPodatakaOperacije;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
@@ -67,8 +68,7 @@ public class GeoMeteoWS {
         boolean rezultat = false;
         
         //TODO dohvati geolokaciju iz naziva i adrese
-        GMKlijent gmk = new GMKlijent("AIzaSyB1My2HHb8rRuQ35EUnPbwM2LOM1D5eItg");   //TODO u konfig
-        Lokacija lokacija = gmk.getGeoLocation(adresa);
+        Lokacija lokacija = PomocnaKlasa.dohvatiGMLokaciju(adresa);
         String latitude = lokacija.getLatitude();
         String longitude = lokacija.getLongitude();
         
