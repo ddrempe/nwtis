@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
@@ -261,5 +262,82 @@ public class BazaPodatakaOperacije {
         preparedStmt.execute(); 
         
         return true;
+    }
+    
+    public ArrayList<MeteoPodaci> meteoPodaciSelect(int id, long odVrijeme, long doVrijeme) throws SQLException {
+        ArrayList<MeteoPodaci> dohvaceniMeteopodaci = new ArrayList<>();
+        Timestamp odTimestamp = new Timestamp(odVrijeme);
+        Timestamp doTimestamp = new Timestamp(doVrijeme);
+        String upit = "SELECT * FROM meteo WHERE id=? AND preuzeto>=? AND preuzeto<=?";
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+        preparedStmt.setInt(1, id);
+        preparedStmt.setTimestamp(2, odTimestamp);
+        preparedStmt.setTimestamp(3, doTimestamp);
+        preparedStmt.execute();
+        ResultSet odgovor = preparedStmt.executeQuery();
+        while (odgovor.next()) {
+            MeteoPodaci meteo = new MeteoPodaci();
+            
+            //meteo.setWeatherNumber("VRIJEME");            //ne postoji setter
+            meteo.setWeatherValue(odgovor.getString("VRIJEMEOPIS"));
+            meteo.setTemperatureValue(odgovor.getFloat("TEMP"));
+            meteo.setTemperatureMin(odgovor.getFloat("TEMPMIN"));
+            meteo.setTemperatureMax(odgovor.getFloat("TEMPMAX"));
+            meteo.setHumidityValue(odgovor.getFloat("VLAGA"));
+            meteo.setPressureValue(odgovor.getFloat("TLAK"));
+            meteo.setWindSpeedValue(odgovor.getFloat("VJETAR"));
+            //meteo.setWindDirectionValue("VJETARSMJER");   //ne postoji setter
+            meteo.setLastUpdate(odgovor.getDate("PREUZETO"));
+                
+            dohvaceniMeteopodaci.add(meteo);
+        }     
+
+        return dohvaceniMeteopodaci;
+    }
+    
+    public MeteoPodaci meteoPodaciSelectLast(int id) throws SQLException {
+        String upit = "SELECT * FROM meteo WHERE id=? ORDER BY preuzeto DESC";
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+        preparedStmt.setInt(1, id);
+        preparedStmt.execute();
+        ResultSet odgovor = preparedStmt.executeQuery();
+        odgovor.next();
+            
+        MeteoPodaci meteo = new MeteoPodaci();
+        //meteo.setWeatherNumber("VRIJEME");            //ne postoji setter
+        meteo.setWeatherValue(odgovor.getString("VRIJEMEOPIS"));
+        meteo.setTemperatureValue(odgovor.getFloat("TEMP"));
+        meteo.setTemperatureMin(odgovor.getFloat("TEMPMIN"));
+        meteo.setTemperatureMax(odgovor.getFloat("TEMPMAX"));
+        meteo.setHumidityValue(odgovor.getFloat("VLAGA"));
+        meteo.setPressureValue(odgovor.getFloat("TLAK"));
+        meteo.setWindSpeedValue(odgovor.getFloat("VJETAR"));
+        //meteo.setWindDirectionValue("VJETARSMJER");   //ne postoji setter
+        meteo.setLastUpdate(odgovor.getDate("PREUZETO"));           
+
+        return meteo;
+    }
+    
+    public ArrayList<Float> meteoPodaciSelectMinMax(int id, long odVrijeme, long doVrijeme) throws SQLException {
+        String upit = "SELECT MIN(TEMPMIN) AS mintemp, MAX(TEMPMAX) AS maxtemp FROM METEO WHERE ID =? AND preuzeto>=? and preuzeto<=?";
+        
+        Timestamp odTimestamp = new Timestamp(odVrijeme);
+        Timestamp doTimestamp = new Timestamp(doVrijeme);
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+        preparedStmt.setInt(1, id);
+        preparedStmt.setTimestamp(2, odTimestamp);
+        preparedStmt.setTimestamp(3, doTimestamp);
+        preparedStmt.execute();
+        ResultSet odgovor = preparedStmt.executeQuery();
+        odgovor.next();
+            
+        ArrayList<Float> tempMinMax = new ArrayList<>();
+        tempMinMax.add(odgovor.getFloat("mintemp"));
+        tempMinMax.add(odgovor.getFloat("maxtemp"));
+
+        return tempMinMax;
     }
 }
