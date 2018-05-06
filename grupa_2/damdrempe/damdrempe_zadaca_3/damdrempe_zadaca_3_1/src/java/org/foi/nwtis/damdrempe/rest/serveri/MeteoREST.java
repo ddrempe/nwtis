@@ -19,6 +19,7 @@ import javax.json.JsonObject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 import org.foi.nwtis.damdrempe.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.web.BazaPodatakaOperacije;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
+import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 import org.foi.nwtis.damdrempe.ws.serveri.GeoMeteoWS;
 
@@ -71,10 +73,10 @@ public class MeteoREST {
             poruka = ex.toString();
             Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         JsonArray parkiralistaJsonDio = jsonOdgovor.postaviParkiralistaJsonDio(svaParkiralista);
-        return jsonOdgovor.vratiKompletanJsonOdgovor(parkiralistaJsonDio);       
+        return jsonOdgovor.vratiKompletanJsonOdgovor(parkiralistaJsonDio);
     }
 
     @POST
@@ -83,79 +85,134 @@ public class MeteoREST {
     public String postJson(String podaci) {
         boolean uspjesno = true;
         String poruka = "";
-        
+
         Parkiraliste parkiraliste;
         try {
             Gson gson = new Gson();
             parkiraliste = gson.fromJson(podaci, Parkiraliste.class);
 
-            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije(); 
-            if(bpo.parkiralistaSelectNaziv(parkiraliste.getNaziv())){
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            if (bpo.parkiralistaSelectNaziv(parkiraliste.getNaziv())) {
                 uspjesno = false;
                 poruka = "Parkiraliste s nazivom " + parkiraliste.getNaziv() + " vec postoji!";
-            }
-            else {
+            } else {
                 Lokacija lokacija = PomocnaKlasa.dohvatiGMLokaciju(parkiraliste.getAdresa());
                 bpo.parkiralistaInsert(parkiraliste.getNaziv(), parkiraliste.getAdresa(), lokacija.getLatitude(), lokacija.getLongitude());
             }
+            bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
             uspjesno = false;
             poruka = ex.toString();
             Logger.getLogger(MeteoREST.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         return jsonOdgovor.vratiKompletanJsonOdgovor();
-        
+
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")
     public String getJson(@PathParam("id") String id) {
-        //TODO provjeri da li postoji parkiralište s id iz argumenta
-        if (Integer.parseInt(id) == 0) {
-            return "{\"odgovor\": [], "
-                    + "\"status\": \"ERR\", "
-                    + "\"poruka\": \"Parkiralište ne postoji\"}";
-        } else {
-            return "{\"odgovor\": [{\"id\": 1, "
-                    + "\"naziv\": \"Podzemna garaža\","
-                    + "\"adresa\": \"Kapucinski trg 1, Varaždin\"}],"
-                    + "\"status\": \"OK\"}";
-        }
-    }
+        boolean uspjesno = true;
+        String poruka = "";
+        int idParkiralista = Integer.parseInt(id);
+        MeteoPodaci meteo = new MeteoPodaci();
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("{id}")
-    public String postJson(@PathParam("id") String id, String podaci) {
-        //TODO provjeri da li postoji parkiralište s id iz argumenta
-        return "{\"odgovor\": [], "
-                + "\"status\": \"ERR\","
-                + "\"poruka\": \"Nije dozvoljeno\"}";
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            if (!bpo.parkiralistaSelectId(idParkiralista)) {
+                uspjesno = false;
+                poruka = "Parkiraliste s id " + id + " ne postoji!";
+
+            } else {
+                Parkiraliste p = bpo.parkiralistaSelectIdVrati(idParkiralista);
+                meteo = PomocnaKlasa.dohvatiOWMMeteo(p.getGeoloc().getLatitude(), p.getGeoloc().getLongitude());
+            }
+            bpo.zatvoriVezu();
+        } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
+            uspjesno = false;
+            poruka = ex.toString();
+            Logger.getLogger(MeteoREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (uspjesno) {
+            JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
+            JsonArray meteoJsonDio = jsonOdgovor.postaviMeteoJsonDio(meteo);
+            return jsonOdgovor.vratiKompletanJsonOdgovor(meteoJsonDio);
+        } else {
+            JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
+            return jsonOdgovor.vratiKompletanJsonOdgovor();
+        }
     }
 
     /**
      * PUT method for updating or creating an instance of MeteoREST
      *
-     * @param content representation for the resource
+     * @param id
+     * @param podaci
+     * @return 
      */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("{id}")
     public String putJson(@PathParam("id") String id, String podaci) {
-        //TODO provjeri da li postoji parkiralište s id iz argumenta
-        //TODO ako postoji ažurirati u bazi pdoataka
-        if (Integer.parseInt(id) == 0) {
-            return "{\"odgovor\": [], "
-                    + "\"status\": \"ERR\", "
-                    + "\"poruka\": \"Parkiralište ne postoji\"}";
-        } else {
-            return "{\"odgovor\": [],"
-                    + "\"status\": \"OK\"}";
+        boolean uspjesno = true;
+        String poruka = "";
+        int idParkiralista = Integer.parseInt(id);
+
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            if (!bpo.parkiralistaSelectId(idParkiralista)) {
+                uspjesno = false;
+                poruka = "Parkiraliste s id " + id + " ne postoji!";
+
+            } else {
+                Gson gson = new Gson();
+                Parkiraliste parkiraliste = gson.fromJson(podaci, Parkiraliste.class);
+                Lokacija lokacija = PomocnaKlasa.dohvatiGMLokaciju(parkiraliste.getAdresa());
+                parkiraliste.setId(idParkiralista);
+                parkiraliste.setGeoloc(lokacija);
+                bpo.parkiralistaUpdate(parkiraliste); 
+            }
+            bpo.zatvoriVezu();
+        } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
+            uspjesno = false;
+            poruka = ex.toString();
+            Logger.getLogger(MeteoREST.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
+        return jsonOdgovor.vratiKompletanJsonOdgovor();
+    }
+    
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id}")
+    public String deleteJson(@PathParam("id") String id) {
+        boolean uspjesno = true;
+        String poruka = "";
+        int idParkiralista = Integer.parseInt(id);
+
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            if (!bpo.parkiralistaSelectId(idParkiralista)) {
+                uspjesno = false;
+                poruka = "Parkiraliste s id " + id + " ne postoji!";
+
+            } else {                
+                bpo.parkiralistaDelete(idParkiralista); 
+            }
+            bpo.zatvoriVezu();
+        } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
+            uspjesno = false;
+            poruka = ex.toString();
+            Logger.getLogger(MeteoREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
+        return jsonOdgovor.vratiKompletanJsonOdgovor();
     }
 }

@@ -10,6 +10,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 
 /**
@@ -38,6 +39,17 @@ public class JsonOdgovor {
                     .add("latitude", parkiraliste.getGeoloc().getLatitude())
                     .add("longitude", parkiraliste.getGeoloc().getLongitude()));
         }
+        
+        return jsonBuilder.build();
+    }
+    
+    public JsonArray postaviMeteoJsonDio(MeteoPodaci meteo){
+        JsonArrayBuilder jsonBuilder = Json.createArrayBuilder();
+        
+        jsonBuilder.add(Json.createObjectBuilder()
+                .add("temp", meteo.getTemperatureValue())
+                .add("vlaga", meteo.getHumidityValue())
+                .add("tlak", meteo.getPressureValue()));        
         
         return jsonBuilder.build();
     }

@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
@@ -110,6 +109,43 @@ public class BazaPodatakaOperacije {
         return rs.next();
     }
     
+    /**
+     * Provjerava da li parkiralište s traženim id postoji
+     * @param id
+     * @return true ako postoji, inače false
+     * @throws SQLException 
+     */
+    public boolean parkiralistaSelectId(int id) throws SQLException{
+        String upitSelect = "SELECT * FROM parkiralista WHERE id = ?";
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
+        preparedStmt.setInt(1, id);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.getResultSet();
+        
+        return rs.next();
+    }
+    
+    public Parkiraliste parkiralistaSelectIdVrati(int id) throws SQLException{        
+        String upit = "SELECT * FROM parkiralista WHERE id = ?";
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+        preparedStmt.setInt(1, id);
+        preparedStmt.execute();
+        ResultSet odgovor = preparedStmt.executeQuery();
+        odgovor.next(); 
+        Parkiraliste parkiraliste = new Parkiraliste();
+        parkiraliste.setId(odgovor.getInt("ID"));
+        parkiraliste.setNaziv(odgovor.getString("NAZIV"));
+        Lokacija lokacija = new Lokacija();
+        lokacija.setLatitude(odgovor.getString("LATITUDE"));
+        lokacija.setLongitude(odgovor.getString("LONGITUDE"));
+        parkiraliste.setGeoloc(lokacija);
+        parkiraliste.setAdresa(odgovor.getString("ADRESA"));
+        
+        return parkiraliste;
+    }
+    
     public ArrayList<Parkiraliste> parkiralistaSelect() throws SQLException {
         ArrayList<Parkiraliste> dohvacenaParkiralista = new ArrayList<>();
         String upit = "SELECT * FROM PARKIRALISTA";
@@ -131,6 +167,59 @@ public class BazaPodatakaOperacije {
         }     
 
         return dohvacenaParkiralista;
+    }
+    
+    public boolean parkiralistaUpdate(Parkiraliste parkiraliste) throws SQLException{
+        if(!parkiralistaSelectId(parkiraliste.getId())){
+            return false;
+        }   
+        
+        String upit = "UPDATE parkiralista SET naziv=?, adresa=?, latitude=?, longitude=? WHERE id=?";        
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);        
+
+        preparedStmt.setString(1, parkiraliste.getNaziv());
+        preparedStmt.setString(2, parkiraliste.getAdresa());
+        preparedStmt.setString(3, parkiraliste.getGeoloc().getLatitude());
+        preparedStmt.setString(4, parkiraliste.getGeoloc().getLongitude());
+        preparedStmt.setInt(5, parkiraliste.getId());
+
+        preparedStmt.execute(); 
+        
+        return true;
+    }
+    
+    public boolean parkiralistaDelete(int id) throws SQLException{
+        if(!parkiralistaSelectId(id)){
+            return false;
+        }   
+        
+        meteoDelete(id);
+        
+        String upit = "DELETE FROM parkiralista WHERE id=?";        
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);        
+        preparedStmt.setInt(1, id);
+        preparedStmt.execute(); 
+        
+        return true;
+    }
+    
+    /**
+     * Provjerava da li meteopodaci s traženim id parkiralista postoje
+     * @param id
+     * @return true ako postoji, inače false
+     * @throws SQLException 
+     */
+    public boolean meteoSelectIdParkiralista(int id) throws SQLException{
+        String upitSelect = "SELECT * FROM meteo WHERE id = ?";
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
+        preparedStmt.setInt(1, id);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.getResultSet();
+        
+        return rs.next();
     }
     
     public void meteoInsert(MeteoPodaci meteoPodaci, Parkiraliste parkiraliste) throws SQLException{
@@ -158,5 +247,19 @@ public class BazaPodatakaOperacije {
         preparedStmt.setDouble(12, meteoPodaci.getWindDirectionValue());
 
         preparedStmt.execute();        
+    }
+    
+    public boolean meteoDelete(int idParkiralista) throws SQLException{
+        if(!meteoSelectIdParkiralista(idParkiralista)){
+            return false;
+        }   
+        
+        String upit = "DELETE FROM meteo WHERE id=?";        
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);        
+        preparedStmt.setInt(1, idParkiralista);
+        preparedStmt.execute(); 
+        
+        return true;
     }
 }
