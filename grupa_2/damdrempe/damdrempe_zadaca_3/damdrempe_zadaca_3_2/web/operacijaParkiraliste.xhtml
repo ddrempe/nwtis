@@ -5,117 +5,171 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>Operacija parkiraliste</title>
+        <h:outputStylesheet library="css" name="bootstrap.css" />
     </h:head>
     <h:body>
-        <h1>Operacija parkiraliste</h1>
+        <div class="container-fluid">
+            <h1>Operacija parkiraliste</h1>
 
-        <h:form>
-            <h:outputLabel value="Naziv: "></h:outputLabel>
-            <h:inputText value="#{operacijaParkiraliste.naziv}" 
-                         maxlength="50"
-                         id="naziv"
-                         required="true"
-                         requiredMessage="Niste unijeli naziv!"
-                         >
-                <f:ajax render="naziv" />
-            </h:inputText>
-            <h:outputLabel value="Adresa: "></h:outputLabel>
-            <h:inputText value="#{operacijaParkiraliste.adresa}" 
-                         maxlength="50"
-                         id="adresa"
-                         required="true"
-                         requiredMessage="Niste unijeli adresu!" >
-                <f:ajax render="adresa" />
-            </h:inputText>
-            <h:commandButton value="Upiši REST" 
-                             action="#{operacijaParkiraliste.upisiREST()}" />
-            <h:commandButton value="Upiši SOAP" 
-                             action="#{operacijaParkiraliste.upisiSOAP()}" />
-            <br/><br/>
-        </h:form>
+            <table class="table">
+                <tr>
+                    <h:form>
+                        <td>
+                            <h:outputLabel value="Naziv i adresa: "></h:outputLabel>
+                        </td>
+                        <td>
+                            <h:inputText value="#{operacijaParkiraliste.naziv}"
+                                         class="form-control"
+                                         maxlength="50"
+                                         id="naziv"
+                                         required="true"
+                                         requiredMessage="Niste unijeli naziv!"
+                                         >
+                                <f:ajax render="naziv" />
+                            </h:inputText>
+                        </td>
+                        <td>
+                            <h:inputText value="#{operacijaParkiraliste.adresa}"
+                                         class="form-control"
+                                         maxlength="50"
+                                         id="adresa"
+                                         required="true"
+                                         requiredMessage="Niste unijeli adresu!" >
+                                <f:ajax render="adresa" />
+                            </h:inputText>
+                        </td>
+                        <td>
+                            <h:commandButton value="Upiši SOAP"
+                                             class="btn btn-block btn-default"
+                                             action="#{operacijaParkiraliste.upisiSOAP()}" />
+                            <h:commandButton value="Upiši REST"
+                                             class="btn btn-block btn-primary"
+                                             action="#{operacijaParkiraliste.upisiREST()}" />
+                        </td> 
+                    </h:form>
 
-        <h:form>
-            <h:outputLabel value="Parkirališta: "></h:outputLabel><br/>
-            <h:selectManyListbox value="#{operacijaParkiraliste.odabranaParkiralista}"
-                                 valueChangeListener="#{operacijaParkiraliste.promjena}" 
-                                 onchange="submit()">
-                <f:selectItems value="#{operacijaParkiraliste.popisParkiralistaPrikaz}" />
-            </h:selectManyListbox><br/>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="alert alert-warning">
+                            <h:message for="naziv"/> <br/>                   
+                            <h:message for="adresa"/>                    
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <h:form>
+                        <td>
+                            <h:outputLabel value="Parkirališta: "></h:outputLabel>
+                        </td>
+                        <td>
+                            <h:selectManyListbox value="#{operacijaParkiraliste.odabranaParkiralista}"
+                                                 class="form-control"
+                                                 valueChangeListener="#{operacijaParkiraliste.promjena}" 
+                                                 onchange="submit()">
+                                <f:selectItems value="#{operacijaParkiraliste.popisParkiralistaPrikaz}" />
+                            </h:selectManyListbox>
+                        </td>
+                        <td>
+                            <h:commandButton value="Preuzmi REST"
+                                             class="btn btn-block btn-primary"
+                                             action="#{operacijaParkiraliste.preuzmiParkiralisteREST()}"
+                                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
+                                             /><br/>
+                            <h:commandButton value="Ažuriraj REST" 
+                                             class="btn btn-block btn-primary"
+                                             action="#{operacijaParkiraliste.azurirajREST()}"
+                                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
+                                             /><br/>
+                            <h:commandButton value="Briši REST"
+                                             class="btn btn-block btn-primary"
+                                             action="#{operacijaParkiraliste.brisiREST()}"
+                                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
+                                             /><br/>
+                            <h:commandButton value="Preuzmi meteo"
+                                             class="btn btn-block btn-default"
+                                             action="#{operacijaParkiraliste.preuzmiMeteoSOAP()}"
+                                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista &lt; 2}"
+                                             /><br/>
+                            <h:commandButton value="Preuzmi SOAP"
+                                             class="btn btn-block btn-default"
+                                             action="#{operacijaParkiraliste.preuzmiParkiralisteSOAP()}"
+                                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"                             
+                                             />
+                        </td>
+                        <td></td>                        
+                    </h:form>
+                </tr>
 
-            <h:commandButton value="Preuzmi REST"
-                             action="#{operacijaParkiraliste.preuzmiParkiralisteREST()}"
-                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
-                             /><br/>
-            <h:commandButton value="Ažuriraj REST" 
-                             action="#{operacijaParkiraliste.azurirajREST()}"
-                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
-                             /><br/>
-            <h:commandButton value="Briši REST"
-                             action="#{operacijaParkiraliste.brisiREST()}"
-                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
-                             /><br/>
-            <h:commandButton value="Preuzmi meteo"
-                             action="#{operacijaParkiraliste.preuzmiMeteoSOAP()}"
-                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista &lt; 2}"
-                             /><br/>
-            <h:commandButton value="Preuzmi SOAP" 
-                             action="#{operacijaParkiraliste.preuzmiParkiralisteSOAP()}"
-                             disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"                             
-                             /><br/>
+            </table>
 
-            <h:message for="naziv" style="color:red" /><br/>
-            <h:message for="adresa" style="color:red" />
+            <div class="alert alert-info">                   
+                <h:outputText value="#{operacijaParkiraliste.poruka}" />
+            </div>
 
-            <h:outputText value="#{operacijaParkiraliste.poruka}" />
-        </h:form>
+            <h:form rendered="#{operacijaParkiraliste.ukupnoZapisa ne 0}">
+                <h2>Meteopodaci za odabrana parkirališta</h2>
+                <table class="table">
+                    <tr>
+                        <td>
+                            <h:commandButton value="Prethodni"
+                                             class="btn btn-block"
+                                             action="#{operacijaParkiraliste.prethodniZapisi()}"
+                                             rendered="#{operacijaParkiraliste.pomak ne 0}" /> 
+                        </td>
+                        <td>
+                            <h:commandButton value="Sljedeci"
+                                             class="btn btn-block"
+                                             action="#{operacijaParkiraliste.sljedeciZapisi()}"
+                                             rendered="#{operacijaParkiraliste.pomak ne operacijaParkiraliste.maksPomak}" /> 
+                        </td>
+                        <td>
+                            <h:outputLabel value="Stranica #{operacijaParkiraliste.pomak + 1} od #{operacijaParkiraliste.maksPomak + 1}"></h:outputLabel>
+                        </td>
+                        <td>
+                            <h:outputLabel value="Prikazuju se zapisi od #{operacijaParkiraliste.odZapisa + 1} od #{operacijaParkiraliste.doZapisa}"></h:outputLabel>
+                        </td>
+                        <td>
+                            <h:outputLabel value="Ukupno zapisa: #{operacijaParkiraliste.ukupnoZapisa}"></h:outputLabel>
+                        </td>
+                    </tr>
+                </table>
+            </h:form>            
 
-        <h:form rendered="#{operacijaParkiraliste.ukupnoZapisa ne 0}">
-            <h:outputLabel value="Stranica #{operacijaParkiraliste.pomak + 1} od #{operacijaParkiraliste.maksPomak + 1}"></h:outputLabel><br/>
-            <h:outputLabel value="Prikazuju se zapisi od #{operacijaParkiraliste.odZapisa + 1} od #{operacijaParkiraliste.doZapisa}"></h:outputLabel><br/>
-            <h:outputLabel value="Ukupno zapisa: #{operacijaParkiraliste.ukupnoZapisa}"></h:outputLabel><br/>
-            <h:commandButton value="Prethodni" 
-                             action="#{operacijaParkiraliste.prethodniZapisi()}"
-                             rendered="#{operacijaParkiraliste.pomak ne 0}" /> 
-
-
-            <h:commandButton value="Sljedeci" 
-                             action="#{operacijaParkiraliste.sljedeciZapisi()}"
-                             rendered="#{operacijaParkiraliste.pomak ne operacijaParkiraliste.maksPomak}" /> 
-            
-        </h:form>
-        <h:dataTable value="#{operacijaParkiraliste.meteopodaciPrikaz}" 
-                     var="meteo"
-                     rendered="#{operacijaParkiraliste.ukupnoZapisa ne 0}">
-            <h:column>
-                <f:facet name="header">Vrijeme</f:facet>
-                    #{meteo.weatherValue}
-            </h:column>
-
-            <h:column>
-                <f:facet name="header">Temperatura</f:facet>
-                    #{meteo.temperatureValue}
-            </h:column>
-
-            <h:column>
-                <f:facet name="header">Maksimalna temperatura</f:facet>
-                    #{meteo.temperatureMax}
-            </h:column>
-
-            <h:column>
-                <f:facet name="header">Minimalna temperatura</f:facet>
-                    #{meteo.humidityValue}
-            </h:column>
-
-            <h:column>
-                <f:facet name="header">Tlak </f:facet>
-                    #{meteo.pressureValue}
-            </h:column>
-
-            <h:column>
-                <f:facet name="header">Vjetar</f:facet>
-                    #{meteo.windSpeedValue}
-            </h:column>
-        </h:dataTable>        
+            <h:dataTable value="#{operacijaParkiraliste.meteopodaciPrikaz}" 
+                         class="table table-striped"
+                         var="meteo"
+                         rendered="#{operacijaParkiraliste.ukupnoZapisa ne 0}">
+                <h:column>
+                    <f:facet name="header">Vrijeme</f:facet>
+                        #{meteo.weatherValue}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Temperatura</f:facet>
+                        #{meteo.temperatureValue}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Minimalna temperatura</f:facet>
+                        #{meteo.temperatureMin}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Maksimalna temperatura</f:facet>
+                        #{meteo.temperatureMax}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Vlaga</f:facet>
+                        #{meteo.humidityValue}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Tlak </f:facet>
+                        #{meteo.pressureValue}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Vjetar</f:facet>
+                        #{meteo.windSpeedValue}
+                </h:column>
+            </h:dataTable> 
+        </div>
     </h:body>
 </html>
 
