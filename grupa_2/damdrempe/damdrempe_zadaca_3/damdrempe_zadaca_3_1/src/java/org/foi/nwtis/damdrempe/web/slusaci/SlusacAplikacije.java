@@ -15,7 +15,7 @@ import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.damdrempe.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.damdrempe.konfiguracije.NemaKonfiguracije;
 import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
-import org.foi.nwtis.damdrempe.web.dretve.PozadinskaDretva;
+import org.foi.nwtis.damdrempe.web.dretve.PreuzmiMeteoPodatke;
 
 /**
  * 
@@ -23,7 +23,7 @@ import org.foi.nwtis.damdrempe.web.dretve.PozadinskaDretva;
  */
 public class SlusacAplikacije implements ServletContextListener {
     
-    PozadinskaDretva dretva;  
+    PreuzmiMeteoPodatke dretva;  
     public static ServletContext servletContext;
     
     /**
@@ -56,7 +56,7 @@ public class SlusacAplikacije implements ServletContextListener {
         }
         
         servletContext = sc;
-        dretva = new PozadinskaDretva(sc);
+        dretva = new PreuzmiMeteoPodatke(sc);
         dretva.start();
     }
 

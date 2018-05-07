@@ -73,7 +73,6 @@ public class BazaPodatakaOperacije {
         veza.close();
     } 
     
-    //TODO moglo bi se umjesto 4 argumenta staviti objekt Parkiraliste
     public boolean parkiralistaInsert(String naziv, String adresa, String latitude, String longitude) throws SQLException{
         if(parkiralistaSelectNaziv(naziv)){
             return false;

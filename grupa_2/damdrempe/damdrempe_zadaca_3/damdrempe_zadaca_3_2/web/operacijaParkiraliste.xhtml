@@ -69,7 +69,10 @@
             <h:outputText value="#{operacijaParkiraliste.poruka}" />
         </h:form>
 
-        <h:form>
+        <h:form rendered="#{operacijaParkiraliste.ukupnoZapisa ne 0}">
+            <h:outputLabel value="Stranica #{operacijaParkiraliste.pomak + 1} od #{operacijaParkiraliste.maksPomak + 1}"></h:outputLabel><br/>
+            <h:outputLabel value="Prikazuju se zapisi od #{operacijaParkiraliste.odZapisa + 1} od #{operacijaParkiraliste.doZapisa}"></h:outputLabel><br/>
+            <h:outputLabel value="Ukupno zapisa: #{operacijaParkiraliste.ukupnoZapisa}"></h:outputLabel><br/>
             <h:commandButton value="Prethodni" 
                              action="#{operacijaParkiraliste.prethodniZapisi()}"
                              rendered="#{operacijaParkiraliste.pomak ne 0}" /> 
@@ -78,6 +81,7 @@
             <h:commandButton value="Sljedeci" 
                              action="#{operacijaParkiraliste.sljedeciZapisi()}"
                              rendered="#{operacijaParkiraliste.pomak ne operacijaParkiraliste.maksPomak}" /> 
+            
         </h:form>
         <h:dataTable value="#{operacijaParkiraliste.meteopodaciPrikaz}" 
                      var="meteo"

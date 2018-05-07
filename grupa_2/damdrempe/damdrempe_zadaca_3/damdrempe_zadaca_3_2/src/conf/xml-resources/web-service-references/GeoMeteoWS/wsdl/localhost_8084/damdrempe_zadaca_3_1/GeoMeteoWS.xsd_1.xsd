@@ -134,8 +134,7 @@
 
 <xs:complexType name="dodajParkiraliste">
 <xs:sequence>
-<xs:element name="naziv" type="xs:string" minOccurs="0"/>
-<xs:element name="adresa" type="xs:string" minOccurs="0"/>
+<xs:element name="arg0" type="tns:parkiraliste" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 

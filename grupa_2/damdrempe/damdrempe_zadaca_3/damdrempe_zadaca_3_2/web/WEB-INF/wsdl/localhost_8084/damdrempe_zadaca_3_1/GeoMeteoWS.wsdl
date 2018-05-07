@@ -4,11 +4,17 @@
 <xsd:import namespace="http://serveri.ws.damdrempe.nwtis.foi.org/" schemaLocation="http://localhost:8084/damdrempe_zadaca_3_1/GeoMeteoWS?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="dodajParkiraliste">
-<part name="parameters" element="tns:dodajParkiraliste"/>
+<message name="dajSvaParkiralista">
+<part name="parameters" element="tns:dajSvaParkiralista"/>
 </message>
-<message name="dodajParkiralisteResponse">
-<part name="parameters" element="tns:dodajParkiralisteResponse"/>
+<message name="dajSvaParkiralistaResponse">
+<part name="parameters" element="tns:dajSvaParkiralistaResponse"/>
+</message>
+<message name="dajZadnjeMeteoPodatke">
+<part name="parameters" element="tns:dajZadnjeMeteoPodatke"/>
+</message>
+<message name="dajZadnjeMeteoPodatkeResponse">
+<part name="parameters" element="tns:dajZadnjeMeteoPodatkeResponse"/>
 </message>
 <message name="dajVazeceMeteoPodatke">
 <part name="parameters" element="tns:dajVazeceMeteoPodatke"/>
@@ -16,23 +22,17 @@
 <message name="dajVazeceMeteoPodatkeResponse">
 <part name="parameters" element="tns:dajVazeceMeteoPodatkeResponse"/>
 </message>
-<message name="dajSvaParkiralista">
-<part name="parameters" element="tns:dajSvaParkiralista"/>
-</message>
-<message name="dajSvaParkiralistaResponse">
-<part name="parameters" element="tns:dajSvaParkiralistaResponse"/>
-</message>
 <message name="dajSveMeteoPodatke">
 <part name="parameters" element="tns:dajSveMeteoPodatke"/>
 </message>
 <message name="dajSveMeteoPodatkeResponse">
 <part name="parameters" element="tns:dajSveMeteoPodatkeResponse"/>
 </message>
-<message name="dajZadnjeMeteoPodatke">
-<part name="parameters" element="tns:dajZadnjeMeteoPodatke"/>
+<message name="dodajParkiraliste">
+<part name="parameters" element="tns:dodajParkiraliste"/>
 </message>
-<message name="dajZadnjeMeteoPodatkeResponse">
-<part name="parameters" element="tns:dajZadnjeMeteoPodatkeResponse"/>
+<message name="dodajParkiralisteResponse">
+<part name="parameters" element="tns:dodajParkiralisteResponse"/>
 </message>
 <message name="dajMinMaxTemp">
 <part name="parameters" element="tns:dajMinMaxTemp"/>
@@ -41,25 +41,25 @@
 <part name="parameters" element="tns:dajMinMaxTempResponse"/>
 </message>
 <portType name="GeoMeteoWS">
-<operation name="dodajParkiraliste">
-<input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dodajParkiralisteRequest" message="tns:dodajParkiraliste"/>
-<output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dodajParkiralisteResponse" message="tns:dodajParkiralisteResponse"/>
+<operation name="dajSvaParkiralista">
+<input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSvaParkiralistaRequest" message="tns:dajSvaParkiralista"/>
+<output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSvaParkiralistaResponse" message="tns:dajSvaParkiralistaResponse"/>
+</operation>
+<operation name="dajZadnjeMeteoPodatke">
+<input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajZadnjeMeteoPodatkeRequest" message="tns:dajZadnjeMeteoPodatke"/>
+<output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajZadnjeMeteoPodatkeResponse" message="tns:dajZadnjeMeteoPodatkeResponse"/>
 </operation>
 <operation name="dajVazeceMeteoPodatke">
 <input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajVazeceMeteoPodatkeRequest" message="tns:dajVazeceMeteoPodatke"/>
 <output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajVazeceMeteoPodatkeResponse" message="tns:dajVazeceMeteoPodatkeResponse"/>
 </operation>
-<operation name="dajSvaParkiralista">
-<input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSvaParkiralistaRequest" message="tns:dajSvaParkiralista"/>
-<output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSvaParkiralistaResponse" message="tns:dajSvaParkiralistaResponse"/>
-</operation>
 <operation name="dajSveMeteoPodatke">
 <input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSveMeteoPodatkeRequest" message="tns:dajSveMeteoPodatke"/>
 <output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajSveMeteoPodatkeResponse" message="tns:dajSveMeteoPodatkeResponse"/>
 </operation>
-<operation name="dajZadnjeMeteoPodatke">
-<input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajZadnjeMeteoPodatkeRequest" message="tns:dajZadnjeMeteoPodatke"/>
-<output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajZadnjeMeteoPodatkeResponse" message="tns:dajZadnjeMeteoPodatkeResponse"/>
+<operation name="dodajParkiraliste">
+<input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dodajParkiralisteRequest" message="tns:dodajParkiraliste"/>
+<output wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dodajParkiralisteResponse" message="tns:dodajParkiralisteResponse"/>
 </operation>
 <operation name="dajMinMaxTemp">
 <input wsam:Action="http://serveri.ws.damdrempe.nwtis.foi.org/GeoMeteoWS/dajMinMaxTempRequest" message="tns:dajMinMaxTemp"/>
@@ -68,7 +68,16 @@
 </portType>
 <binding name="GeoMeteoWSPortBinding" type="tns:GeoMeteoWS">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="dodajParkiraliste">
+<operation name="dajSvaParkiralista">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="dajZadnjeMeteoPodatke">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -86,15 +95,6 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="dajSvaParkiralista">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
 <operation name="dajSveMeteoPodatke">
 <soap:operation soapAction=""/>
 <input>
@@ -104,7 +104,7 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="dajZadnjeMeteoPodatke">
+<operation name="dodajParkiraliste">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>

@@ -48,12 +48,13 @@ public class GeoMeteoWS {
     
     /**
      * Web service operation
-     * @param naziv
-     * @param adresa
+     * @param parkiraliste
      * @return 
      */
     @WebMethod(operationName = "dodajParkiraliste")
-    public Boolean dodajParkiraliste(@WebParam(name = "naziv") String naziv, @WebParam(name = "adresa") String adresa) {
+    public Boolean dodajParkiraliste(Parkiraliste parkiraliste) {
+        String naziv = parkiraliste.getNaziv();
+        String adresa = parkiraliste.getAdresa();
 
         boolean rezultat = false;
         

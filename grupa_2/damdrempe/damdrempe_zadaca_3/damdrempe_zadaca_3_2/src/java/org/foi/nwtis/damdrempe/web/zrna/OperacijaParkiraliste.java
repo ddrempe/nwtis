@@ -11,15 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
 import org.foi.nwtis.damdrempe.rest.klijenti.MeteoRESTKlijent;
 import org.foi.nwtis.damdrempe.rest.klijenti.MeteoRESTKlijentId;
 import org.foi.nwtis.damdrempe.web.PomocnaKlasa;
@@ -37,12 +32,11 @@ public class OperacijaParkiraliste implements Serializable {
 
     private String naziv;
     private String adresa;
-    //private List<Parkiraliste> parkiralista;
     private List<String> odabranaParkiralista;
     private List<MeteoPodaci> meteo;
     private String poruka = "";
 
-    private Map<String, Object> popisParkiralistaPrikaz; //todo rename    
+    private Map<String, Object> popisParkiralistaPrikaz;   
     private boolean viseOdabrano = false;
     private boolean jedanOdabran = false;
 
@@ -66,7 +60,10 @@ public class OperacijaParkiraliste implements Serializable {
     }
 
     public String upisiSOAP() {
-        if (MeteoWSKlijent.dodajParkiraliste(naziv, adresa)) {
+        Parkiraliste parkiraliste = new Parkiraliste();
+        parkiraliste.setAdresa(adresa);
+        parkiraliste.setNaziv(naziv);
+        if (MeteoWSKlijent.dodajParkiraliste(parkiraliste)) {
             poruka = "Uspjesno dodano parkiraliste putem SOAP zahtjeva!";
         } else {
             poruka = "Greska kod dodavanja parkiralista putem SOAP zahtjeva!";
@@ -205,7 +202,6 @@ public class OperacijaParkiraliste implements Serializable {
         MeteoRESTKlijentId klijent = new MeteoRESTKlijentId(odabranoParkiralisteId);
         String novoParkiraliste = PomocnaKlasa.napraviJsonZaSlanjeParkiraliste(naziv, adresa);
         String odgovor = klijent.putJson(novoParkiraliste, String.class);
-        //TODO ne dohvacaju se dobro naziv i adresa i ne osvjezavaju na promjenu vrijednosti
         poruka = odgovor; //TODO parsati poruku iz odgovora
 
         preuzmiSvaParkiralistaSOAP();
@@ -346,6 +342,22 @@ public class OperacijaParkiraliste implements Serializable {
 
     public void setUkupnoZapisa(int ukupnoZapisa) {
         this.ukupnoZapisa = ukupnoZapisa;
+    }
+
+    public int getOdZapisa() {
+        return odZapisa;
+    }
+
+    public void setOdZapisa(int odZapisa) {
+        this.odZapisa = odZapisa;
+    }
+
+    public int getDoZapisa() {
+        return doZapisa;
+    }
+
+    public void setDoZapisa(int doZapisa) {
+        this.doZapisa = doZapisa;
     }
     
     

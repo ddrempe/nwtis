@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
-import org.foi.nwtis.damdrempe.rest.klijenti.OWMKlijent;
 import org.foi.nwtis.damdrempe.web.BazaPodatakaOperacije;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
@@ -22,7 +21,7 @@ import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
  *
  * @author ddrempetic
  */
-public class PozadinskaDretva extends Thread {
+public class PreuzmiMeteoPodatke extends Thread {
     
     private int spavanje;
     private boolean radi = false;
@@ -31,7 +30,7 @@ public class PozadinskaDretva extends Thread {
     private BazaPodatakaOperacije bpo;
     private ServletContext sc;
 
-    public PozadinskaDretva(ServletContext sc) {
+    public PreuzmiMeteoPodatke(ServletContext sc) {
         this.sc = sc;
     }    
 
@@ -41,7 +40,7 @@ public class PozadinskaDretva extends Thread {
         try {  
             bpo.zatvoriVezu();
         } catch (SQLException ex) {
-            Logger.getLogger(PozadinskaDretva.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PreuzmiMeteoPodatke.class.getName()).log(Level.SEVERE, null, ex);
         }
         super.interrupt();
     }
@@ -59,7 +58,7 @@ public class PozadinskaDretva extends Thread {
         try {
             bpo = new BazaPodatakaOperacije(sc);
         } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(PozadinskaDretva.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PreuzmiMeteoPodatke.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         radi = true;
@@ -80,7 +79,7 @@ public class PozadinskaDretva extends Thread {
             } catch (InterruptedException ex) {
                 System.out.println("Dretva je zaustavljena prilikom spavanja");
             } catch (SQLException ex) {
-                Logger.getLogger(PozadinskaDretva.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PreuzmiMeteoPodatke.class.getName()).log(Level.SEVERE, null, ex);
             } 
         }
         
