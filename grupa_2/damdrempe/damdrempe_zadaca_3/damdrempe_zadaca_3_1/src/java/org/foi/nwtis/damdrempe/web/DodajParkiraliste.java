@@ -126,10 +126,10 @@ public class DodajParkiraliste extends HttpServlet {
         }
 
         if(rezultat){
-            obavijest = "Podaci su spremljeni u bazu podataka";        
+            obavijest = "Podaci su spremljeni u bazu podataka.";        
         }
         else {
-            obavijest = "Greška kod spremanja u bazu podataka";
+            obavijest = "Greska kod spremanja u bazu podataka.";
         }
     }
 
@@ -154,7 +154,7 @@ public class DodajParkiraliste extends HttpServlet {
                 "Vlaga: " + mp.getHumidityValue().toString() + mp.getHumidityUnit() + "<br/>" +
                 "Tlak: " + mp.getPressureValue().toString() + mp.getPressureUnit();
         
-        obavijest = "Dohvaceni su meteo podaci";
+        obavijest = "Dohvaceni su meteo podaci.";
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
