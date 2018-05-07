@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.dretve;
 
 import static java.lang.Thread.sleep;
@@ -18,22 +13,30 @@ import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 
 /**
- *
+ * Dretva koja u pozadini dohvaća sva parkirališta iz baze podataka, dohvaća za svako od njih meteorološke podatke.
+ * Dohvaćene meteorološke podatke sprema u bazu podataka.
+ * Izvršava se periodički za interval u konfiguraciji.
  * @author ddrempetic
  */
 public class PreuzmiMeteoPodatke extends Thread {
     
     private int spavanje;
     private boolean radi = false;
-    private int brojacObrada = 1;
-    
+    private int brojacObrada = 1;    
     private BazaPodatakaOperacije bpo;
     private ServletContext sc;
 
+    /**
+     * Konstruktor klase koji prima kontekst servleta.
+     * @param sc 
+     */
     public PreuzmiMeteoPodatke(ServletContext sc) {
         this.sc = sc;
     }    
 
+    /**
+     * Metoda koja se poziva prilikom prekida rada dretve.
+     */
     @Override
     public void interrupt() {
         radi = false;
@@ -45,11 +48,17 @@ public class PreuzmiMeteoPodatke extends Thread {
         super.interrupt();
     }
     
+    /**
+     * Metoda kojom se pokreće dretva.
+     */
     @Override
     public synchronized void start() {
         super.start(); //To change body of generated methods, choose Tools | Templates.       
     }
 
+    /**
+     * Metoda koja se izvrši kada je dretva pokrenuta.
+     */
     @Override
     public void run() {
         Konfiguracija k = (Konfiguracija) sc.getAttribute("Konfig");
@@ -62,7 +71,15 @@ public class PreuzmiMeteoPodatke extends Thread {
         }
         
         radi = true;
-        
+        radiPosao();
+    }
+    
+    /**
+     * Dohvaća listu svih parkirališta iz baze podataka
+     * Dohvaća meteopodatke za svakog od njih preko web servisa.
+     * Upisuje meteopodatke u bazu podataka.
+     */
+    private void radiPosao(){
         while (radi) {
             try {                
                 ArrayList<Parkiraliste> dohvacenaParkiralista = bpo.parkiralistaSelect();
@@ -81,7 +98,6 @@ public class PreuzmiMeteoPodatke extends Thread {
             } catch (SQLException ex) {
                 Logger.getLogger(PreuzmiMeteoPodatke.class.getName()).log(Level.SEVERE, null, ex);
             } 
-        }
-        
-    }   
+        }         
+    }
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.rest.serveri;
 
 import com.google.gson.Gson;
@@ -34,7 +29,7 @@ import org.foi.nwtis.damdrempe.ws.serveri.GeoMeteoWS;
 /**
  * REST Web Service
  *
- * @author grupa_2
+ * @author ddrempetic
  */
 @Path("meteo")
 public class MeteoREST {
@@ -49,10 +44,8 @@ public class MeteoREST {
     }
 
     /**
-     * Retrieves representation of an instance of
-     * org.foi.nwtis.matnovak.rest.serveri.MeteoREST
-     *
-     * @return an instance of java.lang.String
+     * Metoda za dohvat svih parkirališta iz baze podataka.
+     * @return popis svih parkirališta, njihovih adresa i geo lokacija kao strukturirani odgovor u application/json formatu
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -76,6 +69,11 @@ public class MeteoREST {
         return jsonOdgovor.vratiKompletanJsonOdgovor(parkiralistaJsonDio);
     }
     
+    /**
+     * Metoda za dohvat podataka pojedinog parkirališta.
+     * @param id identifikator parkirališta po kojem se dohvaća
+     * @return vraća podatke o parkiralištu s zadanim id
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")
@@ -83,8 +81,8 @@ public class MeteoREST {
         boolean uspjesno = true;
         String poruka = "";
         int idParkiralista = Integer.parseInt(id);
-
         Parkiraliste p = new Parkiraliste();
+        
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             if (!bpo.parkiralistaSelectId(idParkiralista)) {
@@ -109,6 +107,11 @@ public class MeteoREST {
         }
     }
 
+    /**
+     * Metoda za dodavanje novog parkirališta u bazu podataka. 
+     * @param podaci podaci parkirališta u application/json formatu
+     * @return strukturirani odgovor u application/json formatu
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -140,6 +143,12 @@ public class MeteoREST {
         return jsonOdgovor.vratiKompletanJsonOdgovor();
     }
     
+    /**
+     * Metoda za POST na bazi putanje {id} nije dozvoljena.
+     * @param id identifikator parkirališta po kojem se dohvaća
+     * @param podaci podaci parkirališta u application/json formatu
+     * @return grešku HTTP statusa 405: Nedozvoljena operacija
+     */
     @POST
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -149,6 +158,10 @@ public class MeteoREST {
         return response;
     }
     
+    /**
+     * Metoda za PUT na bazi osnovne adrese nije dozvoljena.
+     * @return grešku HTTP statusa 405: Nedozvoljena operacija
+     */
     @PUT
     public Response putJson() {
         Response.ResponseBuilder rb = Response.status(Response.Status.METHOD_NOT_ALLOWED);
@@ -156,12 +169,11 @@ public class MeteoREST {
         return response;
     }
 
-    /**
-     * PUT method for updating or creating an instance of MeteoREST
-     *
-     * @param id
-     * @param podaci
-     * @return 
+    /** 
+     * Metoda za ažuriranje novog parkirališta u bazi podataka. 
+     * @param id identifikator parkirališta po kojem se ažurira
+     * @param podaci podaci parkirališta u application/json formatu
+     * @return strukturirani odgovor u application/json formatu
      */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
@@ -197,6 +209,10 @@ public class MeteoREST {
         return jsonOdgovor.vratiKompletanJsonOdgovor();
     }
     
+    /**
+     * Metoda za DELETE na bazi osnovne adrese nije dozvoljena.
+     * @return grešku HTTP statusa 405: Nedozvoljena operacija
+     */
     @DELETE
     public Response deleteJson() {
         Response.ResponseBuilder rb = Response.status(Response.Status.METHOD_NOT_ALLOWED);
@@ -204,6 +220,11 @@ public class MeteoREST {
         return response;
     }
     
+    /**
+     * Metoda za brisanje pojedinog parkirališta.
+     * @param id identifikator parkirališta po kojem se dohvaća
+     * @return strukturirani odgovor u application/json formatu
+     */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")

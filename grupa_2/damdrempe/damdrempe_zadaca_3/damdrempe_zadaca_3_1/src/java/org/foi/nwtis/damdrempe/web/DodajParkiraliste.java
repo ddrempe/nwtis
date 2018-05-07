@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web;
 
 import java.io.IOException;
@@ -16,14 +11,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.foi.nwtis.damdrempe.PomocnaKlasa;
-import org.foi.nwtis.damdrempe.rest.klijenti.GMKlijent;
-import org.foi.nwtis.damdrempe.rest.klijenti.OWMKlijent;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 
 /**
- *
- * @author grupa_2
+ * Servlet klasa za akcije koje se pozivaju sa sučelja.
+ * @author ddrempetic
  */
 @WebServlet(name = "DodajParkiraliste", urlPatterns = {"/DodajParkiraliste"})
 public class DodajParkiraliste extends HttpServlet {
@@ -31,7 +24,6 @@ public class DodajParkiraliste extends HttpServlet {
     private String naziv = "";
     private String adresa = "";
     private Lokacija lokacija;
-
     private String geolokacija = "";
     private String meteo = "";
     private String obavijest = "";
@@ -47,16 +39,15 @@ public class DodajParkiraliste extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        //čitanje iz requesta
-        naziv = request.getParameter("naziv");
-        adresa = request.getParameter("adresa");
-
+        
+        if(request.getParameter("naziv")!=null && request.getParameter("adresa")!=null){
+            naziv = request.getParameter("naziv");
+            adresa = request.getParameter("adresa");
+        }
         String gumbGeolokacija = request.getParameter("geolokacija");
         String gumbSpremi = request.getParameter("spremi");
         String gumbMeteo = request.getParameter("meteo");
 
-        //obrada akcija
         if (gumbGeolokacija != null && !gumbGeolokacija.isEmpty()) {
             postaviGeoLokaciju();
         } else if (gumbSpremi != null && !gumbSpremi.isEmpty()) {
@@ -65,17 +56,30 @@ public class DodajParkiraliste extends HttpServlet {
             meteo();
         }
 
-        //postavljanje podatka za vracanje odgovora
-        if (!naziv.isEmpty() && !adresa.isEmpty()) {
+        postaviPodatkeZaOdgovor(request, response);        
+    }
+    
+    /**
+     * Postavlja sve potrebne podatke za prikaz na sučelju u odgovor,
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
+    private void postaviPodatkeZaOdgovor(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        if (naziv !=null && !naziv.isEmpty()) {            
             request.setAttribute("naziv", naziv);
-            request.setAttribute("adresa", adresa);
         }
+        
+        if (adresa !=null && !adresa.isEmpty()) {            
+            request.setAttribute("adresa", adresa);
+        }       
 
-        if (!geolokacija.isEmpty()) {
+        if (geolokacija!=null && !geolokacija.isEmpty()) {
             request.setAttribute("geolokacija", geolokacija);
         }
         
-        if (!meteo.isEmpty()) {
+        if (meteo!=null && !meteo.isEmpty()) {
             request.setAttribute("meteo", meteo);
         }
 
@@ -85,6 +89,9 @@ public class DodajParkiraliste extends HttpServlet {
         rd.forward(request, response);
     }
 
+    /**
+     * Dohvaća i sprema geolokaciju na osnovu adrese.
+     */
     private void postaviGeoLokaciju() {
         if(adresa == null || adresa.isEmpty()){
             obavijest = "Niste upisali adresu!";
@@ -97,6 +104,10 @@ public class DodajParkiraliste extends HttpServlet {
         obavijest = "Geolokacija je uspjesno dohvacena i prikazana u polju!";
     }
 
+    /**
+     * Sprema novo parkiralište u bazu podataka.
+     * Naziv i adresa se moraju upisati putem sučelja, a lokacija moria biti prethodno dohvaćena.
+     */
     private void spremi() {
         if(lokacija == null){
             obavijest = "Nije moguce spremanje! Niste dohvatili lokaciju!";
@@ -122,6 +133,10 @@ public class DodajParkiraliste extends HttpServlet {
         }
     }
 
+    /**
+     * Dohvaćaju se metopodaci za traženu lokaciju.
+     * Spremaju se kao tekst koji se prikazuje na sučelju
+     */
     private void meteo() {
         if(lokacija == null){
             obavijest = "Nije moguce dohvacanje meteo podataka! Niste dohvatili lokaciju!";

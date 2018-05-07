@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.ws.serveri;
 
 import java.sql.SQLException;
@@ -12,24 +7,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
-import javax.jws.WebParam;
 import org.foi.nwtis.damdrempe.PomocnaKlasa;
-import org.foi.nwtis.damdrempe.rest.klijenti.GMKlijent;
 import org.foi.nwtis.damdrempe.web.BazaPodatakaOperacije;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 
 /**
- *
- * @author grupa_2
+ * SOAP web servis za pozivanje operacija nad parkiralištima i meteopodacima u bazi podataka.
+ * @author ddrempetic
  */
 @WebService(serviceName = "GeoMeteoWS")
 public class GeoMeteoWS {
 
     /**
-     * Web service operation
-     * @return 
+     * Poziva upit nad bazom podataka.
+     * @return listu svih parkirališta iz baze podataka
      */
     @WebMethod(operationName = "dajSvaParkiralista")
     public List<Parkiraliste> dajSvaParkiralista() {
@@ -47,9 +40,10 @@ public class GeoMeteoWS {
     }
     
     /**
-     * Web service operation
+     * Poziva upit nad bazom podataka.
+     * Dodaje parkiralište.
      * @param parkiraliste
-     * @return 
+     * @return true ako je parkiralište dodano, inače false
      */
     @WebMethod(operationName = "dodajParkiraliste")
     public Boolean dodajParkiraliste(Parkiraliste parkiraliste) {
@@ -73,6 +67,14 @@ public class GeoMeteoWS {
         return rezultat;
     }  
     
+    /**
+     * Poziva upit nad bazom podataka.
+     * Dohvaća sve meteopodatke za parkiralište u zadanom vremenskom intervalu.
+     * @param id identifikator parkirališta za kojeg se dohvaćaju podaci
+     * @param odVrijeme početak vremenskog intervala
+     * @param doVrijeme kraj vremenskog intervala
+     * @return listu meteopodataka iz rezultata upita
+     */
     public List<MeteoPodaci> dajSveMeteoPodatke(int id, long odVrijeme, long doVrijeme){
         List<MeteoPodaci> sviMeteopodaci = null;
         
@@ -87,8 +89,15 @@ public class GeoMeteoWS {
         return sviMeteopodaci;
     }
     
+    /**
+     * Poziva upit nad bazom podataka.
+     * Uzima najsvježije meteopodatke iz baze podataka.
+     * @param id identifikator parkirališta za kojeg se dohvaćaju podaci
+     * @return objekt meteopodataka
+     */
     public MeteoPodaci dajZadnjeMeteoPodatke(int id){
-        MeteoPodaci meteopodaci = null;        
+        MeteoPodaci meteopodaci = null; 
+        
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             meteopodaci = bpo.meteoPodaciSelectLast(id);
@@ -100,8 +109,15 @@ public class GeoMeteoWS {
         return meteopodaci;        
     }
     
+    /**
+     * Poziva upit nad bazom podataka.
+     * Za dohvaćenu adresu parkirališta dohvaća trenutne meteopodatke sa web servisa.
+     * @param id identifikator parkirališta za kojeg se dohvaćaju podaci
+     * @return objekt meteopodataka
+     */
     public MeteoPodaci dajVazeceMeteoPodatke(int id){       
         Parkiraliste parkiraliste = new Parkiraliste();
+        
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             parkiraliste = bpo.parkiralistaSelectIdVrati(id);
@@ -121,8 +137,17 @@ public class GeoMeteoWS {
         return meteo;
     }
     
+    /**
+     * Poziva upit nad bazom podataka.
+     * Dohvaća minimalnu i maksimalnu temperaturu za parkiralište.
+     * @param id identifikator parkirališta za kojeg se dohvaćaju podaci
+     * @param odVrijeme početak vremenskog intervala
+     * @param doVrijeme kraj vremenskog intervala
+     * @return listu od dva objekta tipa float koji predstavljaju minimalnu i maksimalnu temepraturu
+     */
     public List<Float> dajMinMaxTemp(int id, long odVrijeme, long doVrijeme){
         List<Float> rezultat = new ArrayList<>();
+        
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             rezultat = bpo.meteoPodaciSelectMinMax(id, odVrijeme, doVrijeme);

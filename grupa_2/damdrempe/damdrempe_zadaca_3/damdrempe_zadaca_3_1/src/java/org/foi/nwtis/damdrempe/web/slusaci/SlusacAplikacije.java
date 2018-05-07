@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.slusaci;
 
 import java.util.logging.Level;
@@ -18,7 +13,7 @@ import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
 import org.foi.nwtis.damdrempe.web.dretve.PreuzmiMeteoPodatke;
 
 /**
- * 
+ * Slušač aplikacije.
  * @author ddrempetic
  */
 public class SlusacAplikacije implements ServletContextListener {
@@ -31,7 +26,7 @@ public class SlusacAplikacije implements ServletContextListener {
      * Čita konfiguracije i sprema ih u kontekst.
      * Sprema kontekst u varijablu klase.
      * Pokreće dretvu obrade.
-     * @param sce 
+     * @param sce događaj konteksta servleta
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -62,7 +57,7 @@ public class SlusacAplikacije implements ServletContextListener {
 
     /**
      * Briše atribute iz konteksta i prekida dretvu obrade.
-     * @param sce 
+     * @param sce događaj konteksta servleta
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {

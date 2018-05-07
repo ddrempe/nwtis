@@ -28,10 +28,10 @@ public class BazaPodatakaOperacije {
     private String klasaDrivera;
 
     /**
-     * Konstrktor klase.
+     * Konstruktor klase koji prima kontekst servleta.
      * Učitava potrebne postavke iz konfiguracije i otvara vezu nad bazom.
      * Registrira driver.
-     * @param sc
+     * @param sc kontekst servleta
      * @throws SQLException
      * @throws ClassNotFoundException 
      */
@@ -47,7 +47,7 @@ public class BazaPodatakaOperacije {
     }
     
     /**
-     * Konstrktor klase.
+     * Konstruktor klase koji čita kontekst servleta iz slušača aplikacije.
      * Učitava potrebne postavke iz konfiguracije i otvara vezu nad bazom.
      * Registrira driver.
      * @throws SQLException
@@ -73,6 +73,15 @@ public class BazaPodatakaOperacije {
         veza.close();
     } 
     
+    /**
+     * Dodaje novo parkiralište.
+     * @param naziv
+     * @param adresa
+     * @param latitude
+     * @param longitude
+     * @return false ako parkiralište s tim nazivom već postoji, inače true
+     * @throws SQLException 
+     */
     public boolean parkiralistaInsert(String naziv, String adresa, String latitude, String longitude) throws SQLException{
         if(parkiralistaSelectNaziv(naziv)){
             return false;
@@ -81,12 +90,10 @@ public class BazaPodatakaOperacije {
         String upit = "INSERT INTO parkiralista(naziv, adresa, latitude, longitude) VALUES (?, ?, ?, ?)";        
         
         PreparedStatement preparedStmt = veza.prepareStatement(upit);        
-
         preparedStmt.setString(1, naziv);
         preparedStmt.setString(2, adresa);
         preparedStmt.setString(3, latitude);
         preparedStmt.setString(4, longitude);
-
         preparedStmt.execute(); 
         
         return true;
@@ -126,42 +133,55 @@ public class BazaPodatakaOperacije {
         return rs.next();
     }
     
+    /**
+     * Vraća parkiralište s traženim id.
+     * @param id
+     * @return
+     * @throws SQLException
+     */
     public Parkiraliste parkiralistaSelectIdVrati(int id) throws SQLException{        
         String upit = "SELECT * FROM parkiralista WHERE id = ?";
         
         PreparedStatement preparedStmt = veza.prepareStatement(upit);
         preparedStmt.setInt(1, id);
         preparedStmt.execute();
-        ResultSet odgovor = preparedStmt.executeQuery();
-        odgovor.next(); 
+        ResultSet rs = preparedStmt.executeQuery();
+        rs.next(); 
+        
         Parkiraliste parkiraliste = new Parkiraliste();
-        parkiraliste.setId(odgovor.getInt("ID"));
-        parkiraliste.setNaziv(odgovor.getString("NAZIV"));
+        parkiraliste.setId(rs.getInt("ID"));
+        parkiraliste.setNaziv(rs.getString("NAZIV"));
+        
         Lokacija lokacija = new Lokacija();
-        lokacija.setLatitude(odgovor.getString("LATITUDE"));
-        lokacija.setLongitude(odgovor.getString("LONGITUDE"));
+        lokacija.setLatitude(rs.getString("LATITUDE"));
+        lokacija.setLongitude(rs.getString("LONGITUDE"));
         parkiraliste.setGeoloc(lokacija);
-        parkiraliste.setAdresa(odgovor.getString("ADRESA"));
+        parkiraliste.setAdresa(rs.getString("ADRESA"));
         
         return parkiraliste;
     }
     
+    /**
+     * Vraća sva parkirališta.
+     * @return listu svih parkirališta
+     * @throws SQLException
+     */
     public ArrayList<Parkiraliste> parkiralistaSelect() throws SQLException {
         ArrayList<Parkiraliste> dohvacenaParkiralista = new ArrayList<>();
         String upit = "SELECT * FROM PARKIRALISTA";
         
         PreparedStatement preparedStmt = veza.prepareStatement(upit);
         preparedStmt.execute();
-        ResultSet odgovor = preparedStmt.executeQuery();
-        while (odgovor.next()) {
+        ResultSet rs = preparedStmt.executeQuery();
+        while (rs.next()) {
             Parkiraliste p = new Parkiraliste();
-            p.setId(odgovor.getInt("ID"));
-            p.setNaziv(odgovor.getString("NAZIV"));
+            p.setId(rs.getInt("ID"));
+            p.setNaziv(rs.getString("NAZIV"));
             Lokacija lokacija = new Lokacija();
-            lokacija.setLatitude(odgovor.getString("LATITUDE"));
-            lokacija.setLongitude(odgovor.getString("LONGITUDE"));
+            lokacija.setLatitude(rs.getString("LATITUDE"));
+            lokacija.setLongitude(rs.getString("LONGITUDE"));
             p.setGeoloc(lokacija);
-            p.setAdresa(odgovor.getString("ADRESA"));
+            p.setAdresa(rs.getString("ADRESA"));
             
             dohvacenaParkiralista.add(p);
         }     
@@ -169,6 +189,12 @@ public class BazaPodatakaOperacije {
         return dohvacenaParkiralista;
     }
     
+    /**
+     * Ažurira parkiralište s novim podacima.
+     * @param parkiraliste
+     * @return false ako parkiralište ne postoji, inače true
+     * @throws SQLException
+     */
     public boolean parkiralistaUpdate(Parkiraliste parkiraliste) throws SQLException{
         if(!parkiralistaSelectId(parkiraliste.getId())){
             return false;
@@ -189,6 +215,12 @@ public class BazaPodatakaOperacije {
         return true;
     }
     
+    /**
+     * Briše parkiralište s traženim id.
+     * @param id
+     * @return false ako parkiralište ne postoji, inače true
+     * @throws SQLException
+     */
     public boolean parkiralistaDelete(int id) throws SQLException{
         if(!parkiralistaSelectId(id)){
             return false;
@@ -205,7 +237,7 @@ public class BazaPodatakaOperacije {
     
     /**
      * Provjerava da li meteopodaci s traženim id parkiralista postoje
-     * @param id
+     * @param id identifikator parkirališta, vanjski ključ
      * @return true ako postoji, inače false
      * @throws SQLException 
      */
@@ -220,6 +252,12 @@ public class BazaPodatakaOperacije {
         return rs.next();
     }
     
+    /**
+     * Dodaje nove metopodatke za određeno parkiralište.
+     * @param meteoPodaci objekt meteopodataka
+     * @param parkiraliste objekt parkirališta
+     * @throws SQLException
+     */
     public void meteoInsert(MeteoPodaci meteoPodaci, Parkiraliste parkiraliste) throws SQLException{
         String upit = "INSERT INTO METEO (ID, LATITUDE, LONGITUDE, VRIJEME, VRIJEMEOPIS, TEMP, TEMPMIN, TEMPMAX, VLAGA, TLAK, VJETAR, VJETARSMJER)" + 
                               " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -247,6 +285,12 @@ public class BazaPodatakaOperacije {
         preparedStmt.execute();        
     }
     
+    /**
+     * Briše meteopodatke za pojedino parkiralište.
+     * @param idParkiralista identifikator parkirališta, vanjski ključ
+     * @return false ako parkiralište ne postoji, inače true
+     * @throws SQLException
+     */
     public boolean meteoDelete(int idParkiralista) throws SQLException{
         if(!meteoSelectIdParkiralista(idParkiralista)){
             return false;
@@ -261,10 +305,19 @@ public class BazaPodatakaOperacije {
         return true;
     }
     
+    /**
+     * Vraća meteopodatke za pojedino parkiralište u vremenskom intervalu.
+     * @param id identifikator parkirališta, vanjski ključ
+     * @param odVrijeme početno vrijeme intervala
+     * @param doVrijeme završno vrijeme intervala
+     * @return listu meteopodataka
+     * @throws SQLException
+     */
     public ArrayList<MeteoPodaci> meteoPodaciSelect(int id, long odVrijeme, long doVrijeme) throws SQLException {
         ArrayList<MeteoPodaci> dohvaceniMeteopodaci = new ArrayList<>();
         Timestamp odTimestamp = new Timestamp(odVrijeme);
         Timestamp doTimestamp = new Timestamp(doVrijeme);
+        
         String upit = "SELECT * FROM meteo WHERE id=? AND preuzeto>=? AND preuzeto<=?";
         
         PreparedStatement preparedStmt = veza.prepareStatement(upit);
@@ -272,51 +325,64 @@ public class BazaPodatakaOperacije {
         preparedStmt.setTimestamp(2, odTimestamp);
         preparedStmt.setTimestamp(3, doTimestamp);
         preparedStmt.execute();
-        ResultSet odgovor = preparedStmt.executeQuery();
-        while (odgovor.next()) {
-            MeteoPodaci meteo = new MeteoPodaci();
-            
-            //meteo.setWeatherNumber("VRIJEME");            //ne postoji setter
-            meteo.setWeatherValue(odgovor.getString("VRIJEMEOPIS"));
-            meteo.setTemperatureValue(odgovor.getFloat("TEMP"));
-            meteo.setTemperatureMin(odgovor.getFloat("TEMPMIN"));
-            meteo.setTemperatureMax(odgovor.getFloat("TEMPMAX"));
-            meteo.setHumidityValue(odgovor.getFloat("VLAGA"));
-            meteo.setPressureValue(odgovor.getFloat("TLAK"));
-            meteo.setWindSpeedValue(odgovor.getFloat("VJETAR"));
-            //meteo.setWindDirectionValue("VJETARSMJER");   //ne postoji setter
-            meteo.setLastUpdate(odgovor.getDate("PREUZETO"));
-                
+        
+        ResultSet rs = preparedStmt.executeQuery();
+        while (rs.next()) {
+            MeteoPodaci meteo = procitajVrijednostiMeteopodataka(rs);                
             dohvaceniMeteopodaci.add(meteo);
         }     
 
         return dohvaceniMeteopodaci;
     }
     
+    /**
+     * Vraća zadnje meteopodatke za traženo parkiralište.
+     * @param id identifikator parkirališta, vanjski ključ
+     * @return objekt meteopodataka
+     * @throws SQLException
+     */
     public MeteoPodaci meteoPodaciSelectLast(int id) throws SQLException {
         String upit = "SELECT * FROM meteo WHERE id=? ORDER BY preuzeto DESC";
         
         PreparedStatement preparedStmt = veza.prepareStatement(upit);
         preparedStmt.setInt(1, id);
         preparedStmt.execute();
-        ResultSet odgovor = preparedStmt.executeQuery();
-        odgovor.next();
+        ResultSet rs = preparedStmt.executeQuery();
+        rs.next();
             
+        return procitajVrijednostiMeteopodataka(rs);
+    }
+    
+    /**
+     * Pomoćna metoda koja iz odgovora upita nad bazom podataka pročita sve vrijednosti i dodijeli u objekt meteopodataka.
+     * @param rs rezultat upita nad bazom podataka
+     * @return objekt meteopodataka
+     * @throws SQLException
+     */
+    public MeteoPodaci procitajVrijednostiMeteopodataka(ResultSet rs) throws SQLException{
         MeteoPodaci meteo = new MeteoPodaci();
-        //meteo.setWeatherNumber("VRIJEME");            //ne postoji setter
-        meteo.setWeatherValue(odgovor.getString("VRIJEMEOPIS"));
-        meteo.setTemperatureValue(odgovor.getFloat("TEMP"));
-        meteo.setTemperatureMin(odgovor.getFloat("TEMPMIN"));
-        meteo.setTemperatureMax(odgovor.getFloat("TEMPMAX"));
-        meteo.setHumidityValue(odgovor.getFloat("VLAGA"));
-        meteo.setPressureValue(odgovor.getFloat("TLAK"));
-        meteo.setWindSpeedValue(odgovor.getFloat("VJETAR"));
-        //meteo.setWindDirectionValue("VJETARSMJER");   //ne postoji setter
-        meteo.setLastUpdate(odgovor.getDate("PREUZETO"));           
+        meteo.setWeatherValue(rs.getString("VRIJEMEOPIS"));
+        meteo.setTemperatureValue(rs.getFloat("TEMP"));
+        meteo.setTemperatureMin(rs.getFloat("TEMPMIN"));
+        meteo.setTemperatureMax(rs.getFloat("TEMPMAX"));
+        meteo.setHumidityValue(rs.getFloat("VLAGA"));
+        meteo.setPressureValue(rs.getFloat("TLAK"));
+        meteo.setWindSpeedValue(rs.getFloat("VJETAR"));
+        meteo.setLastUpdate(rs.getDate("PREUZETO"));           
+        //meteo.setWeatherNumber("VRIJEME");                        //ne postoji setter
+        //meteo.setWindDirectionValue("VJETARSMJER");               //ne postoji setter
 
         return meteo;
     }
     
+    /**
+     * Dohvaća minimalnu i maksimalnu temeperaturu za pojedino parkiralište u zadanom intervalu.
+     * @param id identifikator parkirališta, vanjski ključ
+     * @param odVrijeme početno vrijeme intervala
+     * @param doVrijeme završno vrijeme intervala
+     * @return listu od dva elementa tipa float koji predstavljaju minimalnu i maksimalnu temperaturu
+     * @throws SQLException
+     */
     public ArrayList<Float> meteoPodaciSelectMinMax(int id, long odVrijeme, long doVrijeme) throws SQLException {
         String upit = "SELECT MIN(TEMPMIN) AS mintemp, MAX(TEMPMAX) AS maxtemp FROM METEO WHERE ID =? AND preuzeto>=? and preuzeto<=?";
         
@@ -328,12 +394,12 @@ public class BazaPodatakaOperacije {
         preparedStmt.setTimestamp(2, odTimestamp);
         preparedStmt.setTimestamp(3, doTimestamp);
         preparedStmt.execute();
-        ResultSet odgovor = preparedStmt.executeQuery();
-        odgovor.next();
+        ResultSet rs = preparedStmt.executeQuery();
+        rs.next();
             
         ArrayList<Float> tempMinMax = new ArrayList<>();
-        tempMinMax.add(odgovor.getFloat("mintemp"));
-        tempMinMax.add(odgovor.getFloat("maxtemp"));
+        tempMinMax.add(rs.getFloat("mintemp"));
+        tempMinMax.add(rs.getFloat("maxtemp"));
 
         return tempMinMax;
     }
