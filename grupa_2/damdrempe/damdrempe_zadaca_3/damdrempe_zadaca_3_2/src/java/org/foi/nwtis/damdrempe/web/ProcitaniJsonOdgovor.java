@@ -16,29 +16,31 @@ import javax.json.JsonReader;
  * @author ddrempetic
  */
 public class ProcitaniJsonOdgovor {
-    private JsonArray odgovor;
+    private JsonObject odgovorAtribut;
     private String status;
     private String poruka;
 
     public ProcitaniJsonOdgovor(String jsonOdgovor) {
         JsonReader jsonReader = Json.createReader(new StringReader(jsonOdgovor));
-        JsonObject jsonObject = jsonReader.readObject();
+        JsonObject jsonObject = jsonReader.readObject();        
         
-        this.odgovor = jsonObject.getJsonArray("odgovor");
+        try {
+            JsonArray jsonArray = jsonObject.getJsonArray("odgovor");
+            this.odgovorAtribut = jsonArray.getJsonObject(0);            
+        } catch (Exception e) {
+            this.odgovorAtribut = Json.createObjectBuilder().build();
+        }      
+        
         this.status = jsonObject.getString("status");
         try {
             this.poruka = jsonObject.getString("poruka");            
         } catch (NullPointerException e) {
-            poruka = "";
+            this.poruka = "";
         }
-    }  
-
-    public JsonArray getOdgovor() {
-        return odgovor;
-    }
-
-    public void setOdgovor(JsonArray odgovor) {
-        this.odgovor = odgovor;
+    } 
+    
+    public String vratiVrijednostAtributaIzOdgovora(String nazivAtributa){
+        return odgovorAtribut.getString(nazivAtributa);
     }
 
     public String getStatus() {
@@ -56,6 +58,12 @@ public class ProcitaniJsonOdgovor {
     public void setPoruka(String poruka) {
         this.poruka = poruka;
     }
-    
-    
+
+    public JsonObject getOdgovorAtribut() {
+        return odgovorAtribut;
+    }
+
+    public void setOdgovorAtribut(JsonObject odgovorAtribut) {
+        this.odgovorAtribut = odgovorAtribut;
+    }   
 }

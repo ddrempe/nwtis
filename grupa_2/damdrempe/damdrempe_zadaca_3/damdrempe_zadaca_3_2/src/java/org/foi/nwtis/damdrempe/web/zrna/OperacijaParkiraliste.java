@@ -171,9 +171,13 @@ public class OperacijaParkiraliste implements Serializable {
     public String upisiREST() {
         MeteoRESTKlijent klijent = new MeteoRESTKlijent();
         String novoParkiraliste = PomocnaKlasa.napraviJsonZaSlanjeParkiraliste(naziv, adresa);
-        String odgovor = klijent.postJson(novoParkiraliste, String.class);
+        String odgovorJsonTekst = klijent.postJson(novoParkiraliste, String.class);
 
-        poruka = odgovor; //TODO parsati poruku iz odgovora
+        ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovorJsonTekst);
+        poruka = "Status: " + procitaniJsonOdgovor.getStatus();
+        if(procitaniJsonOdgovor.getStatus().equals("ERR")){
+            poruka = poruka + ". Poruka: " + procitaniJsonOdgovor.getPoruka();
+        }
 
         preuzmiSvaParkiralistaSOAP();
 
@@ -183,16 +187,15 @@ public class OperacijaParkiraliste implements Serializable {
     public String preuzmiParkiralisteREST() {
         String odabranoParkiralisteId = odabranaParkiralista.get(0);
         MeteoRESTKlijentId klijent = new MeteoRESTKlijentId(odabranoParkiralisteId);
-        String odgovor = klijent.getJson(String.class);
+        String odgovorJsonTekst = klijent.getJson(String.class);
 
-        //TODO bolje organizirati kod za odgovor
-        ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovor);
-        JsonArray odgovorDio = procitaniJsonOdgovor.getOdgovor();
-        JsonObject odgovorObjekt = odgovorDio.getJsonObject(0);
-        adresa = odgovorObjekt.getString("adresa");
-        naziv = odgovorObjekt.getString("naziv");
-
-        poruka = procitaniJsonOdgovor.getStatus() + " " + procitaniJsonOdgovor.getPoruka();
+        ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovorJsonTekst);
+        adresa = procitaniJsonOdgovor.vratiVrijednostAtributaIzOdgovora("adresa");
+        naziv = procitaniJsonOdgovor.vratiVrijednostAtributaIzOdgovora("naziv");
+        poruka = "Status: " + procitaniJsonOdgovor.getStatus();
+        if(procitaniJsonOdgovor.getStatus().equals("ERR")){
+            poruka = poruka + ". Poruka: " + procitaniJsonOdgovor.getPoruka();
+        }
 
         return "";
     }
@@ -201,8 +204,13 @@ public class OperacijaParkiraliste implements Serializable {
         String odabranoParkiralisteId = odabranaParkiralista.get(0);
         MeteoRESTKlijentId klijent = new MeteoRESTKlijentId(odabranoParkiralisteId);
         String novoParkiraliste = PomocnaKlasa.napraviJsonZaSlanjeParkiraliste(naziv, adresa);
-        String odgovor = klijent.putJson(novoParkiraliste, String.class);
-        poruka = odgovor; //TODO parsati poruku iz odgovora
+        String odgovorJsonTekst = klijent.putJson(novoParkiraliste, String.class);
+        
+        ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovorJsonTekst);
+        poruka = "Status: " + procitaniJsonOdgovor.getStatus();
+        if(procitaniJsonOdgovor.getStatus().equals("ERR")){
+            poruka = poruka + ". Poruka: " + procitaniJsonOdgovor.getPoruka();
+        }
 
         preuzmiSvaParkiralistaSOAP();
 
@@ -212,12 +220,16 @@ public class OperacijaParkiraliste implements Serializable {
     public String brisiREST() {
         String odabranoParkiralisteId = odabranaParkiralista.get(0);
         MeteoRESTKlijentId klijent = new MeteoRESTKlijentId(odabranoParkiralisteId);
-        String odgovor = klijent.deleteJson(String.class);
+        String odgovorJsonTekst = klijent.deleteJson(String.class);
 
-        poruka = odgovor; //TODO parsati poruku iz odgovora
+        ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovorJsonTekst);
+        poruka = "Status: " + procitaniJsonOdgovor.getStatus();
+        if(procitaniJsonOdgovor.getStatus().equals("ERR")){
+            poruka = poruka + ". Poruka: " + procitaniJsonOdgovor.getPoruka();
+        }
 
         preuzmiSvaParkiralistaSOAP();
-        if (odgovor.contains("OK")) {
+        if (odgovorJsonTekst.contains("OK")) {
             brojOdabranihParkiralista = 0;
         }
 
