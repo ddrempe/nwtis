@@ -27,26 +27,37 @@ public class MeteoRESTKlijentId {
     private Client client;
     private static final String BASE_URI = "http://localhost:8084/damdrempe_zadaca_3_1/webresources/";
 
+    /**
+     *
+     * @param id
+     */
     public MeteoRESTKlijentId(String id) {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         String resourcePath = java.text.MessageFormat.format("meteo/{0}", new Object[]{id});
         webTarget = client.target(BASE_URI).path(resourcePath);
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setResourcePath(String id) {
         String resourcePath = java.text.MessageFormat.format("meteo/{0}", new Object[]{id});
         webTarget = client.target(BASE_URI).path(resourcePath);
     }
 
     /**
+     * @param <T>
      * @param responseType Class representing the response
      * @param requestEntity request data@return response object (instance of responseType class)
+     * @return 
      */
     public <T> T putJson(Object requestEntity, Class<T> responseType) throws ClientErrorException {
         return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), responseType);
     }
 
     /**
+     * @param <T>
      * @param responseType Class representing the response
      * @return response object (instance of responseType class)
      */
@@ -55,6 +66,7 @@ public class MeteoRESTKlijentId {
     }
 
     /**
+     * @param <T>
      * @param responseType Class representing the response
      * @return response object (instance of responseType class)
      */
@@ -62,6 +74,9 @@ public class MeteoRESTKlijentId {
         return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
+    /**
+     *
+     */
     public void close() {
         client.close();
     }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web;
 
 import java.io.StringReader;
@@ -12,7 +7,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 /**
- *
+ * Klasa koja iz teksta odgovora kojeg je poslao REST servis cita sve elemente.
  * @author ddrempetic
  */
 public class ProcitaniJsonOdgovor {
@@ -20,6 +15,10 @@ public class ProcitaniJsonOdgovor {
     private String status;
     private String poruka;
 
+    /**
+     * Cita sve elemente odgovora.
+     * @param jsonOdgovor
+     */
     public ProcitaniJsonOdgovor(String jsonOdgovor) {
         JsonReader jsonReader = Json.createReader(new StringReader(jsonOdgovor));
         JsonObject jsonObject = jsonReader.readObject();        
@@ -39,30 +38,59 @@ public class ProcitaniJsonOdgovor {
         }
     } 
     
+    /**
+     *
+     * @param nazivAtributa
+     * @return
+     */
     public String vratiVrijednostAtributaIzOdgovora(String nazivAtributa){
         return odgovorAtribut.getString(nazivAtributa);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStatus() {
         return status;
     }
 
+    /**
+     *
+     * @param status
+     */
     public void setStatus(String status) {
         this.status = status;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPoruka() {
         return poruka;
     }
 
+    /**
+     *
+     * @param poruka
+     */
     public void setPoruka(String poruka) {
         this.poruka = poruka;
     }
 
+    /**
+     *
+     * @return
+     */
     public JsonObject getOdgovorAtribut() {
         return odgovorAtribut;
     }
 
+    /**
+     *
+     * @param odgovorAtribut
+     */
     public void setOdgovorAtribut(JsonObject odgovorAtribut) {
         this.odgovorAtribut = odgovorAtribut;
     }   
