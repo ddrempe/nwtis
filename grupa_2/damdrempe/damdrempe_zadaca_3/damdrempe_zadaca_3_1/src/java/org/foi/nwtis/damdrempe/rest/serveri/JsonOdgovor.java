@@ -29,7 +29,7 @@ public class JsonOdgovor {
         this.status = uspjesno ? "OK" : "ERR";
     }
     
-    public JsonArray postaviParkiralistaJsonDio(List<Parkiraliste> svaParkiralista){
+    public JsonArray postaviSvaParkiralistaJsonDio(List<Parkiraliste> svaParkiralista){
         JsonArrayBuilder jsonBuilder = Json.createArrayBuilder();
         for (Parkiraliste parkiraliste : svaParkiralista) {
             jsonBuilder.add(Json.createObjectBuilder()
@@ -43,15 +43,15 @@ public class JsonOdgovor {
         return jsonBuilder.build();
     }
     
-    public JsonArray postaviMeteoJsonDio(MeteoPodaci meteo, Parkiraliste parkiraliste){
+    public JsonArray postaviParkiralisteJsonDio(Parkiraliste parkiraliste){
         JsonArrayBuilder jsonBuilder = Json.createArrayBuilder();
         
         jsonBuilder.add(Json.createObjectBuilder()
-                .add("temp", meteo.getTemperatureValue())
-                .add("vlaga", meteo.getHumidityValue())
-                .add("tlak", meteo.getPressureValue())
-                .add("naziv", parkiraliste.getNaziv())
-                .add("adresa", parkiraliste.getAdresa()));        
+                    .add("id", parkiraliste.getId())
+                    .add("naziv", parkiraliste.getNaziv())
+                    .add("adresa", parkiraliste.getAdresa())
+                    .add("latitude", parkiraliste.getGeoloc().getLatitude())
+                    .add("longitude", parkiraliste.getGeoloc().getLongitude()));       
         
         return jsonBuilder.build();
     }

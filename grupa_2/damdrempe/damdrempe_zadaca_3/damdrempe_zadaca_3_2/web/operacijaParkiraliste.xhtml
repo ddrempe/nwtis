@@ -55,6 +55,7 @@
                              disabled="#{operacijaParkiraliste.brojOdabranihParkiralista != 1}"
                              /><br/>
             <h:commandButton value="Preuzmi meteo"
+                             action="#{operacijaParkiraliste.preuzmiMeteoSOAP()}"
                              disabled="#{operacijaParkiraliste.brojOdabranihParkiralista &lt; 2}"
                              /><br/>
             <h:commandButton value="Preuzmi SOAP" 
@@ -67,6 +68,50 @@
 
             <h:outputText value="#{operacijaParkiraliste.poruka}" />
         </h:form>
+
+        <h:form>
+            <h:commandButton value="Prethodni" 
+                             action="#{operacijaParkiraliste.prethodniZapisi()}"
+                             rendered="#{operacijaParkiraliste.pomak ne 0}" /> 
+
+
+            <h:commandButton value="Sljedeci" 
+                             action="#{operacijaParkiraliste.sljedeciZapisi()}"
+                             rendered="#{operacijaParkiraliste.pomak ne operacijaParkiraliste.maksPomak}" /> 
+        </h:form>
+        <h:dataTable value="#{operacijaParkiraliste.meteopodaciPrikaz}" 
+                     var="meteo"
+                     rendered="#{operacijaParkiraliste.ukupnoZapisa ne 0}">
+            <h:column>
+                <f:facet name="header">Vrijeme</f:facet>
+                    #{meteo.weatherValue}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Temperatura</f:facet>
+                    #{meteo.temperatureValue}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Maksimalna temperatura</f:facet>
+                    #{meteo.temperatureMax}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Minimalna temperatura</f:facet>
+                    #{meteo.humidityValue}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Tlak </f:facet>
+                    #{meteo.pressureValue}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Vjetar</f:facet>
+                    #{meteo.windSpeedValue}
+            </h:column>
+        </h:dataTable>        
     </h:body>
 </html>
 

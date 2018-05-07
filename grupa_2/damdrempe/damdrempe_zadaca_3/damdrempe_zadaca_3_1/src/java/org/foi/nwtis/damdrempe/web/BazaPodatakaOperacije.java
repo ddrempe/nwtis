@@ -195,8 +195,6 @@ public class BazaPodatakaOperacije {
             return false;
         }   
         
-        meteoDelete(id);
-        
         String upit = "DELETE FROM parkiralista WHERE id=?";        
         
         PreparedStatement preparedStmt = veza.prepareStatement(upit);        

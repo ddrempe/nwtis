@@ -12,5 +12,11 @@ public class MeteoWSKlijent {
         org.foi.nwtis.damdrempe.ws.serveri.GeoMeteoWS_Service service = new org.foi.nwtis.damdrempe.ws.serveri.GeoMeteoWS_Service();
         org.foi.nwtis.damdrempe.ws.serveri.GeoMeteoWS port = service.getGeoMeteoWSPort();
         return port.dodajParkiraliste(naziv, adresa);
+    } 
+
+    public static java.util.List<org.foi.nwtis.damdrempe.ws.serveri.MeteoPodaci> dajSveMeteoPodatke(int arg0, long arg1, long arg2) {
+        org.foi.nwtis.damdrempe.ws.serveri.GeoMeteoWS_Service service = new org.foi.nwtis.damdrempe.ws.serveri.GeoMeteoWS_Service();
+        org.foi.nwtis.damdrempe.ws.serveri.GeoMeteoWS port = service.getGeoMeteoWSPort();
+        return port.dajSveMeteoPodatke(arg0, arg1, arg2);
     }   
 }

@@ -75,7 +75,7 @@ public class MeteoREST {
         }
 
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
-        JsonArray parkiralistaJsonDio = jsonOdgovor.postaviParkiralistaJsonDio(svaParkiralista);
+        JsonArray parkiralistaJsonDio = jsonOdgovor.postaviSvaParkiralistaJsonDio(svaParkiralista);
         return jsonOdgovor.vratiKompletanJsonOdgovor(parkiralistaJsonDio);
     }
 
@@ -118,7 +118,6 @@ public class MeteoREST {
         boolean uspjesno = true;
         String poruka = "";
         int idParkiralista = Integer.parseInt(id);
-        MeteoPodaci meteo = new MeteoPodaci();
 
         Parkiraliste p = new Parkiraliste();
         try {
@@ -126,10 +125,8 @@ public class MeteoREST {
             if (!bpo.parkiralistaSelectId(idParkiralista)) {
                 uspjesno = false;
                 poruka = "Parkiraliste s id " + id + " ne postoji!";
-
             } else {
                 p = bpo.parkiralistaSelectIdVrati(idParkiralista);
-                meteo = PomocnaKlasa.dohvatiOWMMeteo(p.getGeoloc().getLatitude(), p.getGeoloc().getLongitude());
             }
             bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
@@ -137,18 +134,12 @@ public class MeteoREST {
             poruka = ex.toString();
             Logger.getLogger(MeteoREST.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        if(meteo == null){
-            uspjesno = false;
-            poruka = "Za parkiraliste s id " + id + " nije moguce dohvatiti meteopodatke!";
-        }
 
+        JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         if (uspjesno) {
-            JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
-            JsonArray meteoJsonDio = jsonOdgovor.postaviMeteoJsonDio(meteo, p);
+            JsonArray meteoJsonDio = jsonOdgovor.postaviParkiralisteJsonDio(p);
             return jsonOdgovor.vratiKompletanJsonOdgovor(meteoJsonDio);
         } else {
-            JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
             return jsonOdgovor.vratiKompletanJsonOdgovor();
         }
     }
@@ -207,9 +198,13 @@ public class MeteoREST {
             if (!bpo.parkiralistaSelectId(idParkiralista)) {
                 uspjesno = false;
                 poruka = "Parkiraliste s id " + id + " ne postoji!";
-
-            } else {                
-                bpo.parkiralistaDelete(idParkiralista); 
+            } else {
+                if (bpo.meteoSelectIdParkiralista(idParkiralista)){
+                    uspjesno = false;
+                    poruka = "Postoje meteopodaci za parkiraliste s id " + id + " !"; 
+                } else {
+                    bpo.parkiralistaDelete(idParkiralista); 
+                }                
             }
             bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
