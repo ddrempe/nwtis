@@ -31,7 +31,7 @@ public class MeteoKlijentZrno {
     }
     
     public Lokacija dajLokaciju(String adresa){
-        GMKlijent gmk = new GMKlijent(apiKey);
+        GMKlijent gmk = new GMKlijent(gmApiKey);
         Lokacija lokacija = gmk.getGeoLocation(adresa);
         return lokacija;
     }
@@ -39,7 +39,7 @@ public class MeteoKlijentZrno {
     public MeteoPrognoza[] dajMeteoPrognoze(int id, String adresa){
         OWMKlijentPrognoza klijentPrognoza = new OWMKlijentPrognoza(apiKey);
         Lokacija l = dajLokaciju(adresa);
-        MeteoPrognoza[] meteoPrognoze = klijentPrognoza.getWeatherForecast(id, apiKey, apiKey);//TODO popraviti
+        MeteoPrognoza[] meteoPrognoze = klijentPrognoza.getWeatherForecast(id, l.getLatitude(),l.getLongitude());
         
         return meteoPrognoze;
     }

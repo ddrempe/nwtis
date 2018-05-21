@@ -6,8 +6,6 @@
 
 package org.foi.nwtis.damdrempe.web.podaci;
 
-import org.foi.nwtis.damdrempe.rest.klijenti.Lokacija;
-
 /**
  *
  * @author damdrempe
