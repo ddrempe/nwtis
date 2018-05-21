@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./predlozak.xhtml">
+
+            <ui:define name="naslov">
+                NWTiS - Pregled parkirališta i prognoza vremena
+            </ui:define>
+            
+            <ui:define name="content">
+                <h:form>
+                    <h:outputLabel for="naziv" value="Id, naziv i adresa"/>
+                    <h:inputText id="naziv" value="#{pregled.id}"/>
+                    <h:inputText id="naziv" value="#{pregled.naziv}"/>
+                    <h:inputText id="naziv" value="#{pregled.adresa}"/>
+                    <h:commandButton value="dodaj" action="#{pregled.dodajParkrialiste}">
+                        <f:ajax execute="id naziv adresa" render=""/>
+                    </h:commandButton>
+                    
+                    <h:commandButton value="azruriaj" action="#{pregled.azurirajParkrialiste}">
+                        <f:ajax execute="id naziv adresa" render=""/>
+                    </h:commandButton>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
