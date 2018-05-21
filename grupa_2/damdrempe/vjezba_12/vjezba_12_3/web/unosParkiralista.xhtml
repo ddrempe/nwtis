@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Unos parkirališta</title>
+        <h:outputScript library="js" name="websocket.js"/>
+    </h:head>
+    <h:body>
+        
+        <h:form>
+            <h:link value="index.xhtml"/><br/>
+            <h:outputLabel value="Naziv i adresa" /><br/>
+            <h:inputText id="naziv" value="#{meteoPrognoza.naziv}" /><br/>
+            <h:inputText id="adresa" value="#{meteoPrognoza.adresa}" /><br/>
+            <h:commandButton value="Dodaj" action="#{meteoPrognoza.dodajParkiraliste()}" /><br/>
+<!--            <f:ajax></f:ajax>TODO-->
+            <h:selectOneListbox value="#{meteoPrognoza.odabranoParkiraliste}"><br/>
+                <f:selectItems value="#{meteoPrognoza.parkiralista}"
+                               var="p"
+                               itemLabel="#{p}"
+                               itemValue="#{p}"/>
+            </h:selectOneListbox>
+            
+            <h:dataTable id="meteopodaci"
+                         value="#{meteoPrognoza.meteoPodaci}"
+                         var="mp">
+                <h:column>
+                    <f:facet name="header">temp</f:facet>
+                    <h:outputText value="#{mp.temperatureValue}"/>                        
+                </h:column>
+                
+                <h:column>
+                    <f:facet name="header">tlak</f:facet>
+                    <h:outputText value="#{mp.pressureValue}"/>                        
+                </h:column>
+                
+                <h:column>
+                    <f:facet name="header">vjertar</f:facet>
+                    <h:outputText value="#{mp.windSpeedValue}"/>                        
+                </h:column>
+                
+            </h:dataTable>
+        </h:form>
+    </h:body>
+</html>
+
