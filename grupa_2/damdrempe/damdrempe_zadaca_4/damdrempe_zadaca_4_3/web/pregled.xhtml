@@ -28,15 +28,19 @@
 
                     <h:panelGroup id="gumbUpisi">
                         <h:commandButton value="Upiši" action="#{pregled.upisiParkiraliste()}" rendered="#{pregled.pokrenutoAzuriranje}">
-                            <f:ajax execute="id naziv adresa" render="popisparking gumbUpisi"/>
+                            <f:ajax execute="id naziv adresa" render="popisparking gumbUpisi poruka"/>
                         </h:commandButton>
                     </h:panelGroup>
-                    <br/><br/>                    
+                    <br/><br/> 
+                    
+                    <h:outputText id="poruka" value="#{pregled.poruka}" />
+                    <br/><br/> 
 
                     <h:outputLabel for="popisparking" value="Parkiralista"/>
                     <h:selectManyListbox id="popisparking" size="5" value="#{pregled.popisParkingOdabrano}" >
                         <f:selectItems value="#{pregled.popisParking}" var="p" 
                                        itemLabel="#{p.labela}" itemValue="#{p.vrijednost}" />
+                        <f:ajax event="change" listener="#{pregled.promjena}" render="gumbAzuriraj"/>
                     </h:selectManyListbox>
 
                     <h:commandButton value="Preuzmi" action="#{pregled.preuzmiParkiralista()}">
@@ -45,9 +49,12 @@
                     <h:commandButton value="Vrati" action="#{pregled.vratiParkiralista()}">
                         <f:ajax execute="popisparkingmeteo" render="popisparkingmeteo popisparking" />
                     </h:commandButton>
-                    <h:commandButton value="Ažuriraj" id="gumbAzuriraj" action="#{pregled.azurirajParkiraliste()}">
-                        <f:ajax execute="gumbAzuriraj popisparking" render="id naziv adresa gumbUpisi"/>
-                    </h:commandButton>                    
+
+                    <h:panelGroup id="gumbAzuriraj">
+                        <h:commandButton value="Ažuriraj" action="#{pregled.azurirajParkiraliste()}" rendered="#{pregled.prikaziGumbAzuriraj}">
+                            <f:ajax execute="gumbAzuriraj popisparking" render="id naziv adresa gumbUpisi"/>
+                        </h:commandButton> 
+                    </h:panelGroup>
 
                     <h:outputLabel for="popisparkingmeteo" value="Odabrana parkiralista"/>
                     <h:selectManyListbox id="popisparkingmeteo" size="5" value="#{pregled.popisParkingMeteoOdabrana}" >
@@ -55,22 +62,69 @@
                                        itemLabel="#{p.labela}" itemValue="#{p.vrijednost}" />
                     </h:selectManyListbox>
 
-                    <h:commandButton value="MeteoPodaci" action="#{pregled.preuzmiMeteoPodatke()}">
-                        <f:ajax execute="popisparkingmeteo" render="meteopodaci" />
-                    </h:commandButton>
+                    <h:panelGroup id="gumbMeteopodaci">
+                        <h:commandButton value="#{pregled.gumbPrognozeVrijednost}" action="#{pregled.preuzmiMeteoPodatke()}">
+                            <f:ajax execute="popisparkingmeteo" render="meteopodaci gumbMeteopodaci" />
+                        </h:commandButton>
+                    </h:panelGroup>
                     <br/>
 
-                    <h:dataTable id="meteopodaci" value="#{pregled.popisMeteoPodaci}" var="mp">
-                        <h:column>
-                            <f:facet name="header">Temperatura</f:facet>
-                                #{mp.temp} 
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">vlaga</f:facet>
-                                #{mp.vlaga} 
-                        </h:column>
+                    <h:panelGroup id="meteopodaci">
+                        <h:dataTable value="#{pregled.popisMeteoPrognoza}" var="mp" rendered="#{pregled.prikaziMeteopodatke}">
+                            <h:column>
+                                <f:facet name="header">Id</f:facet>
+                                    #{mp.id}
+                            </h:column>
 
-                    </h:dataTable>
+                            <h:column>
+                                <f:facet name="header">Datum</f:facet>
+                                <h:outputText value="#{mp.prognoza.lastUpdate}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Prognoza</f:facet>
+                                    #{mp.prognoza.pressureValue}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Temperatura</f:facet>
+                                    #{mp.prognoza.temperatureValue}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Min temperatura</f:facet>
+                                    #{mp.prognoza.temperatureMin}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Max temperatura</f:facet>
+                                    #{mp.prognoza.temperatureMax}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Tlak</f:facet>
+                                    #{mp.prognoza.pressureValue}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Vlaga</f:facet>
+                                    #{mp.prognoza.humidityValue}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Vjetar</f:facet>
+                                    #{mp.prognoza.windSpeedValue}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Smjer vjetra</f:facet>
+                                    #{mp.prognoza.windDirectionValue}
+                            </h:column>
+
+                        </h:dataTable>
+                    </h:panelGroup>
                 </h:form>
             </ui:define>
 
