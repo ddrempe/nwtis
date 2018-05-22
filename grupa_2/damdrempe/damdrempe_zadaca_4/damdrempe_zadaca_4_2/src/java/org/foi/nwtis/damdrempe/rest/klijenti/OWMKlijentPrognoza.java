@@ -19,7 +19,8 @@ public class OWMKlijentPrognoza extends OWMKlijent {
     
     //TODO fali
     public MeteoPrognoza[] getWeatherForecast(int id, String latitude, String longitude){
-        //TODO nesto
+        //TODO treba preuzeti meteo prognoze od web servisa
+        
         MeteoPrognoza[] meteoPrognoze = new MeteoPrognoza[1];
         return meteoPrognoze;
     

@@ -12,50 +12,64 @@
             <ui:define name="top">
                 NWTiS - Pregled parkirališta i prognoza vremena
             </ui:define>
-            
+
             <ui:define name="content">
                 <h:form>
-                    <h:outputLabel for="naziv" value="Id"/>
+                    <h:outputLabel for="id" value="Id"/>
                     <h:inputText id="id" value="#{pregled.id}"/><br/>
                     <h:outputLabel for="naziv" value="Naziv"/>
                     <h:inputText id="naziv" value="#{pregled.naziv}"/><br/>
-                    <h:outputLabel for="naziv" value="Adresa"/>
+                    <h:outputLabel for="adresa" value="Adresa"/>
                     <h:inputText id="adresa" value="#{pregled.adresa}"/>
-                    <br/>
+
                     <h:commandButton value="Dodaj" action="#{pregled.dodajParkiraliste()}">
-                        <f:ajax execute="id naziv adresa" render=""/>
+                        <f:ajax execute="id naziv adresa" render="popisparking"/>
                     </h:commandButton>
-                    <h:commandButton value="Ažuriraj" action="#{pregled.azurirajParkiraliste()}">
-                        <f:ajax execute="id naziv adresa" render=""/>
-                    </h:commandButton>
-                    <br/>
-                    
+
+                    <h:panelGroup id="gumbUpisi">
+                        <h:commandButton value="Upiši" action="#{pregled.upisiParkiraliste()}" rendered="#{pregled.pokrenutoAzuriranje}">
+                            <f:ajax execute="id naziv adresa" render="popisparking gumbUpisi"/>
+                        </h:commandButton>
+                    </h:panelGroup>
+                    <br/><br/>                    
+
                     <h:outputLabel for="popisparking" value="Parkiralista"/>
                     <h:selectManyListbox id="popisparking" size="5" value="#{pregled.popisParkingOdabrano}" >
                         <f:selectItems value="#{pregled.popisParking}" var="p" 
                                        itemLabel="#{p.labela}" itemValue="#{p.vrijednost}" />
                     </h:selectManyListbox>
+
                     <h:commandButton value="Preuzmi" action="#{pregled.preuzmiParkiralista()}">
                         <f:ajax execute="popisparking" render="popisparkingmeteo popisparking" />
                     </h:commandButton>
+                    <h:commandButton value="Vrati" action="#{pregled.vratiParkiralista()}">
+                        <f:ajax execute="popisparkingmeteo" render="popisparkingmeteo popisparking" />
+                    </h:commandButton>
+                    <h:commandButton value="Ažuriraj" id="gumbAzuriraj" action="#{pregled.azurirajParkiraliste()}">
+                        <f:ajax execute="gumbAzuriraj popisparking" render="id naziv adresa gumbUpisi"/>
+                    </h:commandButton>                    
+
                     <h:outputLabel for="popisparkingmeteo" value="Odabrana parkiralista"/>
                     <h:selectManyListbox id="popisparkingmeteo" size="5" value="#{pregled.popisParkingMeteoOdabrana}" >
-                        <f:selectItems value="#{pregled.popisParkingMeto}" var="p" 
+                        <f:selectItems value="#{pregled.popisParkingMeteo}" var="p" 
                                        itemLabel="#{p.labela}" itemValue="#{p.vrijednost}" />
                     </h:selectManyListbox>
+
                     <h:commandButton value="MeteoPodaci" action="#{pregled.preuzmiMeteoPodatke()}">
                         <f:ajax execute="popisparkingmeteo" render="meteopodaci" />
                     </h:commandButton>
+                    <br/>
+
                     <h:dataTable id="meteopodaci" value="#{pregled.popisMeteoPodaci}" var="mp">
                         <h:column>
                             <f:facet name="header">Temperatura</f:facet>
-                            #{mp.temp} 
+                                #{mp.temp} 
                         </h:column>
                         <h:column>
                             <f:facet name="header">vlaga</f:facet>
-                            #{mp.vlaga} 
+                                #{mp.vlaga} 
                         </h:column>
-                        
+
                     </h:dataTable>
                 </h:form>
             </ui:define>
