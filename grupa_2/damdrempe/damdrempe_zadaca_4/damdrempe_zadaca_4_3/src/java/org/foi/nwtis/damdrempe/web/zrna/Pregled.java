@@ -44,7 +44,7 @@ public class Pregled implements Serializable {
     
     private List<MeteoPrognoza> popisMeteoPrognoza = new ArrayList<>();
     
-    private boolean pokrenutoAzuriranje = false;
+    private boolean prikaziGumbUpisi = false;
     private boolean prikaziGumbAzuriraj = false;
     
     private boolean prikaziMeteopodatke = false;
@@ -85,8 +85,8 @@ public class Pregled implements Serializable {
             p.setLongitude(Float.parseFloat(lokacija.getLongitude()));
             parkiralistaFacade.create(p);
 
-            setPokrenutoAzuriranje(true);
-            dohvatiPopisParking();            
+            setPrikaziGumbUpisi(false);
+            dohvatiPopisParking(); 
         } catch (Exception e) {
             poruka = e.toString();
         }
@@ -100,18 +100,16 @@ public class Pregled implements Serializable {
             return "";
         }
         
-        //TODO ako ne postoji ID javi poruku
         boolean postoji = false;
-        List<Parkiralista> parkiralista = parkiralistaFacade.findAll();
-        for (Parkiralista p : parkiralista) {
-            if(p.getId() == id){
+        for (Izbornik p : popisParking) {
+            if(Integer.parseInt(p.getVrijednost()) == id){
                 postoji = true;
                 break;
             }
         }
         
         if(postoji == false){
-            poruka = "Ne postoji parkiraliste s tim ID!";
+            poruka = "Ne postoji parkiraliste za azuriranje s tim ID!";
             return "";
         }
         
@@ -126,7 +124,7 @@ public class Pregled implements Serializable {
             p.setLongitude(Float.parseFloat(lokacija.getLongitude()));
             parkiralistaFacade.edit(p);
 
-            setPokrenutoAzuriranje(false);
+            setPrikaziGumbUpisi(false);
             dohvatiPopisParking();
             poruka="";
         } catch (Exception e) {
@@ -143,7 +141,7 @@ public class Pregled implements Serializable {
             naziv = p.getNaziv();
             adresa = p.getAdresa();
             
-            setPokrenutoAzuriranje(true);
+            setPrikaziGumbUpisi(true);
         }       
         
         return "";
@@ -209,20 +207,22 @@ public class Pregled implements Serializable {
         return meteoPrognoze;
     }
     
-    public String preuzmiMeteoPodatke(){        
-        popisMeteoPrognoza.clear();        
+    public String preuzmiMeteoPodatke(){
+        prikaziMeteopodatke = !prikaziMeteopodatke;
         
-        for (Parkiralista parkiralista : parkiralistaFacade.findAll()) {
-            for (Izbornik izbornik : popisParkingMeteo) {
-                if(Integer.parseInt(izbornik.getVrijednost()) == parkiralista.getId()){
-                    MeteoPrognoza[] mp = dohvatiMeteoPrekoZrna(parkiralista.getId(), parkiralista.getAdresa());
-                    popisMeteoPrognoza.addAll(Arrays.asList(mp));
+        if(prikaziMeteopodatke == true){
+            popisMeteoPrognoza.clear();        
+
+            for (Parkiralista parkiralista : parkiralistaFacade.findAll()) {
+                for (Izbornik izbornik : popisParkingMeteo) {
+                    if(Integer.parseInt(izbornik.getVrijednost()) == parkiralista.getId()){
+                        MeteoPrognoza[] mp = dohvatiMeteoPrekoZrna(parkiralista.getId(), parkiralista.getAdresa());
+                        popisMeteoPrognoza.addAll(Arrays.asList(mp));
+                    }
                 }
             }
         }
         
-        prikaziMeteopodatke = !prikaziMeteopodatke;
-                
         return "";
     }
     
@@ -294,12 +294,12 @@ public class Pregled implements Serializable {
         this.popisMeteoPodaci = popisMeteoPodaci;
     }
 
-    public boolean isPokrenutoAzuriranje() {
-        return pokrenutoAzuriranje;
+    public boolean isPrikaziGumbUpisi() {
+        return prikaziGumbUpisi;
     }
 
-    public void setPokrenutoAzuriranje(boolean pokrenutoAzuriranje) {
-        this.pokrenutoAzuriranje = pokrenutoAzuriranje;
+    public void setPrikaziGumbUpisi(boolean prikaziGumbUpisi) {
+        this.prikaziGumbUpisi = prikaziGumbUpisi;
     }
 
     public List<MeteoPrognoza> getPopisMeteoPrognoza() {
