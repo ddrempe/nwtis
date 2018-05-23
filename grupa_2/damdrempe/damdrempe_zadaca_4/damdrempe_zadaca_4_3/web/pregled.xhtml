@@ -89,23 +89,13 @@
                             </h:column>
 
                             <h:column>
-                                <f:facet name="header">Min temperatura</f:facet>
+                                <f:facet name="header">Temperatura min</f:facet>
                                     #{mp.prognoza.temperatureMin}
                             </h:column>
 
                             <h:column>
-                                <f:facet name="header">Max temperatura</f:facet>
+                                <f:facet name="header">Temperatura max</f:facet>
                                     #{mp.prognoza.temperatureMax}
-                            </h:column>
-                            
-                            <h:column>
-                                <f:facet name="header">Prognoza</f:facet>
-                                    #{mp.prognoza.pressureValue}
-                            </h:column>
-
-                            <h:column>
-                                <f:facet name="header">Vlaga</f:facet>
-                                    #{mp.prognoza.humidityValue}
                             </h:column>
                             
                             <h:column>
@@ -114,12 +104,17 @@
                             </h:column>
 
                             <h:column>
-                                <f:facet name="header">Vjetar</f:facet>
+                                <f:facet name="header">Vlaga</f:facet>
+                                    #{mp.prognoza.humidityValue}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Vjetar brzina</f:facet>
                                     #{mp.prognoza.windSpeedValue}
                             </h:column>
 
                             <h:column>
-                                <f:facet name="header">Smjer vjetra</f:facet>
+                                <f:facet name="header">Vjetar smjer</f:facet>
                                     #{mp.prognoza.windDirectionValue}
                             </h:column>
                         </h:dataTable>

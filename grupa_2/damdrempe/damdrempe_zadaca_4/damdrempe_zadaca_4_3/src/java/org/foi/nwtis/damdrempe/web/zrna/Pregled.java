@@ -2,19 +2,26 @@
 package org.foi.nwtis.damdrempe.web.zrna;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
-import org.foi.nwtis.damdrempe.ejb.eb.Meteo;
+import javax.servlet.http.HttpServletRequest;
+import org.foi.nwtis.damdrempe.ejb.eb.Dnevnik;
 import org.foi.nwtis.damdrempe.ejb.sb.ParkiralistaFacade;
 import org.foi.nwtis.damdrempe.ejb.eb.Parkiralista;
-import org.foi.nwtis.damdrempe.ejb.sb.MeteoFacade;
+import org.foi.nwtis.damdrempe.ejb.sb.DnevnikFacade;
 import org.foi.nwtis.damdrempe.ejb.sb.MeteoKlijentZrno;
 import org.foi.nwtis.damdrempe.web.podaci.Izbornik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
@@ -25,10 +32,10 @@ import org.foi.nwtis.damdrempe.web.podaci.MeteoPrognoza;
 public class Pregled implements Serializable {
 
     @EJB
-    private MeteoKlijentZrno meteoKlijentZrno;
+    private DnevnikFacade dnevnikFacade;
 
     @EJB
-    private MeteoFacade meteoFacade;
+    private MeteoKlijentZrno meteoKlijentZrno;
 
     @EJB
     private ParkiralistaFacade parkiralistaFacade;   
@@ -40,17 +47,20 @@ public class Pregled implements Serializable {
     private List<String> popisParkingOdabrano = new ArrayList<>();
     private List<Izbornik> popisParkingMeteo = new ArrayList<>();
     private List<String> popisParkingMeteoOdabrana = new ArrayList<>();
-    private List<Meteo> popisMeteoPodaci = new ArrayList<>();
     
     private List<MeteoPrognoza> popisMeteoPrognoza = new ArrayList<>();
     
     private boolean prikaziGumbUpisi = false;
-    private boolean prikaziGumbAzuriraj = false;
-    
+    private boolean prikaziGumbAzuriraj = false;    
     private boolean prikaziMeteopodatke = false;
     private String gumbPrognozeVrijednost;
     
     private String poruka = "";
+    
+    private long dnevnikPocetak;
+    private long dnevnikKraj;
+    private int dnevnikTrajanje;
+    private int dnevnikStatus;
     
     private Comparator<Izbornik> c = Comparator.comparing(Izbornik::getLabela, String.CASE_INSENSITIVE_ORDER);
     
@@ -74,6 +84,8 @@ public class Pregled implements Serializable {
     
     public String dodajParkiraliste(){ 
         //TODO ako je id null nađi sljedeci broj u bazi
+        
+        dnevnikPostavi();
         try {
             Parkiralista p = new Parkiralista();
             p.setId(id);
@@ -87,16 +99,21 @@ public class Pregled implements Serializable {
 
             setPrikaziGumbUpisi(false);
             dohvatiPopisParking(); 
+            dnevnikUspjesanStatus();
         } catch (Exception e) {
             poruka = e.toString();
-        }
+        }        
+
+        dnevnikPisi("dodajParkiraliste");
         
         return "";
     }
     
-    public String upisiParkiraliste(){ 
+    public String upisiParkiraliste(){  
+        dnevnikPostavi();
         if(id == null){
             poruka = "Niste upisali ID!";
+            dnevnikPisi("upisiParkiraliste");
             return "";
         }
         
@@ -110,6 +127,7 @@ public class Pregled implements Serializable {
         
         if(postoji == false){
             poruka = "Ne postoji parkiraliste za azuriranje s tim ID!";
+            dnevnikPisi("upisiParkiraliste");
             return "";
         }
         
@@ -127,21 +145,27 @@ public class Pregled implements Serializable {
             setPrikaziGumbUpisi(false);
             dohvatiPopisParking();
             poruka="";
+            dnevnikUspjesanStatus();
         } catch (Exception e) {
             poruka = e.toString();
         }
         
+        dnevnikPisi("upisiParkiraliste");
+        
         return "";
     }
     
-    public String azurirajParkiraliste(){        
+    public String azurirajParkiraliste(){   
         if (popisParkingOdabrano.size() == 1) {
+            dnevnikPostavi();
             Parkiralista p = parkiralistaFacade.find(popisParkingOdabrano);
             id = p.getId();
             naziv = p.getNaziv();
             adresa = p.getAdresa();
             
             setPrikaziGumbUpisi(true);
+            dnevnikUspjesanStatus();
+            dnevnikPisi("azurirajParkiraliste");
         }       
         
         return "";
@@ -211,6 +235,7 @@ public class Pregled implements Serializable {
         prikaziMeteopodatke = !prikaziMeteopodatke;
         
         if(prikaziMeteopodatke == true){
+            dnevnikPostavi();
             popisMeteoPrognoza.clear();        
 
             for (Parkiralista parkiralista : parkiralistaFacade.findAll()) {
@@ -221,6 +246,9 @@ public class Pregled implements Serializable {
                     }
                 }
             }
+            
+            dnevnikUspjesanStatus();
+            dnevnikPisi("preuzmiMeteoPodatke");
         }
         
         return "";
@@ -228,6 +256,33 @@ public class Pregled implements Serializable {
     
     public void promjena(AjaxBehaviorEvent event){
         prikaziGumbAzuriraj = popisParkingOdabrano.size() == 1;
+    }
+    
+    private void dnevnikPostavi(){
+        dnevnikPocetak = System.currentTimeMillis();
+        dnevnikStatus = 0;
+    }
+    
+    private void dnevnikUspjesanStatus(){
+        dnevnikStatus = 1;
+    }
+    
+    private void dnevnikPisi(String akcija){
+        dnevnikKraj = System.currentTimeMillis();
+        dnevnikTrajanje = (int) (dnevnikKraj - dnevnikPocetak);
+        
+        try {
+            HttpServletRequest zahtjev = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            String adresaZahtjeva = zahtjev.getRequestURL() + "/" + akcija;
+            String ipAdresa = InetAddress.getLocalHost().getHostAddress();
+            Date vrijeme = new Date(System.currentTimeMillis());
+            
+            Dnevnik dnevnik = new Dnevnik(1, "korisnik", adresaZahtjeva, ipAdresa, dnevnikTrajanje, dnevnikStatus);
+            dnevnik.setVrijeme(vrijeme);
+            dnevnikFacade.create(dnevnik);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Pregled.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public Integer getId() {
@@ -284,14 +339,6 @@ public class Pregled implements Serializable {
 
     public void setPopisParkingMeteoOdabrana(List<String> popisParkingMeteoOdabrana) {
         this.popisParkingMeteoOdabrana = popisParkingMeteoOdabrana;
-    }
-
-    public List<Meteo> getPopisMeteoPodaci() {
-        return popisMeteoPodaci;
-    }
-
-    public void setPopisMeteoPodaci(List<Meteo> popisMeteoPodaci) {
-        this.popisMeteoPodaci = popisMeteoPodaci;
     }
 
     public boolean isPrikaziGumbUpisi() {

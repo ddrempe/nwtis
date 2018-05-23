@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -12,10 +14,60 @@
             </ui:define>
 
             <ui:define name="content">
-                <br/>
-                <br/>
-                <br/>
-                <br/>
+                <h:form>
+                    <h:outputLabel for="ipadresa" value="IP adresa"/>
+                    <h:inputText id="ipadresa" value="#{pregledDnevnika.ipAdresa}"/><br/>
+
+                    <h:outputLabel for="od" value="Od"/>
+                    <h:inputText id="od" value="#{pregledDnevnika.odVrijeme}"/><br/>
+
+                    <h:outputLabel for="do" value="Do"/>
+                    <h:inputText id="do" value="#{pregledDnevnika.doVrijeme}"/><br/>
+
+                    <h:outputLabel for="trajanje" value="Trajanje"/>
+                    <h:inputText id="trajanje" value="#{pregledDnevnika.trajanje}"/><br/>
+
+                    <h:outputLabel for="adresazahtjeva" value="Adresa zahtjeva"/>
+                    <h:inputText id="adresazahtjeva" value="#{pregledDnevnika.adresaZahtjeva}"/><br/>
+
+                    <h:commandButton value="Preuzmi" action="#{pregledDnevnika.preuzmi()}">
+                    </h:commandButton> <br/>           
+
+                </h:form>
+
+                <h:dataTable value="#{pregledDnevnika.listaDnevnik}" var="d">
+                    <h:column>
+                        <f:facet name="header">Korisnik</f:facet>
+                        <h:outputText value="#{d.korisnik}"/>                      
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Adresa zahtjeva</f:facet>
+                        <h:outputText value="#{d.url}"/>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">IP adresa</f:facet>
+                        <h:outputText value="#{d.ipadresa}"/> 
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Vrijeme</f:facet>
+                        <h:outputText value="#{d.vrijeme}">
+                            <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" type="both" />
+                        </h:outputText> 
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Trajanje</f:facet>
+                        <h:outputText value="#{d.trajanje}"/> 
+                    </h:column>                            
+
+                    <h:column>
+                        <f:facet name="header">Status</f:facet>
+                        <h:outputText value="#{d.status}"/> 
+                    </h:column>
+                </h:dataTable>
             </ui:define>
 
         </ui:composition>
