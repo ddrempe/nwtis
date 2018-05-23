@@ -18,11 +18,19 @@
                     <h:outputLabel for="ipadresa" value="IP adresa"/>
                     <h:inputText id="ipadresa" value="#{pregledDnevnika.ipAdresa}"/><br/>
 
-                    <h:outputLabel for="od" value="Od"/>
-                    <h:inputText id="od" value="#{pregledDnevnika.odVrijeme}"/><br/>
+                    <h:outputLabel for="od" value="Od"/>                    
+                    <h:inputText id="od" value="#{pregledDnevnika.odVrijeme}"
+                                 converterMessage="Datum OD nije u dobrom formatu">
+                        <f:convertDateTime timeZone="Europe/Zagreb" 
+                                           pattern="dd.MM.yyyy HH:mm:ss" />
+                    </h:inputText><br/>
 
                     <h:outputLabel for="do" value="Do"/>
-                    <h:inputText id="do" value="#{pregledDnevnika.doVrijeme}"/><br/>
+                    <h:inputText id="do" value="#{pregledDnevnika.doVrijeme}"
+                                 converterMessage="Datum DO nije u dobrom formatu">
+                        <f:convertDateTime timeZone="Europe/Zagreb" 
+                                           pattern="dd.MM.yyyy HH:mm:ss" />
+                    </h:inputText><br/>
 
                     <h:outputLabel for="trajanje" value="Trajanje"/>
                     <h:inputText id="trajanje" value="#{pregledDnevnika.trajanje}"/><br/>
@@ -30,7 +38,7 @@
                     <h:outputLabel for="adresazahtjeva" value="Adresa zahtjeva"/>
                     <h:inputText id="adresazahtjeva" value="#{pregledDnevnika.adresaZahtjeva}"/><br/>
 
-                    <h:commandButton value="Preuzmi" action="#{pregledDnevnika.preuzmi()}">
+                    <h:commandButton value="Preuzmi" action="#{pregledDnevnika.preuzmiFiltrirano()}">
                     </h:commandButton> <br/>           
 
                 </h:form>

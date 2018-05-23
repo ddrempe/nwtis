@@ -9,6 +9,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -25,31 +26,39 @@ public class PregledDnevnika implements Serializable {
 
     @EJB
     private DnevnikFacade dnevnikFacade;
-    
+
     private String ipAdresa;
-    private String odVrijeme;
-    private String doVrijeme;
+    private Date odVrijeme;
+    private Date doVrijeme;
     private String adresaZahtjeva;
-    private String trajanje;    
-    
+    private String trajanje;
+
     private List<Dnevnik> listaDnevnik = new ArrayList<>();
 
     /**
      * Creates a new instance of PregledDnevnika
      */
     public PregledDnevnika() {
-        
+
     }
-    
+
     @PostConstruct
-    public void init(){
+    public void init() {
         if (listaDnevnik.isEmpty()) {
-            preuzmi();
+            preuzmiSve();
         }
     }
-    
-    public void preuzmi(){
+
+    public void preuzmiSve() {
         listaDnevnik = dnevnikFacade.findAll();
+    }
+
+    public void preuzmiFiltrirano() {
+        Integer trajanjeInt = null;
+        if(trajanje !=null && !trajanje.isEmpty()){
+            trajanjeInt = Integer.parseInt(trajanje);
+        }
+        listaDnevnik = dnevnikFacade.findFiltered(ipAdresa, trajanjeInt, adresaZahtjeva, odVrijeme, doVrijeme);
     }
 
     public String getIpAdresa() {
@@ -60,21 +69,21 @@ public class PregledDnevnika implements Serializable {
         this.ipAdresa = ipAdresa;
     }
 
-    public String getOdVrijeme() {
+    public Date getOdVrijeme() {
         return odVrijeme;
     }
 
-    public void setOdVrijeme(String odVrijeme) {
+    public void setOdVrijeme(Date odVrijeme) {
         this.odVrijeme = odVrijeme;
     }
 
-    public String getDoVrijeme() {
+    public Date getDoVrijeme() {
         return doVrijeme;
     }
 
-    public void setDoVrijeme(String doVrijeme) {
+    public void setDoVrijeme(Date doVrijeme) {
         this.doVrijeme = doVrijeme;
-    }
+    }   
 
     public String getAdresaZahtjeva() {
         return adresaZahtjeva;
@@ -98,5 +107,5 @@ public class PregledDnevnika implements Serializable {
 
     public void setListaDnevnik(List<Dnevnik> listaDnevnik) {
         this.listaDnevnik = listaDnevnik;
-    }   
+    }
 }
