@@ -1,4 +1,3 @@
-
 package org.foi.nwtis.damdrempe.web.zrna;
 
 import java.io.Serializable;
@@ -25,12 +24,15 @@ import org.foi.nwtis.damdrempe.ejb.eb.Parkiralista;
 import org.foi.nwtis.damdrempe.ejb.sb.DnevnikFacade;
 import org.foi.nwtis.damdrempe.ejb.sb.MeteoKlijentZrno;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
-import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.damdrempe.web.podaci.Izbornik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPrognoza;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
+/**
+ * Zrno za rad s pregledom/ažuriranjem parkirališta i preuzimanjem meteopodataka.
+ * @author ddrempetic
+ */
 @Named(value = "pregled")
 @SessionScoped
 public class Pregled implements Serializable {
@@ -66,16 +68,26 @@ public class Pregled implements Serializable {
     private int dnevnikTrajanje;
     private int dnevnikStatus;
     
-    private Comparator<Izbornik> c = Comparator.comparing(Izbornik::getLabela, String.CASE_INSENSITIVE_ORDER);
+    private Comparator<Izbornik> comparator = Comparator.comparing(Izbornik::getLabela, String.CASE_INSENSITIVE_ORDER);
     
+    /**
+     * Konstruktor klase.
+     */
     public Pregled() { 
     }
     
+    /**
+     * Dohvaća popis parkirališta.
+     */
     @PostConstruct
     public void init(){
         dohvatiPopisParking();
     }
     
+    /**
+     * Služi za dohvaćanje lokacije za trenutno upisanu adresu na sučelju.
+     * @return objekt s podacima lokacije.
+     */
     private Lokacija dohvatiLokacijuPrekoZrna(){
         ServletContext sc = SlusacAplikacije.servletContext;
         Konfiguracija k = (Konfiguracija) sc.getAttribute("Konfig");
@@ -90,9 +102,11 @@ public class Pregled implements Serializable {
         return lokacija;
     }
     
-    public String dodajParkiraliste(){ 
-        //TODO ako je id null nađi sljedeci broj u bazi
-        
+    /**
+     * Dodaje parkiralište s trenutno upisanim podacima na sučelju u bazu podataka.
+     * @return
+     */
+    public String dodajParkiraliste(){         
         dnevnikPostavi();
         try {
             Parkiralista p = new Parkiralista();
@@ -117,6 +131,10 @@ public class Pregled implements Serializable {
         return "";
     }
     
+    /**
+     * Provjerava da li parkiralište s upisanim ID postoji i zapisuje ga u tablicu u bazi.
+     * @return
+     */
     public String upisiParkiraliste(){  
         dnevnikPostavi();
         if(id == null){
@@ -131,14 +149,22 @@ public class Pregled implements Serializable {
                 postoji = true;
                 break;
             }
-        }
-        
+        }        
         if(postoji == false){
             poruka = "Ne postoji parkiraliste za azuriranje s tim ID!";
             dnevnikPisi("upisiParkiraliste");
             return "";
         }
         
+        upisiParkiralisteUBazu();        
+        dnevnikPisi("upisiParkiraliste");        
+        return "";
+    }
+
+    /**
+     * Za podatke upisane na sučelju stvara novi objekt parkirališta i upisuje u bazu podataka.
+     */
+    private void upisiParkiralisteUBazu() {
         try {
             Parkiralista p = new Parkiralista();
             p.setId(id);
@@ -157,12 +183,12 @@ public class Pregled implements Serializable {
         } catch (Exception e) {
             poruka = e.toString();
         }
-        
-        dnevnikPisi("upisiParkiraliste");
-        
-        return "";
     }
     
+    /**
+     * Učitava podatke o parkiralištu iz tablice u bazi podataka i prikazuje ih na sučelju za kasnije ažuriranje.
+     * @return
+     */
     public String azurirajParkiraliste(){   
         if (popisParkingOdabrano.size() == 1) {
             dnevnikPostavi();
@@ -179,6 +205,10 @@ public class Pregled implements Serializable {
         return "";
     }
 
+    /**
+     * Prebacuje selektirana parkirališta iz inicijalnog popisa u popis odabranih.
+     * @return
+     */
     public String preuzmiParkiralista(){
         for(Izbornik i : popisParking){
             if(popisParkingOdabrano.contains(i.getVrijednost())
@@ -193,11 +223,15 @@ public class Pregled implements Serializable {
             }
         }
         
-        popisParkingMeteo.sort(c);
+        popisParkingMeteo.sort(comparator);
         
         return "";
     }
     
+    /**
+     * Prebacuje selektirana parkirališta iz popisa odabranih u inicijalni popis.
+     * @return
+     */
     public String vratiParkiralista(){
         for(Izbornik i : popisParkingMeteo){
             if(popisParkingMeteoOdabrana.contains(i.getVrijednost())){
@@ -211,11 +245,14 @@ public class Pregled implements Serializable {
             }
         }
         
-        popisParking.sort(c);
+        popisParking.sort(comparator);
         
         return "";
     }
     
+    /**
+     * Dohvaća popis svih parkirališta iz tablice i sortira abecedno.
+     */
     public void dohvatiPopisParking(){
         popisParking = new ArrayList<>();
         
@@ -225,9 +262,15 @@ public class Pregled implements Serializable {
             popisParking.add(i);
         }  
         
-        popisParking.sort(c);
+        popisParking.sort(comparator);
     }
     
+    /**
+     * Preko meteoKlijentZrna dohvaća meteopodatke.
+     * @param idMeteo
+     * @param adresaMeteo
+     * @return niz meteoprognoza
+     */
     private MeteoPrognoza[] dohvatiMeteoPrekoZrna(int idMeteo, String adresaMeteo){
         ServletContext sc = SlusacAplikacije.servletContext;
         Konfiguracija k = (Konfiguracija) sc.getAttribute("Konfig");
@@ -242,6 +285,10 @@ public class Pregled implements Serializable {
         return meteoPrognoze;
     }
     
+    /**
+     * Za odabrana parkirališta preuzima meteopodatke i sprema u odgovarajući niz.
+     * @return
+     */
     public String preuzmiMeteoPodatke(){
         prikaziMeteopodatke = !prikaziMeteopodatke;
         
@@ -265,19 +312,33 @@ public class Pregled implements Serializable {
         return "";
     }
     
+    /**
+     * Ovisno o broju odabranih parkirališta na popisu mijenja vidljivost gumba Azuriraj.
+     * @param event
+     */
     public void promjena(AjaxBehaviorEvent event){
         prikaziGumbAzuriraj = popisParkingOdabrano.size() == 1;
     }
     
+    /**
+     * Metoda za početak rada s dnevnikom.
+     */
     private void dnevnikPostavi(){
         dnevnikPocetak = System.currentTimeMillis();
         dnevnikStatus = 0;
     }
     
+    /**
+     * Metoda za postavljanje uspješnog statusa rada.
+     */
     private void dnevnikUspjesanStatus(){
         dnevnikStatus = 1;
     }
     
+    /**
+     * Zapisuje informacije o korisničkim akcijama u tablicu dnevnik.
+     * @param akcija 
+     */
     private void dnevnikPisi(String akcija){
         dnevnikKraj = System.currentTimeMillis();
         dnevnikTrajanje = (int) (dnevnikKraj - dnevnikPocetak);
@@ -296,107 +357,211 @@ public class Pregled implements Serializable {
         }
     }
     
+    /**
+     *
+     * @return
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getAdresa() {
         return adresa;
     }
 
+    /**
+     *
+     * @param adresa
+     */
     public void setAdresa(String adresa) {
         this.adresa = adresa;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNaziv() {
         return naziv;
     }
 
+    /**
+     *
+     * @param naziv
+     */
     public void setNaziv(String naziv) {
         this.naziv = naziv;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Izbornik> getPopisParking() {
         return popisParking;
     }
 
+    /**
+     *
+     * @param popisParking
+     */
     public void setPopisParking(List<Izbornik> popisParking) {
         this.popisParking = popisParking;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getPopisParkingOdabrano() {
         return popisParkingOdabrano;
     }
 
+    /**
+     *
+     * @param popisParkingOdabrano
+     */
     public void setPopisParkingOdabrano(List<String> popisParkingOdabrano) {
         this.popisParkingOdabrano = popisParkingOdabrano;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Izbornik> getPopisParkingMeteo() {
         return popisParkingMeteo;
     }
 
+    /**
+     *
+     * @param popisParkingMeteo
+     */
     public void setPopisParkingMeteo(List<Izbornik> popisParkingMeteo) {
         this.popisParkingMeteo = popisParkingMeteo;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getPopisParkingMeteoOdabrana() {
         return popisParkingMeteoOdabrana;
     }
 
+    /**
+     *
+     * @param popisParkingMeteoOdabrana
+     */
     public void setPopisParkingMeteoOdabrana(List<String> popisParkingMeteoOdabrana) {
         this.popisParkingMeteoOdabrana = popisParkingMeteoOdabrana;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isPrikaziGumbUpisi() {
         return prikaziGumbUpisi;
     }
 
+    /**
+     *
+     * @param prikaziGumbUpisi
+     */
     public void setPrikaziGumbUpisi(boolean prikaziGumbUpisi) {
         this.prikaziGumbUpisi = prikaziGumbUpisi;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<MeteoPrognoza> getPopisMeteoPrognoza() {
         return popisMeteoPrognoza;
     }
 
+    /**
+     *
+     * @param popisMeteoPrognoza
+     */
     public void setPopisMeteoPrognoza(List<MeteoPrognoza> popisMeteoPrognoza) {
         this.popisMeteoPrognoza = popisMeteoPrognoza;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isPrikaziGumbAzuriraj() {
         return prikaziGumbAzuriraj;
     }
 
+    /**
+     *
+     * @param prikaziGumbAzuriraj
+     */
     public void setPrikaziGumbAzuriraj(boolean prikaziGumbAzuriraj) {
         this.prikaziGumbAzuriraj = prikaziGumbAzuriraj;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getGumbPrognozeVrijednost() {
         this.gumbPrognozeVrijednost = prikaziMeteopodatke ? "Zatvori prognoze" : "Prognoze";
         return gumbPrognozeVrijednost;
     }
 
+    /**
+     *
+     * @param gumbPrognozeVrijednost
+     */
     public void setGumbPrognozeVrijednost(String gumbPrognozeVrijednost) {
         this.gumbPrognozeVrijednost = gumbPrognozeVrijednost;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isPrikaziMeteopodatke() {
         return prikaziMeteopodatke;
     }
 
+    /**
+     *
+     * @param prikaziMeteopodatke
+     */
     public void setPrikaziMeteopodatke(boolean prikaziMeteopodatke) {
         this.prikaziMeteopodatke = prikaziMeteopodatke;
     }    
 
+    /**
+     *
+     * @return
+     */
     public String getPoruka() {
         return poruka;
     }
 
+    /**
+     *
+     * @param poruka
+     */
     public void setPoruka(String poruka) {
         this.poruka = poruka;
     }   

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.ejb.sb;
 
 import javax.ejb.Stateless;
@@ -13,8 +8,8 @@ import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPrognoza;
 
 /**
- *
- * @author grupa_2
+ * Zrno za dohvaćanje lokacije i meteoprognoza putem odgovarajućih klijenata.
+ * @author ddrempetic
  */
 @Stateless
 @LocalBean
@@ -22,20 +17,33 @@ public class MeteoKlijentZrno {
     private String apiKey;
     private String gmApiKey;
 
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
-
+    /**
+     * Metoda za postavljanje API ključeva.
+     * @param apiKey
+     * @param gmApiKey 
+     */
     public void postaviKorisnickePodatke(String apiKey, String gmApiKey) {
         this.apiKey = apiKey;
         this.gmApiKey = gmApiKey;
     }
     
+    /**
+     * Dohvaća lokaciju preko GM klijenta.
+     * @param adresa
+     * @return 
+     */
     public Lokacija dajLokaciju(String adresa){
         GMKlijent gmk = new GMKlijent(gmApiKey);
         Lokacija lokacija = gmk.getGeoLocation(adresa);
         return lokacija;
     }
     
+    /**
+     * Dohvaća meteoprognozu za parkiralište s zadanom adresom.
+     * @param id identifikator parkiralista koji se uparuje i vraća s dohvaćenim podacima 
+     * @param adresa adresa parkirališta za koje se dohvaćaju meteopodaci
+     * @return 
+     */
     public MeteoPrognoza[] dajMeteoPrognoze(int id, String adresa){
         OWMKlijentPrognoza klijentPrognoza = new OWMKlijentPrognoza(apiKey);
         Lokacija l = dajLokaciju(adresa);

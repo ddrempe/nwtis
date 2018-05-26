@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.ejb.eb;
 
 import java.io.Serializable;
@@ -23,8 +18,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author grupa_2
+ * Klasa za rad s tablicom dnevnik.
+ * @author ddrempetic
  */
 @Entity
 @Table(name = "DNEVNIK")

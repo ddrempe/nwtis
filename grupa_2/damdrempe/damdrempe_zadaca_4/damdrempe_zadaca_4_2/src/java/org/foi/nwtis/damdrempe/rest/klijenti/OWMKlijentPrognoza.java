@@ -17,17 +17,28 @@ import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPrognoza;
 
 /**
- *
- * @author grupa_2
+ * Proširenje klase za dohvat meteopodataka.
+ * @author ddrempetic
  */
 public class OWMKlijentPrognoza extends OWMKlijent {
     
+    /**
+     * Konstruktor klase.
+     * @param apiKey 
+     */
     public OWMKlijentPrognoza(String apiKey) {
         super(apiKey);
     }
     
     //TODO promijeniti svoje
     //TODO vidjeti da li je dobro da dohvaca 5 podataka
+    /**
+     * Za objekt s određenim identifikatorom i lokacijom vraća meteoprognoze.
+     * @param id identifikator objekta
+     * @param latitude geografska širina
+     * @param longitude geografska dužina
+     * @return niz meteoprognoza dohvaćenih preko servisa
+     */
     public MeteoPrognoza[] getWeatherForecast(int id, String latitude, String longitude) {
 
         WebTarget webResource = client.target(OWMRESTHelper.getOWM_BASE_URI())

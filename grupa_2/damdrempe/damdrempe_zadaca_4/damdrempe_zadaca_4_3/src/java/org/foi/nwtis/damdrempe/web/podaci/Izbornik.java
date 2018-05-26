@@ -2,6 +2,10 @@ package org.foi.nwtis.damdrempe.web.podaci;
 
 import java.util.Objects;
 
+/**
+ * Preuzeta klasa.
+ * @author ddrempetic
+ */
 public class Izbornik {
     private String labela;
     private String vrijednost;

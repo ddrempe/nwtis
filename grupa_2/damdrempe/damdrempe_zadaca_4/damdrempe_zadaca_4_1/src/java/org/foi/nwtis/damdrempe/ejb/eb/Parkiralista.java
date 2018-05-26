@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.ejb.eb;
 
 import java.io.Serializable;
@@ -24,8 +19,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author grupa_2
+ * Klasa za rad s tablicom parkiralista.
+ * @author ddrempetic
  */
 @Entity
 @Table(name = "PARKIRALISTA")
