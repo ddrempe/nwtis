@@ -15,67 +15,72 @@
 
             <ui:define name="content">
                 <h:form>
-                    <h:outputLabel for="ipadresa" value="IP adresa"/>
-                    <h:inputText id="ipadresa" value="#{pregledDnevnika.ipAdresa}"/><br/>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel for="ipadresa" value="IP adresa"/>
+                        <h:inputText id="ipadresa" value="#{pregledDnevnika.ipAdresa}"/>
 
-                    <h:outputLabel for="od" value="Od"/>                    
-                    <h:inputText id="od" value="#{pregledDnevnika.odVrijeme}"
-                                 converterMessage="Datum OD nije u dobrom formatu">
-                        <f:convertDateTime timeZone="Europe/Zagreb" 
-                                           pattern="dd.MM.yyyy HH:mm:ss" />
-                    </h:inputText><br/>
+                        <h:outputLabel for="od" value="Od"/>                    
+                        <h:inputText id="od" value="#{pregledDnevnika.odVrijeme}"
+                                     converterMessage="Datum OD nije u dobrom formatu">
+                            <f:convertDateTime timeZone="Europe/Zagreb" 
+                                               pattern="dd.MM.yyyy HH:mm:ss" />
+                        </h:inputText>
 
-                    <h:outputLabel for="do" value="Do"/>
-                    <h:inputText id="do" value="#{pregledDnevnika.doVrijeme}"
-                                 converterMessage="Datum DO nije u dobrom formatu">
-                        <f:convertDateTime timeZone="Europe/Zagreb" 
-                                           pattern="dd.MM.yyyy HH:mm:ss" />
-                    </h:inputText><br/>
+                        <h:outputLabel for="do" value="Do"/>
+                        <h:inputText id="do" value="#{pregledDnevnika.doVrijeme}"
+                                     converterMessage="Datum DO nije u dobrom formatu">
+                            <f:convertDateTime timeZone="Europe/Zagreb" 
+                                               pattern="dd.MM.yyyy HH:mm:ss" />
+                        </h:inputText>
 
-                    <h:outputLabel for="trajanje" value="Trajanje"/>
-                    <h:inputText id="trajanje" value="#{pregledDnevnika.trajanje}"/><br/>
+                        <h:outputLabel for="trajanje" value="Trajanje"/>
+                        <h:inputText id="trajanje" value="#{pregledDnevnika.trajanje}"/>
 
-                    <h:outputLabel for="adresazahtjeva" value="Adresa zahtjeva"/>
-                    <h:inputText id="adresazahtjeva" value="#{pregledDnevnika.adresaZahtjeva}"/><br/>
+                        <h:outputLabel for="adresazahtjeva" value="Adresa zahtjeva"/>
+                        <h:inputText id="adresazahtjeva" value="#{pregledDnevnika.adresaZahtjeva}"/>
 
-                    <h:commandButton value="Preuzmi" action="#{pregledDnevnika.preuzmiFiltrirano()}">
-                    </h:commandButton> <br/>           
+                        <h:commandButton value="Preuzmi" action="#{pregledDnevnika.preuzmiFiltrirano()}">
+                            <f:ajax execute="ipadresa od do trajanje adresazahtjeva" render="dnevnik"/>
+                        </h:commandButton>
+                    </h:panelGrid>
 
                 </h:form>
 
-                <h:dataTable value="#{pregledDnevnika.listaDnevnik}" var="d">
-                    <h:column>
-                        <f:facet name="header">Korisnik</f:facet>
-                        <h:outputText value="#{d.korisnik}"/>                      
-                    </h:column>
+                <h:panelGroup id="dnevnik">
+                    <h:dataTable value="#{pregledDnevnika.listaDnevnik}" var="d" styleClass="table">
+                        <h:column>
+                            <f:facet name="header">Korisnik</f:facet>
+                            <h:outputText value="#{d.korisnik}"/>                      
+                        </h:column>
 
-                    <h:column>
-                        <f:facet name="header">Adresa zahtjeva</f:facet>
-                        <h:outputText value="#{d.url}"/>
-                    </h:column>
+                        <h:column>
+                            <f:facet name="header">Adresa zahtjeva</f:facet>
+                            <h:outputText value="#{d.url}"/>
+                        </h:column>
 
-                    <h:column>
-                        <f:facet name="header">IP adresa</f:facet>
-                        <h:outputText value="#{d.ipadresa}"/> 
-                    </h:column>
+                        <h:column>
+                            <f:facet name="header">IP adresa</f:facet>
+                            <h:outputText value="#{d.ipadresa}"/> 
+                        </h:column>
 
-                    <h:column>
-                        <f:facet name="header">Vrijeme</f:facet>
-                        <h:outputText value="#{d.vrijeme}">
-                            <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" type="both" />
-                        </h:outputText> 
-                    </h:column>
+                        <h:column>
+                            <f:facet name="header">Vrijeme</f:facet>
+                            <h:outputText value="#{d.vrijeme}">
+                                <f:convertDateTime timeZone="Europe/Zagreb" pattern="dd.MM.yyyy HH:mm:ss" type="both" />
+                            </h:outputText> 
+                        </h:column>
 
-                    <h:column>
-                        <f:facet name="header">Trajanje</f:facet>
-                        <h:outputText value="#{d.trajanje}"/> 
-                    </h:column>                            
+                        <h:column>
+                            <f:facet name="header">Trajanje</f:facet>
+                            <h:outputText value="#{d.trajanje}"/> 
+                        </h:column>                            
 
-                    <h:column>
-                        <f:facet name="header">Status</f:facet>
-                        <h:outputText value="#{d.status}"/> 
-                    </h:column>
-                </h:dataTable>
+                        <h:column>
+                            <f:facet name="header">Status</f:facet>
+                            <h:outputText value="#{d.status}"/> 
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
             </ui:define>
 
         </ui:composition>

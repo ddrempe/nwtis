@@ -15,62 +15,76 @@
 
             <ui:define name="content">
                 <h:form>
-                    <h:outputLabel for="id" value="Id"/>
-                    <h:inputText id="id" value="#{pregled.id}"/><br/>
-                    <h:outputLabel for="naziv" value="Naziv"/>
-                    <h:inputText id="naziv" value="#{pregled.naziv}"/><br/>
-                    <h:outputLabel for="adresa" value="Adresa"/>
-                    <h:inputText id="adresa" value="#{pregled.adresa}"/>
-
-                    <h:commandButton value="Dodaj" action="#{pregled.dodajParkiraliste()}">
-                        <f:ajax execute="id naziv adresa" render="popisparking gumbUpisi poruka"/>
-                    </h:commandButton>
-
-                    <h:panelGroup id="gumbUpisi">
-                        <h:commandButton value="Upiši" action="#{pregled.upisiParkiraliste()}" rendered="#{pregled.prikaziGumbUpisi}">
+                    <h:panelGrid columns="3">
+                        <h:outputLabel for="id" value="ID"/>
+                        <h:inputText id="id" value="#{pregled.id}"/>
+                        <h:commandButton value="Dodaj" 
+                                         action="#{pregled.dodajParkiraliste()}"
+                                         styleClass="button">
                             <f:ajax execute="id naziv adresa" render="popisparking gumbUpisi poruka"/>
                         </h:commandButton>
-                    </h:panelGroup>
+                        <h:outputLabel for="naziv" value="Naziv"/>
+                        <h:inputText id="naziv" value="#{pregled.naziv}"/><br/>
+                        <h:outputLabel for="adresa" value="Adresa"/>
+                        <h:inputText id="adresa" value="#{pregled.adresa}"/>            
+                        <h:panelGroup id="gumbUpisi">
+                            <h:commandButton value="Upiši" action="#{pregled.upisiParkiraliste()}" rendered="#{pregled.prikaziGumbUpisi}" styleClass="button">
+                                <f:ajax execute="id naziv adresa" render="popisparking gumbUpisi poruka"/>
+                            </h:commandButton>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <br/>
+
+                    <div style="display: block; border: 2px solid firebrick; color: firebrick;">
+                        <br/> 
+                        <h:outputText id="poruka" value="#{pregled.poruka}"/>
+                    </div>
                     <br/><br/> 
-                    
-                    <h:outputText id="poruka" value="#{pregled.poruka}" />
-                    <br/><br/> 
 
-                    <h:outputLabel for="popisparking" value="Parkiralista"/>
-                    <h:selectManyListbox id="popisparking" size="5" value="#{pregled.popisParkingOdabrano}" >
-                        <f:selectItems value="#{pregled.popisParking}" var="p" 
-                                       itemLabel="#{p.labela}" itemValue="#{p.vrijednost}" />
-                        <f:ajax event="change" listener="#{pregled.promjena}" render="gumbAzuriraj"/>
-                    </h:selectManyListbox>
+                    <h:panelGrid columns="4">
+                        <h:outputLabel for="popisparking" value="Parkiralista"/>
+                        <br/> 
+                        <h:outputLabel for="popisparkingmeteo" value="Odabrana parkiralista"/> 
+                        <br/> 
 
-                    <h:commandButton value="Preuzmi" action="#{pregled.preuzmiParkiralista()}">
-                        <f:ajax execute="popisparking" render="popisparkingmeteo popisparking" />
-                    </h:commandButton>
-                    <h:commandButton value="Vrati" action="#{pregled.vratiParkiralista()}">
-                        <f:ajax execute="popisparkingmeteo" render="popisparkingmeteo popisparking" />
-                    </h:commandButton>
+                        <h:selectManyListbox id="popisparking" size="5" value="#{pregled.popisParkingOdabrano}" >
+                            <f:selectItems value="#{pregled.popisParking}" var="p" 
+                                           itemLabel="#{p.labela}" itemValue="#{p.vrijednost}" />
+                            <f:ajax event="change" listener="#{pregled.promjena}" render="gumbAzuriraj"/>
+                        </h:selectManyListbox>
 
-                    <h:panelGroup id="gumbAzuriraj">
-                        <h:commandButton value="Ažuriraj" action="#{pregled.azurirajParkiraliste()}" rendered="#{pregled.prikaziGumbAzuriraj}">
-                            <f:ajax execute="gumbAzuriraj popisparking" render="id naziv adresa gumbUpisi"/>
-                        </h:commandButton> 
-                    </h:panelGroup>
+                        <h:panelGroup>
+                            <h:commandButton value="Preuzmi" action="#{pregled.preuzmiParkiralista()}" styleClass="button">
+                                <f:ajax execute="popisparking" render="popisparkingmeteo popisparking" />
+                            </h:commandButton><br/>
+                            <h:commandButton value="Vrati" action="#{pregled.vratiParkiralista()}" styleClass="button">
+                                <f:ajax execute="popisparkingmeteo" render="popisparkingmeteo popisparking" />
+                            </h:commandButton><br/>
 
-                    <h:outputLabel for="popisparkingmeteo" value="Odabrana parkiralista"/>
-                    <h:selectManyListbox id="popisparkingmeteo" size="5" value="#{pregled.popisParkingMeteoOdabrana}" >
-                        <f:selectItems value="#{pregled.popisParkingMeteo}" var="p" 
-                                       itemLabel="#{p.labela}" itemValue="#{p.vrijednost}" />
-                    </h:selectManyListbox>
+                            <h:panelGroup id="gumbAzuriraj">
+                                <h:commandButton value="Ažuriraj" action="#{pregled.azurirajParkiraliste()}" rendered="#{pregled.prikaziGumbAzuriraj}" styleClass="button">
+                                    <f:ajax execute="gumbAzuriraj popisparking" render="id naziv adresa gumbUpisi"/>
+                                </h:commandButton> 
+                            </h:panelGroup>
+                        </h:panelGroup>
 
-                    <h:panelGroup id="gumbMeteopodaci">
-                        <h:commandButton value="#{pregled.gumbPrognozeVrijednost}" action="#{pregled.preuzmiMeteoPodatke()}">
-                            <f:ajax execute="popisparkingmeteo" render="meteopodaci gumbMeteopodaci" />
-                        </h:commandButton>
-                    </h:panelGroup>
+
+                        <h:selectManyListbox id="popisparkingmeteo" size="5" value="#{pregled.popisParkingMeteoOdabrana}" >
+                            <f:selectItems value="#{pregled.popisParkingMeteo}" var="p" 
+                                           itemLabel="#{p.labela}" itemValue="#{p.vrijednost}" />
+                        </h:selectManyListbox>
+
+                        <h:panelGroup id="gumbMeteopodaci">
+                            <h:commandButton value="#{pregled.gumbPrognozeVrijednost}" action="#{pregled.preuzmiMeteoPodatke()}" styleClass="button">
+                                <f:ajax execute="popisparkingmeteo" render="meteopodaci gumbMeteopodaci" />
+                            </h:commandButton>
+                        </h:panelGroup>
+
+                    </h:panelGrid>
                     <br/>
 
                     <h:panelGroup id="meteopodaci">
-                        <h:dataTable value="#{pregled.popisMeteoPrognoza}" var="mp" rendered="#{pregled.prikaziMeteopodatke}">
+                        <h:dataTable value="#{pregled.popisMeteoPrognoza}" var="mp" rendered="#{pregled.prikaziMeteopodatke}" styleClass="table">
                             <h:column>
                                 <f:facet name="header">Id parkiralista</f:facet>
                                     #{mp.id}
@@ -97,7 +111,7 @@
                                 <f:facet name="header">Temperatura max</f:facet>
                                     #{mp.prognoza.temperatureMax}
                             </h:column>
-                            
+
                             <h:column>
                                 <f:facet name="header">Tlak</f:facet>
                                     #{mp.prognoza.pressureValue}

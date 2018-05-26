@@ -17,15 +17,19 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import org.foi.nwtis.damdrempe.ejb.eb.Dnevnik;
 import org.foi.nwtis.damdrempe.ejb.sb.ParkiralistaFacade;
 import org.foi.nwtis.damdrempe.ejb.eb.Parkiralista;
 import org.foi.nwtis.damdrempe.ejb.sb.DnevnikFacade;
 import org.foi.nwtis.damdrempe.ejb.sb.MeteoKlijentZrno;
+import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
+import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.damdrempe.web.podaci.Izbornik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPrognoza;
+import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 @Named(value = "pregled")
 @SessionScoped
@@ -73,8 +77,12 @@ public class Pregled implements Serializable {
     }
     
     private Lokacija dohvatiLokacijuPrekoZrna(){
-        String apikey = "eeab428a2e33536c5bb6deb266b37fcd";
-        String gmapikey = "AIzaSyB1My2HHb8rRuQ35EUnPbwM2LOM1D5eItg";
+        ServletContext sc = SlusacAplikacije.servletContext;
+        Konfiguracija k = (Konfiguracija) sc.getAttribute("Konfig");
+        
+        String apikey = k.dajPostavku("apikey");
+        String gmapikey = k.dajPostavku("gmapikey");
+
         meteoKlijentZrno = new MeteoKlijentZrno();
         meteoKlijentZrno.postaviKorisnickePodatke(apikey, gmapikey);
         Lokacija lokacija = meteoKlijentZrno.dajLokaciju(adresa);
@@ -221,8 +229,11 @@ public class Pregled implements Serializable {
     }
     
     private MeteoPrognoza[] dohvatiMeteoPrekoZrna(int idMeteo, String adresaMeteo){
-        String apikey = "eeab428a2e33536c5bb6deb266b37fcd";
-        String gmapikey = "AIzaSyB1My2HHb8rRuQ35EUnPbwM2LOM1D5eItg";
+        ServletContext sc = SlusacAplikacije.servletContext;
+        Konfiguracija k = (Konfiguracija) sc.getAttribute("Konfig");
+        
+        String apikey = k.dajPostavku("apikey");
+        String gmapikey = k.dajPostavku("gmapikey");
         meteoKlijentZrno = new MeteoKlijentZrno();
         meteoKlijentZrno.postaviKorisnickePodatke(apikey, gmapikey);
         

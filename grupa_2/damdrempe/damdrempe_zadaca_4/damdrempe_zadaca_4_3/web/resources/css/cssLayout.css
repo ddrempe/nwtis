@@ -58,4 +58,17 @@
   text-decoration : underline;
 }
 
+.button {
+    width: 150px;
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 1px;
+}
 
