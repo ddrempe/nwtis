@@ -3,7 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/web/index.xhtml</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/pomocno/nekoristenoBazaPodatakaOperacije.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/pomocno/PomocnaKlasa.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/ws/serveri/GeoMeteoWS.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/web/WEB-INF/NWTiS.db.config_1.xml</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/pomocno/BazaPodatakaOperacije.java</file>
         </group>
     </open-files>
 </project-private>
