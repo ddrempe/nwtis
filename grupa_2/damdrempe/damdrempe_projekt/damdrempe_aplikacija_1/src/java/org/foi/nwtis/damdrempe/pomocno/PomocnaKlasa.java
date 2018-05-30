@@ -1,10 +1,13 @@
 package org.foi.nwtis.damdrempe.pomocno;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.rest.klijenti.GMKlijent;
 import org.foi.nwtis.damdrempe.rest.klijenti.OWMKlijent;
+import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
@@ -47,5 +50,38 @@ public class PomocnaKlasa {
             Logger.getLogger("Nije moguće dohvatiti sve meteo podatke!");
         }
         return meteo;
-    }    
+    }  
+    
+    /**
+     * Provjerava da li korisnik postoji
+     * @param korisnik
+     * @return 
+     */
+    public static boolean autentificirajKorisnika(Korisnik korisnik){
+        boolean postoji = false;
+        
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            postoji = bpo.korisniciSelectKorisnikPostoji(korisnik);
+            bpo.zatvoriVezu();            
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return postoji;
+    }
+    
+    /**
+     * Zapisuje novi zapis u tablicu dnevnik
+     * @param dnevnik 
+     */
+    public static void zapisiUDnevnik(Dnevnik dnevnik){
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            bpo.dnevnikInsert(dnevnik);
+            bpo.zatvoriVezu();            
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

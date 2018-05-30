@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
+import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
@@ -256,5 +257,43 @@ public class BazaPodatakaOperacije {
         //meteo.setWindDirectionValue("VJETARSMJER");               //ne postoji setter
 
         return meteo;
+    }
+    
+    /**
+     * Provjerava da li korisnik postoji
+     * @param korisnik objekt korisnika
+     * @return true ako postoji, inače false
+     * @throws SQLException 
+     */
+    public boolean korisniciSelectKorisnikPostoji(Korisnik korisnik) throws SQLException{
+        String upitSelect = "SELECT * FROM korisnici WHERE kor_ime = ? AND lozinka = ?";
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
+        preparedStmt.setString(1, korisnik.getKorisnickoIme());
+        preparedStmt.setString(2, korisnik.getLozinka());
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.getResultSet();
+        
+        return rs.next();
+    }
+    
+    /**
+     * Dodaje novi zapis u dnevnik
+     * @param dnevnik podaci dnevnika
+     * @throws SQLException
+     */
+    public void dnevnikInsert(Dnevnik dnevnik) throws SQLException{
+        String upit = "INSERT INTO dnevnik (KORISNIK, URL, IPADRESA, TRAJANJE, STATUS)" + 
+                              " VALUES (?, ?, ?, ?, ?)";
+
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+        
+        preparedStmt.setString(1, dnevnik.getKorisnik());
+        preparedStmt.setString(2, dnevnik.getUrl());
+        preparedStmt.setString(3, dnevnik.getIpAdresa());
+        preparedStmt.setInt(4, dnevnik.getTrajanje());
+        preparedStmt.setInt(5, dnevnik.getStatus());
+
+        preparedStmt.execute();        
     }
 }

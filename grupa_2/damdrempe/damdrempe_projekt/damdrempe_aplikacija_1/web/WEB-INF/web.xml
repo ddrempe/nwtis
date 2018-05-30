@@ -24,6 +24,11 @@
         <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>GeoMeteoWSBezAutentifikacije</servlet-name>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/faces/*</url-pattern>
@@ -31,6 +36,10 @@
     <servlet-mapping>
         <servlet-name>GeoMeteoWS</servlet-name>
         <url-pattern>/GeoMeteoWS</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GeoMeteoWSBezAutentifikacije</servlet-name>
+        <url-pattern>/GeoMeteoWSBezAutentifikacije</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
