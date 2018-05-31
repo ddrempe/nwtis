@@ -1,5 +1,11 @@
 package org.foi.nwtis.damdrempe.web.podaci;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
+
 /**
  * Klasa za rad s zapisima iz dnevnika rada.
  * @author ddrempetic
@@ -8,16 +14,33 @@ public class Dnevnik {
 
     private String korisnik;
     private String url;
-    private String ipAdresa;
+    private String ipAdresa = "";
     private int trajanje;
     private int status;
+    
+    private long pocetakRada;
+    private long krajRada;
 
-    public Dnevnik(String korisnik, String url, String ipAdresa, int trajanje, int status) {
+    public Dnevnik() {
+        this.pocetakRada = System.currentTimeMillis();
+        this.status = 0;
+    }
+    
+    public void postaviUspjesanStatus(){
+        this.status = 1;
+    }
+    
+    public void zavrsiDnevnik(String korisnik, String url){
+        this.ipAdresa = PomocnaKlasa.dajTrenutnuIPAdresu();        
         this.korisnik = korisnik;
         this.url = url;
-        this.ipAdresa = ipAdresa;
-        this.trajanje = trajanje;
-        this.status = status;
+        this.krajRada = System.currentTimeMillis();
+        this.trajanje = (int) (this.krajRada - this.pocetakRada);
+    }
+    
+    public void zavrsiISpremiDnevnik(String korisnik, String url){
+        this.zavrsiDnevnik(korisnik, url);
+        PomocnaKlasa.zapisiUDnevnik(this);
     }
 
     public String getKorisnik() {

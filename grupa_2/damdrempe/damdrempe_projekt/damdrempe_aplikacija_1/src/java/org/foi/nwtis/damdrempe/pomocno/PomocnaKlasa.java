@@ -1,5 +1,7 @@
 package org.foi.nwtis.damdrempe.pomocno;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,11 +56,13 @@ public class PomocnaKlasa {
     
     /**
      * Provjerava da li korisnik postoji
-     * @param korisnik
-     * @return 
+     * @param korisnickoIme
+     * @param lozinka
+     * @return true ako postoji, inače false
      */
-    public static boolean autentificirajKorisnika(Korisnik korisnik){
+    public static boolean autentificirajKorisnika(String korisnickoIme, String lozinka){
         boolean postoji = false;
+        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
         
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
@@ -83,5 +87,16 @@ public class PomocnaKlasa {
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static String dajTrenutnuIPAdresu(){
+        String ipAdresa = "";
+        try {
+            ipAdresa = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return ipAdresa;
     }
 }

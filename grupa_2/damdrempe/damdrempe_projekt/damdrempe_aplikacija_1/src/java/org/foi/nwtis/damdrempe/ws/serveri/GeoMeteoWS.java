@@ -1,7 +1,5 @@
 package org.foi.nwtis.damdrempe.ws.serveri;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -16,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import org.foi.nwtis.damdrempe.pomocno.BazaPodatakaOperacije;
-import org.foi.nwtis.damdrempe.pomocno.Korisnik;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
@@ -46,8 +43,11 @@ public class GeoMeteoWS {
      * @return listu meteopodataka iz rezultata upita
      */
     public List<MeteoPodaci> dajMeteoPodatkeZaPeriodLong(int id, long odVrijeme, long doVrijeme, String korisnickoIme, String lozinka) {
-        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
-        if (autentificirajIZapisiUDnevnik(korisnik, "dajMeteoPodatkeZaPeriodLong") == false) {
+        Dnevnik dnevnik = new Dnevnik();        
+        String url = vratiTrenutnuAdresuZahtjeva("dajMeteoPodatkeZaPeriodLong");
+        
+        if(PomocnaKlasa.autentificirajKorisnika(korisnickoIme, lozinka) == false){
+            dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
             return null;
         }
         
@@ -57,9 +57,12 @@ public class GeoMeteoWS {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             sviMeteopodaci = bpo.meteoSelectIdMeteoPeriod(id, odVrijeme, doVrijeme);
             bpo.zatvoriVezu();
+            dnevnik.postaviUspjesanStatus();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
 
         return sviMeteopodaci;
     }
@@ -76,8 +79,11 @@ public class GeoMeteoWS {
      * @return listu meteopodataka iz rezultata upita
      */
     public List<MeteoPodaci> dajMeteoPodatkeZaPeriodTimestamp(int id, String odString, String doString, String korisnickoIme, String lozinka) {
-        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
-        if (autentificirajIZapisiUDnevnik(korisnik, "dajMeteoPodatkeZaPeriodTimestamp") == false) {
+        Dnevnik dnevnik = new Dnevnik();        
+        String url = vratiTrenutnuAdresuZahtjeva("dajMeteoPodatkeZaPeriodTimestamp");
+        
+        if(PomocnaKlasa.autentificirajKorisnika(korisnickoIme, lozinka) == false){
+            dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
             return null;
         }
 
@@ -97,9 +103,12 @@ public class GeoMeteoWS {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             sviMeteopodaci = bpo.meteoSelectIdMeteoPeriod(id, odVrijeme, doVrijeme);
             bpo.zatvoriVezu();
+            dnevnik.postaviUspjesanStatus();
         } catch (SQLException | ClassNotFoundException | ParseException ex) {
             Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
 
         return sviMeteopodaci;
     }
@@ -114,8 +123,11 @@ public class GeoMeteoWS {
      * @return objekt meteopodataka
      */
     public MeteoPodaci dajZadnjeMeteoPodatke(int id, String korisnickoIme, String lozinka) {
-        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
-        if (autentificirajIZapisiUDnevnik(korisnik, "dajZadnjeMeteoPodatke") == false) {
+        Dnevnik dnevnik = new Dnevnik();        
+        String url = vratiTrenutnuAdresuZahtjeva("dajZadnjeMeteoPodatke");
+        
+        if(PomocnaKlasa.autentificirajKorisnika(korisnickoIme, lozinka) == false){
+            dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
             return null;
         }
 
@@ -125,9 +137,12 @@ public class GeoMeteoWS {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             meteopodaci = bpo.meteoPodaciSelectIdZadnjiMeteo(id);
             bpo.zatvoriVezu();
+            dnevnik.postaviUspjesanStatus();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
 
         return meteopodaci;
     }
@@ -143,17 +158,19 @@ public class GeoMeteoWS {
      * @return objekt meteopodataka
      */
     public MeteoPodaci dajVazeceMeteoPodatke(int id, String korisnickoIme, String lozinka) {
-        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
-        if (autentificirajIZapisiUDnevnik(korisnik, "dajVazeceMeteoPodatke") == false) {
+        Dnevnik dnevnik = new Dnevnik();        
+        String url = vratiTrenutnuAdresuZahtjeva("dajVazeceMeteoPodatke");
+        
+        if(PomocnaKlasa.autentificirajKorisnika(korisnickoIme, lozinka) == false){
+            dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
             return null;
         }
 
         Parkiraliste parkiraliste = new Parkiraliste();
-
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             parkiraliste = bpo.parkiralistaSelectIdJednoParkiraliste(id);
-            bpo.zatvoriVezu();
+            bpo.zatvoriVezu();            
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -162,9 +179,12 @@ public class GeoMeteoWS {
 
         try {
             meteo = PomocnaKlasa.dohvatiOWMMeteo(parkiraliste.getGeoloc().getLatitude(), parkiraliste.getGeoloc().getLongitude());
+            dnevnik.postaviUspjesanStatus();
         } catch (Exception ex) {
             Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
 
         return meteo;
     }
@@ -180,46 +200,32 @@ public class GeoMeteoWS {
      * @return listu meteopodataka iz rezultata upita
      */
     public List<MeteoPodaci> dajZadnjihNMeteopodataka(int id, int n, String korisnickoIme, String lozinka) {
-        List<MeteoPodaci> meteopodaci = null;
-
-        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
-        if (autentificirajIZapisiUDnevnik(korisnik, "dajZadnjihNMeteopodataka") == false) {
+        Dnevnik dnevnik = new Dnevnik();        
+        String url = vratiTrenutnuAdresuZahtjeva("dajZadnjihNMeteopodataka");
+        
+        if(PomocnaKlasa.autentificirajKorisnika(korisnickoIme, lozinka) == false){
+            dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);
             return null;
         }
-
+        
+        List<MeteoPodaci> meteopodaci = null;
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             meteopodaci = bpo.meteoSelectIdMeteoN(id, n);
             bpo.zatvoriVezu();
+            dnevnik.postaviUspjesanStatus();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
         }
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, url);        
 
         return meteopodaci;
     }
-
-    /**
-     * Provjerava da li korisnik postoji u bazi podataka i zapisuje poziv metode servisa u dnevnik.
-     * @param korisnik korisnički podaci za autentifikaciju
-     * @param akcija naziv metode koja se poziva
-     * @return 
-     */
-    private boolean autentificirajIZapisiUDnevnik(Korisnik korisnik, String akcija) {
-        boolean rezultat;
+    
+    private String vratiTrenutnuAdresuZahtjeva(String akcija){
         HttpServletRequest hsr = (HttpServletRequest) context.getMessageContext().get(MessageContext.SERVLET_REQUEST);
         String adresaZahtjeva = hsr.getRequestURL().toString() + "/" + akcija;
-        String ipAdresa = "";
-        try {
-            ipAdresa = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(GeoMeteoWS.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        rezultat = PomocnaKlasa.autentificirajKorisnika(korisnik);
-        int status = rezultat ? 1 : 0;
-        Dnevnik dnevnik = new Dnevnik(korisnik.getKorisnickoIme(), adresaZahtjeva, ipAdresa, 0, status);
-        PomocnaKlasa.zapisiUDnevnik(dnevnik);
-
-        return rezultat;
+        
+        return adresaZahtjeva;
     }
 }
