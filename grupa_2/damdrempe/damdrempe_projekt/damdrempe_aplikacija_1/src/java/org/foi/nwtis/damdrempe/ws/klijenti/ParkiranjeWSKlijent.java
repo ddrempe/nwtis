@@ -143,4 +143,9 @@ public class ParkiranjeWSKlijent {
         return port.ucitajSvaParkiralistaGrupe(korisnickoIme, korisnickaLozinka);
     }
 
+    public static java.util.List<org.foi.nwtis.damdrempe.ws.klijenti.Vozilo> dajSvaVozilaParkiralistaGrupe(java.lang.String korisnickoIme, java.lang.String korisnickaLozinka, int idParkiraliste) {
+        org.foi.nwtis.damdrempe.ws.klijenti.Parkiranje_Service service = new org.foi.nwtis.damdrempe.ws.klijenti.Parkiranje_Service();
+        org.foi.nwtis.damdrempe.ws.klijenti.Parkiranje port = service.getParkiranjePort();
+        return port.dajSvaVozilaParkiralistaGrupe(korisnickoIme, korisnickaLozinka, idParkiraliste);
+    }   
 }

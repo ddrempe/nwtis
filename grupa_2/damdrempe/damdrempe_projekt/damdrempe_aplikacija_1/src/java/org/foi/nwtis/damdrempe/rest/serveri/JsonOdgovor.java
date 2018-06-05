@@ -71,6 +71,23 @@ public class JsonOdgovor {
     }
     
     /**
+     * Gradi json niz od liste dobivenih parkirališta.
+     * @param svaVozila lista vozila
+     * @return json rezultat u obliku stringa
+     */
+    public JsonArray postaviSvaVozilaJsonDio(List<org.foi.nwtis.damdrempe.ws.klijenti.Vozilo> svaVozila){
+        JsonArrayBuilder jsonBuilder = Json.createArrayBuilder();
+        for (org.foi.nwtis.damdrempe.ws.klijenti.Vozilo vozilo : svaVozila) {
+            jsonBuilder.add(Json.createObjectBuilder()
+                    .add("idParkiraliste", vozilo.getParkiraliste())
+                    .add("registracija", vozilo.getRegistracija())
+                    .add("status", vozilo.getAkcija().toString()));
+        }
+        
+        return jsonBuilder.build();
+    }
+    
+    /**
      * Gradi kompletnu strukturu json odgovora koji mora vracati REST servis.
      * Unutar odgovora postoji atribut odgovor koji je u ovom slučaju prazan.
      * @return json rezultat u obliku stringa

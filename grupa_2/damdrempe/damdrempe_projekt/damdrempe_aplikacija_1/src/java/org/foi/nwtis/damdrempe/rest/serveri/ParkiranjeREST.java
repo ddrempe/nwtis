@@ -142,6 +142,44 @@ public class ParkiranjeREST {
             return jsonOdgovor.vratiKompletanJsonOdgovor();
         }
     }
+    
+    /**
+     * Metoda za dohvat vozila pojedinog parkirališta.
+     * @param id identifikator parkirališta.
+     * @param korisnickoIme
+     * @param lozinka
+     * @return 
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id}/vozila")
+    public String getJsonVozila(@PathParam("id") String id, @HeaderParam("korisnickoIme") String korisnickoIme, @HeaderParam("lozinka") String lozinka) {
+        Dnevnik dnevnik = new Dnevnik();        
+        boolean uspjesno = true;
+        String poruka = "";
+        int idParkiralista = Integer.parseInt(id);
+        
+        java.util.List<org.foi.nwtis.damdrempe.ws.klijenti.Vozilo> svaVozila = new ArrayList<>();
+        try {
+            autentificirajKorisnika(korisnickoIme, lozinka);
+            Korisnik korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();      
+            svaVozila = ParkiranjeWSKlijent.dajSvaVozilaParkiralistaGrupe(korisnik.getKorisnickoIme(), korisnik.getLozinka(), idParkiralista);
+            dnevnik.postaviUspjesanStatus();
+        } catch (Exception ex) {
+            uspjesno = false;
+            poruka = ex.getMessage();
+        }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, vratiTrenutnuAdresuZahtjeva());
+        
+        JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
+        if (uspjesno) {
+            JsonArray vozilaJsonDio = jsonOdgovor.postaviSvaVozilaJsonDio(svaVozila);
+            return jsonOdgovor.vratiKompletanJsonOdgovor(vozilaJsonDio);
+        } else {
+            return jsonOdgovor.vratiKompletanJsonOdgovor();
+        }
+    }
 
     /**
      * Metoda za dodavanje novog parkirališta u bazu podataka.
@@ -306,7 +344,7 @@ public class ParkiranjeREST {
                     poruka = "Postoje meteopodaci za parkiraliste s id " + id + " !";
                 } else {
                     bpo.parkiralistaDelete(idParkiralista);
-                    sinkronizirajParkiralista();
+                    obrisiParkiralisteNaServisu(idParkiralista);
                     dnevnik.postaviUspjesanStatus();
                 }
             }
@@ -324,6 +362,19 @@ public class ParkiranjeREST {
 
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         return jsonOdgovor.vratiKompletanJsonOdgovor();
+    }
+    
+    /**
+     * Briše parkiralište na web servisu
+     * @param idParkiralista 
+     */
+    private void obrisiParkiralisteNaServisu(int idParkiralista) throws Exception{
+        Korisnik korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
+        boolean rezultat = ParkiranjeWSKlijent.obrisiParkiralisteGrupe(korisnik.getKorisnickoIme(), korisnik.getLozinka(), idParkiralista);
+        
+        if(rezultat==false){
+            throw new Exception("Neuspješno dodavanje na servis");
+        }
     }
     
     /**
