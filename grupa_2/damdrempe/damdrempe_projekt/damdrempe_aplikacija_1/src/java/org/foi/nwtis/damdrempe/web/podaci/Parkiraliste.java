@@ -15,6 +15,8 @@ public class Parkiraliste {
     private String naziv;
     private String adresa;
     private Lokacija geoloc;
+    private int kapacitet;
+    private String status;
 
     public Parkiraliste() {
     }
@@ -56,5 +58,21 @@ public class Parkiraliste {
 
     public void setAdresa(String adresa) {
         this.adresa = adresa;
-    }        
+    }  
+
+    public int getKapacitet() {
+        return kapacitet;
+    }
+
+    public void setKapacitet(int kapacitet) {
+        this.kapacitet = kapacitet;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }   
 }

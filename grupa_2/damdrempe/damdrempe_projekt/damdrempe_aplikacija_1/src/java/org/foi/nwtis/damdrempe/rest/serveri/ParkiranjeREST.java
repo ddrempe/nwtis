@@ -26,9 +26,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.foi.nwtis.damdrempe.pomocno.BazaPodatakaOperacije;
+import org.foi.nwtis.damdrempe.pomocno.Korisnik;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
+import org.foi.nwtis.damdrempe.ws.klijenti.ParkiranjeWSKlijent;
+import org.foi.nwtis.damdrempe.ws.klijenti.StatusParkiralista;
 
 /**
  * REST Web Service
@@ -49,13 +52,15 @@ public class ParkiranjeREST {
 
     /**
      * Metoda za dohvat svih parkirališta preko servisa.
-     * @return popis svih parkirališta, njihovih adresa i geo lokacija kao strukturirani odgovor u application/json formatu
+     *
+     * @return popis svih parkirališta, njihovih adresa i geo lokacija kao
+     * strukturirani odgovor u application/json formatu
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getJson() {
         //TODO autenticirati i zapisati u dnevnik
-        
+
         boolean uspjesno = true;
         String poruka = "";
         List<Parkiraliste> svaParkiralista = new ArrayList<>();
@@ -77,6 +82,7 @@ public class ParkiranjeREST {
 
     /**
      * Metoda za dohvat podataka pojedinog parkirališta.
+     *
      * @param id identifikator parkirališta po kojem se dohvaća
      * @return vraća podatke o parkiralištu s zadanim id
      */
@@ -85,12 +91,12 @@ public class ParkiranjeREST {
     @Path("{id}")
     public String getJson(@PathParam("id") String id) {
         //TODO autenticirati i zapisati u dnevnik
-        
+
         boolean uspjesno = true;
         String poruka = "";
         int idParkiralista = Integer.parseInt(id);
         Parkiraliste p = new Parkiraliste();
-        
+
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             if (!bpo.parkiralistaSelectIdPostoji(idParkiralista)) {
@@ -114,9 +120,10 @@ public class ParkiranjeREST {
             return jsonOdgovor.vratiKompletanJsonOdgovor();
         }
     }
-    
+
     /**
-     * Metoda za dodavanje novog parkirališta u bazu podataka. 
+     * Metoda za dodavanje novog parkirališta u bazu podataka.
+     *
      * @param podaci podaci parkirališta u application/json formatu
      * @return strukturirani odgovor u application/json formatu
      */
@@ -125,8 +132,7 @@ public class ParkiranjeREST {
     @Consumes(MediaType.APPLICATION_JSON)
     public String postJson(String podaci) {
         //TODO autenticirati i zapisati u dnevnik
-        //TODO dodati i na servis
-        
+
         boolean uspjesno = true;
         String poruka = "";
 
@@ -141,7 +147,9 @@ public class ParkiranjeREST {
                 poruka = "Parkiraliste s nazivom " + parkiraliste.getNaziv() + " vec postoji!";
             } else {
                 Lokacija lokacija = PomocnaKlasa.dohvatiGMLokaciju(parkiraliste.getAdresa());
-                bpo.parkiralistaInsertOsnovno(parkiraliste.getNaziv(), parkiraliste.getAdresa(), lokacija.getLatitude(), lokacija.getLongitude());
+                parkiraliste.setGeoloc(lokacija);
+                bpo.parkiralistaInsert(parkiraliste);
+                sinkronizirajParkiralista();
             }
             bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
@@ -153,9 +161,10 @@ public class ParkiranjeREST {
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         return jsonOdgovor.vratiKompletanJsonOdgovor();
     }
-    
+
     /**
      * Metoda za POST na bazi putanje {id} nije dozvoljena.
+     *
      * @param id identifikator parkirališta po kojem se dohvaća
      * @param podaci podaci parkirališta u application/json formatu
      * @return grešku HTTP statusa 405: Nedozvoljena operacija
@@ -167,10 +176,11 @@ public class ParkiranjeREST {
         Response.ResponseBuilder rb = Response.status(Response.Status.METHOD_NOT_ALLOWED);
         Response response = rb.build();
         return response;
-    }
-    
+    }   
+
     /**
      * Metoda za PUT na bazi osnovne adrese nije dozvoljena.
+     *
      * @return grešku HTTP statusa 405: Nedozvoljena operacija
      */
     @PUT
@@ -180,8 +190,9 @@ public class ParkiranjeREST {
         return response;
     }
 
-    /** 
-     * Metoda za ažuriranje novog parkirališta u bazi podataka. 
+    /**
+     * Metoda za ažuriranje novog parkirališta u bazi podataka.
+     *
      * @param id identifikator parkirališta po kojem se ažurira
      * @param podaci podaci parkirališta u application/json formatu
      * @return strukturirani odgovor u application/json formatu
@@ -192,8 +203,7 @@ public class ParkiranjeREST {
     @Path("{id}")
     public String putJson(@PathParam("id") String id, String podaci) {
         //TODO autenticirati i zapisati u dnevnik
-        //TODO azurirati i preko servisa
-        
+
         boolean uspjesno = true;
         String poruka = "";
         int idParkiralista = Integer.parseInt(id);
@@ -210,7 +220,8 @@ public class ParkiranjeREST {
                 Lokacija lokacija = PomocnaKlasa.dohvatiGMLokaciju(parkiraliste.getAdresa());
                 parkiraliste.setId(idParkiralista);
                 parkiraliste.setGeoloc(lokacija);
-                bpo.parkiralistaUpdate(parkiraliste); 
+                bpo.parkiralistaUpdate(parkiraliste);
+                sinkronizirajParkiralista();
             }
             bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
@@ -222,9 +233,10 @@ public class ParkiranjeREST {
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         return jsonOdgovor.vratiKompletanJsonOdgovor();
     }
-    
+
     /**
      * Metoda za DELETE na bazi osnovne adrese nije dozvoljena.
+     *
      * @return grešku HTTP statusa 405: Nedozvoljena operacija
      */
     @DELETE
@@ -233,9 +245,10 @@ public class ParkiranjeREST {
         Response response = rb.build();
         return response;
     }
-    
+
     /**
      * Metoda za brisanje pojedinog parkirališta.
+     *
      * @param id identifikator parkirališta po kojem se dohvaća
      * @return strukturirani odgovor u application/json formatu
      */
@@ -244,8 +257,7 @@ public class ParkiranjeREST {
     @Path("{id}")
     public String deleteJson(@PathParam("id") String id) {
         //TODO autenticirati i zapisati u dnevnik
-        //TODO obrisati i preko servisa
-        
+
         boolean uspjesno = true;
         String poruka = "";
         int idParkiralista = Integer.parseInt(id);
@@ -256,12 +268,13 @@ public class ParkiranjeREST {
                 uspjesno = false;
                 poruka = "Parkiraliste s id " + id + " ne postoji!";
             } else {
-                if (bpo.meteoSelectIdParkiralistaPostoje(idParkiralista)){
+                if (bpo.meteoSelectIdParkiralistaPostoje(idParkiralista)) {
                     uspjesno = false;
-                    poruka = "Postoje meteopodaci za parkiraliste s id " + id + " !"; 
+                    poruka = "Postoje meteopodaci za parkiraliste s id " + id + " !";
                 } else {
-                    bpo.parkiralistaDelete(idParkiralista); 
-                }                
+                    bpo.parkiralistaDelete(idParkiralista);
+                    sinkronizirajParkiralista();
+                }
             }
             bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
@@ -272,5 +285,80 @@ public class ParkiranjeREST {
 
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         return jsonOdgovor.vratiKompletanJsonOdgovor();
+    }
+    
+    /**
+     * Sinkronizira parkirališta u bazi podataka sa onima na web servisu.
+     * 1. Briše sva parkiralište grupe na web servisu
+     * 2. Dohvaća sva parkirališta iz baze podataka
+     * 3. Svako parkiralište iz baze podataka dodaje na web servis
+     */
+    private void sinkronizirajParkiralista() {        
+        Korisnik korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
+        ParkiranjeWSKlijent.obrisiSvaParkiralistaGrupe(korisnik.getKorisnickoIme(), korisnik.getLozinka());
+        
+        List<Parkiraliste> svaParkiralista = new ArrayList<>();
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            svaParkiralista = bpo.parkiralistaSelectSvaParkiralista();
+            bpo.zatvoriVezu();
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(ParkiranjeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for (Parkiraliste parkBP : svaParkiralista) {
+            org.foi.nwtis.damdrempe.ws.klijenti.Parkiraliste parkWS = preslikajParkiraliste(parkBP);
+            ParkiranjeWSKlijent.dodajParkiralisteGrupi(korisnik.getKorisnickoIme(), korisnik.getLozinka(), parkWS);
+        }
+    }  
+    
+    /**
+     * Prepisuje vrijednosti iz objekta kakav se dohvaća iz baze podataka u objekt koji se koristi na web servisu.
+     * @param parkBP parkiralište dohvaćeno iz baze podataka
+     * @return parkiralište za web servis
+     */
+    private org.foi.nwtis.damdrempe.ws.klijenti.Parkiraliste preslikajParkiraliste(Parkiraliste parkBP){
+        org.foi.nwtis.damdrempe.ws.klijenti.Parkiraliste parkWS = new org.foi.nwtis.damdrempe.ws.klijenti.Parkiraliste();
+        parkWS.setId(parkBP.getId());
+        parkWS.setNaziv(parkBP.getNaziv());
+        parkWS.setAdresa(parkBP.getAdresa());        
+        parkWS.setKapacitet(parkBP.getKapacitet());
+
+        org.foi.nwtis.damdrempe.ws.klijenti.Lokacija lokacija = new org.foi.nwtis.damdrempe.ws.klijenti.Lokacija();
+        lokacija.setLatitude(parkBP.getGeoloc().getLatitude());
+        lokacija.setLongitude(parkBP.getGeoloc().getLongitude());
+        parkWS.setGeoloc(lokacija);
+        
+        StatusParkiralista status = prepoznajStatus(parkBP.getStatus());
+        parkWS.setStatus(status);
+        
+        return parkWS;        
+    }
+    
+    /**
+     * Pretvara status u obliku stringa iz baze podataka u status iz enumeracije koji se koriste na servisu.
+     * @param statusString status u obliku stringa
+     * @return status iz enumeracije
+     */
+    private StatusParkiralista prepoznajStatus(String statusString){
+        StatusParkiralista statusEnum = StatusParkiralista.PASIVAN;
+        switch (statusString) {
+            case "PASIVAN":
+                statusEnum = StatusParkiralista.PASIVAN;
+                break;
+            case "AKTIVAN":
+                statusEnum = StatusParkiralista.AKTIVAN;
+                break;
+            case "BLOKIRAN":
+                statusEnum = StatusParkiralista.BLOKIRAN;
+                break;
+            case "NEPOSTOJI":
+                statusEnum = StatusParkiralista.NEPOSTOJI;
+                break;
+            default:
+                break;
+        }
+        
+        return statusEnum;
     }
 }

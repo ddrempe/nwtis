@@ -42,7 +42,9 @@ public class JsonOdgovor {
                     .add("naziv", parkiraliste.getNaziv())
                     .add("adresa", parkiraliste.getAdresa())
                     .add("latitude", parkiraliste.getGeoloc().getLatitude())
-                    .add("longitude", parkiraliste.getGeoloc().getLongitude()));
+                    .add("longitude", parkiraliste.getGeoloc().getLongitude())
+                    .add("kapacitet", parkiraliste.getKapacitet())
+                    .add("status", parkiraliste.getStatus()));
         }
         
         return jsonBuilder.build();
@@ -61,7 +63,9 @@ public class JsonOdgovor {
                     .add("naziv", parkiraliste.getNaziv())
                     .add("adresa", parkiraliste.getAdresa())
                     .add("latitude", parkiraliste.getGeoloc().getLatitude())
-                    .add("longitude", parkiraliste.getGeoloc().getLongitude()));       
+                    .add("longitude", parkiraliste.getGeoloc().getLongitude())
+                    .add("kapacitet", parkiraliste.getKapacitet())
+                    .add("status", parkiraliste.getStatus()));      
         
         return jsonBuilder.build();
     }

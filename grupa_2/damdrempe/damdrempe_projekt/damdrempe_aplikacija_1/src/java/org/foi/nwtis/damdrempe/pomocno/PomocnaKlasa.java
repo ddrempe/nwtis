@@ -99,4 +99,17 @@ public class PomocnaKlasa {
         
         return ipAdresa;
     }
+    
+    public static Korisnik dohvatiKorisnickePodatkeZaSvn(){
+        String korisnickoIme;
+        String lozinka;        
+        ServletContext sc = SlusacAplikacije.servletContext;
+        Konfiguracija konf = (Konfiguracija) sc.getAttribute("Konfig");
+        
+        korisnickoIme = konf.dajPostavku("svn.username");
+        lozinka = konf.dajPostavku("svn.password");
+        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
+        
+        return korisnik;
+    }
 }

@@ -95,6 +95,8 @@ public class BazaPodatakaOperacije {
             lokacija.setLongitude(rs.getString("LONGITUDE"));
             p.setGeoloc(lokacija);
             p.setAdresa(rs.getString("ADRESA"));
+            p.setKapacitet(rs.getInt("KAPACITET"));
+            p.setStatus(rs.getString("STATUS"));
             
             dohvacenaParkiralista.add(p);
         }     
@@ -126,6 +128,8 @@ public class BazaPodatakaOperacije {
         lokacija.setLongitude(rs.getString("LONGITUDE"));
         parkiraliste.setGeoloc(lokacija);
         parkiraliste.setAdresa(rs.getString("ADRESA"));
+        parkiraliste.setKapacitet(rs.getInt("KAPACITET"));
+        parkiraliste.setStatus(rs.getString("STATUS"));
         
         return parkiraliste;
     }
@@ -151,6 +155,31 @@ public class BazaPodatakaOperacije {
         preparedStmt.setString(2, adresa);
         preparedStmt.setString(3, latitude);
         preparedStmt.setString(4, longitude);
+        preparedStmt.execute(); 
+        
+        return true;
+    }
+    
+    /**
+     * Dodaje novo parkiralište.
+     * @param parkiraliste objekt parkirališta
+     * @return false ako parkiralište s tim nazivom već postoji, inače true
+     * @throws SQLException 
+     */
+    public boolean parkiralistaInsert(Parkiraliste parkiraliste) throws SQLException{
+        if(parkiralistaSelectNazivPostoji(parkiraliste.getNaziv())){
+            return false;
+        }   
+        
+        String upit = "INSERT INTO parkiralista(naziv, adresa, latitude, longitude, kapacitet) VALUES (?, ?, ?, ?, ?)";        
+        
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);        
+        preparedStmt.setString(1, parkiraliste.getNaziv());
+        preparedStmt.setString(2, parkiraliste.getAdresa());
+        preparedStmt.setString(3, parkiraliste.getGeoloc().getLatitude());
+        preparedStmt.setString(4, parkiraliste.getGeoloc().getLongitude());
+        preparedStmt.setInt(5, parkiraliste.getKapacitet());
+        
         preparedStmt.execute(); 
         
         return true;
@@ -201,7 +230,7 @@ public class BazaPodatakaOperacije {
             return false;
         }   
         
-        String upit = "UPDATE parkiralista SET naziv=?, adresa=?, latitude=?, longitude=? WHERE id=?";        
+        String upit = "UPDATE parkiralista SET naziv=?, adresa=?, latitude=?, longitude=?, kapacitet=?, status=? WHERE id=?";        
         
         PreparedStatement preparedStmt = veza.prepareStatement(upit);        
 
@@ -209,7 +238,9 @@ public class BazaPodatakaOperacije {
         preparedStmt.setString(2, parkiraliste.getAdresa());
         preparedStmt.setString(3, parkiraliste.getGeoloc().getLatitude());
         preparedStmt.setString(4, parkiraliste.getGeoloc().getLongitude());
-        preparedStmt.setInt(5, parkiraliste.getId());
+        preparedStmt.setInt(5, parkiraliste.getKapacitet());
+        preparedStmt.setString(6, parkiraliste.getStatus());
+        preparedStmt.setInt(7, parkiraliste.getId());
 
         preparedStmt.execute(); 
         
