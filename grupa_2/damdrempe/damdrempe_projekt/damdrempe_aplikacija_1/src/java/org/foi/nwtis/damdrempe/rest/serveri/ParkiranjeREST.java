@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.JsonArray;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
@@ -28,6 +30,7 @@ import javax.ws.rs.core.Response;
 import org.foi.nwtis.damdrempe.pomocno.BazaPodatakaOperacije;
 import org.foi.nwtis.damdrempe.pomocno.Korisnik;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
+import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 import org.foi.nwtis.damdrempe.ws.klijenti.ParkiranjeWSKlijent;
@@ -43,6 +46,9 @@ public class ParkiranjeREST {
 
     @Context
     private UriInfo context;
+    
+    @Context 
+    HttpServletRequest request;
 
     /**
      * Creates a new instance of ParkiranjeREST
@@ -53,27 +59,35 @@ public class ParkiranjeREST {
     /**
      * Metoda za dohvat svih parkirališta preko servisa.
      *
+     * @param korisnickoIme
+     * @param lozinka
      * @return popis svih parkirališta, njihovih adresa i geo lokacija kao
      * strukturirani odgovor u application/json formatu
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getJson() {
-        //TODO autenticirati i zapisati u dnevnik
-
+    public String getJson(@HeaderParam("korisnickoIme") String korisnickoIme, @HeaderParam("lozinka") String lozinka) {
+        Dnevnik dnevnik = new Dnevnik();
         boolean uspjesno = true;
         String poruka = "";
         List<Parkiraliste> svaParkiralista = new ArrayList<>();
 
         try {
+            autentificirajKorisnika(korisnickoIme, lozinka);
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             svaParkiralista = bpo.parkiralistaSelectSvaParkiralista();
             bpo.zatvoriVezu();
+            dnevnik.postaviUspjesanStatus();
         } catch (SQLException | ClassNotFoundException ex) {
             uspjesno = false;
             poruka = ex.toString();
             Logger.getLogger(ParkiranjeREST.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            uspjesno = false;
+            poruka = ex.getMessage();
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, vratiTrenutnuAdresuZahtjeva());
 
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         JsonArray parkiralistaJsonDio = jsonOdgovor.postaviSvaParkiralistaJsonDio(svaParkiralista);
@@ -84,33 +98,41 @@ public class ParkiranjeREST {
      * Metoda za dohvat podataka pojedinog parkirališta.
      *
      * @param id identifikator parkirališta po kojem se dohvaća
+     * @param korisnickoIme
+     * @param lozinka
      * @return vraća podatke o parkiralištu s zadanim id
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")
-    public String getJson(@PathParam("id") String id) {
-        //TODO autenticirati i zapisati u dnevnik
-
+    public String getJson(@PathParam("id") String id, @HeaderParam("korisnickoIme") String korisnickoIme, @HeaderParam("lozinka") String lozinka) {
+        Dnevnik dnevnik = new Dnevnik();
         boolean uspjesno = true;
         String poruka = "";
         int idParkiralista = Integer.parseInt(id);
         Parkiraliste p = new Parkiraliste();
 
         try {
+            autentificirajKorisnika(korisnickoIme, lozinka);
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             if (!bpo.parkiralistaSelectIdPostoji(idParkiralista)) {
                 uspjesno = false;
                 poruka = "Parkiraliste s id " + id + " ne postoji!";
             } else {
                 p = bpo.parkiralistaSelectIdJednoParkiraliste(idParkiralista);
+                dnevnik.postaviUspjesanStatus();
             }
             bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
             uspjesno = false;
             poruka = ex.toString();
             Logger.getLogger(ParkiranjeREST.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            uspjesno = false;
+            poruka = ex.getMessage();
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, vratiTrenutnuAdresuZahtjeva());
 
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         if (uspjesno) {
@@ -125,19 +147,21 @@ public class ParkiranjeREST {
      * Metoda za dodavanje novog parkirališta u bazu podataka.
      *
      * @param podaci podaci parkirališta u application/json formatu
+     * @param korisnickoIme
+     * @param lozinka
      * @return strukturirani odgovor u application/json formatu
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String postJson(String podaci) {
-        //TODO autenticirati i zapisati u dnevnik
-
+    public String postJson(String podaci, @HeaderParam("korisnickoIme") String korisnickoIme, @HeaderParam("lozinka") String lozinka) {
+        Dnevnik dnevnik = new Dnevnik();
         boolean uspjesno = true;
         String poruka = "";
 
         Parkiraliste parkiraliste;
         try {
+            autentificirajKorisnika(korisnickoIme, lozinka);
             Gson gson = new Gson();
             parkiraliste = gson.fromJson(podaci, Parkiraliste.class);
 
@@ -150,13 +174,19 @@ public class ParkiranjeREST {
                 parkiraliste.setGeoloc(lokacija);
                 bpo.parkiralistaInsert(parkiraliste);
                 sinkronizirajParkiralista();
+                dnevnik.postaviUspjesanStatus();
             }
             bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
             uspjesno = false;
             poruka = ex.toString();
             Logger.getLogger(ParkiranjeREST.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            uspjesno = false;
+            poruka = ex.getMessage();
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, vratiTrenutnuAdresuZahtjeva());
 
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         return jsonOdgovor.vratiKompletanJsonOdgovor();
@@ -173,9 +203,7 @@ public class ParkiranjeREST {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postJson(@PathParam("id") String id, String podaci) {
-        Response.ResponseBuilder rb = Response.status(Response.Status.METHOD_NOT_ALLOWED);
-        Response response = rb.build();
-        return response;
+        return dajOdgovorZaNedozvoljenPristup();
     }   
 
     /**
@@ -185,9 +213,7 @@ public class ParkiranjeREST {
      */
     @PUT
     public Response putJson() {
-        Response.ResponseBuilder rb = Response.status(Response.Status.METHOD_NOT_ALLOWED);
-        Response response = rb.build();
-        return response;
+        return dajOdgovorZaNedozvoljenPristup();
     }
 
     /**
@@ -195,25 +221,26 @@ public class ParkiranjeREST {
      *
      * @param id identifikator parkirališta po kojem se ažurira
      * @param podaci podaci parkirališta u application/json formatu
+     * @param korisnickoIme
+     * @param lozinka
      * @return strukturirani odgovor u application/json formatu
      */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("{id}")
-    public String putJson(@PathParam("id") String id, String podaci) {
-        //TODO autenticirati i zapisati u dnevnik
-
+    public String putJson(@PathParam("id") String id, String podaci, @HeaderParam("korisnickoIme") String korisnickoIme, @HeaderParam("lozinka") String lozinka) {
+        Dnevnik dnevnik = new Dnevnik();
         boolean uspjesno = true;
         String poruka = "";
         int idParkiralista = Integer.parseInt(id);
 
         try {
+            autentificirajKorisnika(korisnickoIme, lozinka);
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             if (!bpo.parkiralistaSelectIdPostoji(idParkiralista)) {
                 uspjesno = false;
                 poruka = "Parkiraliste s id " + id + " ne postoji!";
-
             } else {
                 Gson gson = new Gson();
                 Parkiraliste parkiraliste = gson.fromJson(podaci, Parkiraliste.class);
@@ -222,13 +249,19 @@ public class ParkiranjeREST {
                 parkiraliste.setGeoloc(lokacija);
                 bpo.parkiralistaUpdate(parkiraliste);
                 sinkronizirajParkiralista();
+                dnevnik.postaviUspjesanStatus();
             }
             bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
             uspjesno = false;
             poruka = ex.toString();
             Logger.getLogger(ParkiranjeREST.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            uspjesno = false;
+            poruka = ex.getMessage();
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, vratiTrenutnuAdresuZahtjeva());
 
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         return jsonOdgovor.vratiKompletanJsonOdgovor();
@@ -241,28 +274,28 @@ public class ParkiranjeREST {
      */
     @DELETE
     public Response deleteJson() {
-        Response.ResponseBuilder rb = Response.status(Response.Status.METHOD_NOT_ALLOWED);
-        Response response = rb.build();
-        return response;
+        return dajOdgovorZaNedozvoljenPristup();
     }
 
     /**
      * Metoda za brisanje pojedinog parkirališta.
      *
      * @param id identifikator parkirališta po kojem se dohvaća
+     * @param korisnickoIme
+     * @param lozinka
      * @return strukturirani odgovor u application/json formatu
      */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")
-    public String deleteJson(@PathParam("id") String id) {
-        //TODO autenticirati i zapisati u dnevnik
-
+    public String deleteJson(@PathParam("id") String id, @HeaderParam("korisnickoIme") String korisnickoIme, @HeaderParam("lozinka") String lozinka) {
+        Dnevnik dnevnik = new Dnevnik();
         boolean uspjesno = true;
         String poruka = "";
         int idParkiralista = Integer.parseInt(id);
 
         try {
+            autentificirajKorisnika(korisnickoIme, lozinka);
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             if (!bpo.parkiralistaSelectIdPostoji(idParkiralista)) {
                 uspjesno = false;
@@ -274,6 +307,7 @@ public class ParkiranjeREST {
                 } else {
                     bpo.parkiralistaDelete(idParkiralista);
                     sinkronizirajParkiralista();
+                    dnevnik.postaviUspjesanStatus();
                 }
             }
             bpo.zatvoriVezu();
@@ -281,7 +315,12 @@ public class ParkiranjeREST {
             uspjesno = false;
             poruka = ex.toString();
             Logger.getLogger(ParkiranjeREST.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            uspjesno = false;
+            poruka = ex.getMessage();
         }
+        
+        dnevnik.zavrsiISpremiDnevnik(korisnickoIme, vratiTrenutnuAdresuZahtjeva());
 
         JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, poruka);
         return jsonOdgovor.vratiKompletanJsonOdgovor();
@@ -360,5 +399,40 @@ public class ParkiranjeREST {
         }
         
         return statusEnum;
+    }
+    
+    /**
+     * Vraća url adresu zahtjeva.
+     * @return url adresa zahtjeva
+     */
+    private String vratiTrenutnuAdresuZahtjeva(){
+        String adresa = context.getRequestUri().toString() + "/" + request.getMethod();
+        return adresa;
+    }
+    
+    /**
+     * Autentificira korisnika prema bazi podataka
+     * @param korisnickoIme
+     * @param lozinka
+     * @throws Exception 
+     */
+    private void autentificirajKorisnika(String korisnickoIme, String lozinka) throws Exception{
+        if(PomocnaKlasa.autentificirajKorisnika(korisnickoIme, lozinka) == false){
+            throw new Exception("Neovlasten pristup! Pogresno korisnicko ime i/ili lozinka.");
+        }
+    }
+    
+    /**
+     * Vraća HTTP Status 405 - Method Not Allowed odgovor.
+     * Zapisuje poziv operacije u dnevnik.
+     * @return 
+     */
+    private Response dajOdgovorZaNedozvoljenPristup(){
+        Dnevnik dnevnik = new Dnevnik();        
+        dnevnik.zavrsiISpremiDnevnik("gost", vratiTrenutnuAdresuZahtjeva());
+        
+        Response.ResponseBuilder rb = Response.status(Response.Status.METHOD_NOT_ALLOWED);
+        Response response = rb.build();
+        return response;
     }
 }

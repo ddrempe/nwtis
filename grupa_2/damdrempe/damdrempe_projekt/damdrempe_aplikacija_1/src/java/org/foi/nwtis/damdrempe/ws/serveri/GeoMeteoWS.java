@@ -222,6 +222,11 @@ public class GeoMeteoWS {
         return meteopodaci;
     }
     
+    /**
+     * Vraća url adresu zahtjeva.
+     * @param akcija naziv akcije
+     * @return url adresa zahtjeva
+     */
     private String vratiTrenutnuAdresuZahtjeva(String akcija){
         HttpServletRequest hsr = (HttpServletRequest) context.getMessageContext().get(MessageContext.SERVLET_REQUEST);
         String adresaZahtjeva = hsr.getRequestURL().toString() + "/" + akcija;
