@@ -88,13 +88,13 @@ public class PreuzmiMeteoPodatke extends Thread {
                     if(meteo != null){
                         bpo.meteoInsert(meteo, parkiraliste);
                     }
-                    else System.out.println("Nije moguce dohvatiti trenutne meteopodatke za parkiraliste " + parkiraliste.getNaziv() + " na adresi " + parkiraliste.getAdresa());
+                    else System.out.println("METEO | Nije moguce dohvatiti trenutne meteopodatke za parkiraliste " + parkiraliste.getNaziv() + " na adresi " + parkiraliste.getAdresa());
                 }                
                               
-                System.out.println("KRAJ! Završila obrada: " + (brojacObrada++) + ".");
+                System.out.println("METEO | KRAJ! Završila obrada: " + (brojacObrada++) + ".");
                 sleep(spavanje);
             } catch (InterruptedException ex) {
-                System.out.println("Dretva je zaustavljena prilikom spavanja");
+                System.out.println("METEO | Dretva je zaustavljena prilikom spavanja");
             } catch (SQLException ex) {
                 Logger.getLogger(PreuzmiMeteoPodatke.class.getName()).log(Level.SEVERE, null, ex);
             } 

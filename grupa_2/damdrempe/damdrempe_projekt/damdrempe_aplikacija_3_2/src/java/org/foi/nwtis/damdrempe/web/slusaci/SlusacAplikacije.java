@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.foi.nwtis.damdrempe.web.slusaci;
 
 import java.util.logging.Level;
@@ -9,20 +14,16 @@ import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.damdrempe.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.damdrempe.konfiguracije.NemaKonfiguracije;
-import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
-import org.foi.nwtis.damdrempe.web.dretve.PreuzmiMeteoPodatke;
-import org.foi.nwtis.damdrempe.web.dretve.ServerSustava;
 
 /**
- * Slušač aplikacije.
+ * Web application lifecycle listener.
+ *
  * @author ddrempetic
  */
 public class SlusacAplikacije implements ServletContextListener {
     
-    PreuzmiMeteoPodatke dretvaMeteo;
-    ServerSustava dretvaServerSustava;
     public static ServletContext servletContext;
-    
+
     /**
      * Inicijalizira kontekst.
      * Čita konfiguracije i sprema ih u kontekst.
@@ -44,20 +45,7 @@ public class SlusacAplikacije implements ServletContextListener {
             Logger.getLogger(SlusacAplikacije.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        BP_Konfiguracija bpk;
-        try {
-            bpk = new BP_Konfiguracija(puniNazivDatoteke);
-            sc.setAttribute("BP_Konfig", bpk);
-        } catch (NemaKonfiguracije | NeispravnaKonfiguracija ex) {
-            Logger.getLogger(SlusacAplikacije.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         servletContext = sc;
-        dretvaMeteo = new PreuzmiMeteoPodatke(sc);
-        dretvaMeteo.start();
-        
-        dretvaServerSustava = new ServerSustava(sc);
-        dretvaServerSustava.start();
     }
 
     /**
@@ -67,10 +55,6 @@ public class SlusacAplikacije implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContext sc = sce.getServletContext();
-        sc.removeAttribute("BP_Konfig");
         sc.removeAttribute("Konfig");
-
-        dretvaMeteo.interrupt();
-        dretvaServerSustava.interrupt();
     }
 }
