@@ -9,12 +9,12 @@ package org.foi.nwtis.damdrempe.pomocno;
  *
  * @author ddrempetic
  */
-public class Korisnik {
+public class KorisnikPodaci {
 
     private String korisnickoIme;
     private String lozinka;
 
-    public Korisnik(String korisnickoIme, String lozinka) {
+    public KorisnikPodaci(String korisnickoIme, String lozinka) {
         this.korisnickoIme = korisnickoIme;
         this.lozinka = lozinka;
     }

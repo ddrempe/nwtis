@@ -5,6 +5,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 
 /**
@@ -82,6 +83,25 @@ public class JsonOdgovor {
                     .add("idParkiraliste", vozilo.getParkiraliste())
                     .add("registracija", vozilo.getRegistracija())
                     .add("status", vozilo.getAkcija().toString()));
+        }
+        
+        return jsonBuilder.build();
+    }
+    
+    /**
+     * Gradi json niz od liste dobivenih korisnika.
+     * @param sviKorisnici
+     * @return json rezultat u obliku stringa
+     */
+    public JsonArray postaviSviKorisniciJsonDio(List<Korisnik> sviKorisnici){
+        JsonArrayBuilder jsonBuilder = Json.createArrayBuilder();
+        for (Korisnik korisnik : sviKorisnici) {
+            jsonBuilder.add(Json.createObjectBuilder()
+                    .add("ki", korisnik.getKor_ime())
+                    .add("prezime", korisnik.getPrezime())
+                    .add("ime", korisnik.getIme())
+                    .add("email", korisnik.getEmail_adresa())
+                    .add("vrsta", korisnik.getVrsta()));
         }
         
         return jsonBuilder.build();

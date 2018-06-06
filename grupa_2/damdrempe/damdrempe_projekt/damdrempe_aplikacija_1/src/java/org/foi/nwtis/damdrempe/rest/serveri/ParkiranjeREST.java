@@ -28,7 +28,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.foi.nwtis.damdrempe.pomocno.BazaPodatakaOperacije;
-import org.foi.nwtis.damdrempe.pomocno.Korisnik;
+import org.foi.nwtis.damdrempe.pomocno.KorisnikPodaci;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
@@ -162,7 +162,7 @@ public class ParkiranjeREST {
         java.util.List<org.foi.nwtis.damdrempe.ws.klijenti.Vozilo> svaVozila = new ArrayList<>();
         try {
             autentificirajKorisnika(korisnickoIme, lozinka);
-            Korisnik korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();      
+            KorisnikPodaci korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();      
             svaVozila = ParkiranjeWSKlijent.dajSvaVozilaParkiralistaGrupe(korisnik.getKorisnickoIme(), korisnik.getLozinka(), idParkiralista);
             dnevnik.postaviUspjesanStatus();
         } catch (Exception ex) {
@@ -369,7 +369,7 @@ public class ParkiranjeREST {
      * @param idParkiralista 
      */
     private void obrisiParkiralisteNaServisu(int idParkiralista) throws Exception{
-        Korisnik korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
+        KorisnikPodaci korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
         boolean rezultat = ParkiranjeWSKlijent.obrisiParkiralisteGrupe(korisnik.getKorisnickoIme(), korisnik.getLozinka(), idParkiralista);
         
         if(rezultat==false){
@@ -384,7 +384,7 @@ public class ParkiranjeREST {
      * 3. Svako parkiralište iz baze podataka dodaje na web servis
      */
     private void sinkronizirajParkiralista() {        
-        Korisnik korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
+        KorisnikPodaci korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
         ParkiranjeWSKlijent.obrisiSvaParkiralistaGrupe(korisnik.getKorisnickoIme(), korisnik.getLozinka());
         
         List<Parkiraliste> svaParkiralista = new ArrayList<>();

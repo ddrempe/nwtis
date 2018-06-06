@@ -62,7 +62,7 @@ public class PomocnaKlasa {
      */
     public static boolean autentificirajKorisnika(String korisnickoIme, String lozinka){
         boolean postoji = false;
-        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
+        KorisnikPodaci korisnik = new KorisnikPodaci(korisnickoIme, lozinka);
         
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
@@ -100,7 +100,7 @@ public class PomocnaKlasa {
         return ipAdresa;
     }
     
-    public static Korisnik dohvatiKorisnickePodatkeZaSvn(){
+    public static KorisnikPodaci dohvatiKorisnickePodatkeZaSvn(){
         String korisnickoIme;
         String lozinka;        
         ServletContext sc = SlusacAplikacije.servletContext;
@@ -108,7 +108,7 @@ public class PomocnaKlasa {
         
         korisnickoIme = konf.dajPostavku("svn.username");
         lozinka = konf.dajPostavku("svn.password");
-        Korisnik korisnik = new Korisnik(korisnickoIme, lozinka);
+        KorisnikPodaci korisnik = new KorisnikPodaci(korisnickoIme, lozinka);
         
         return korisnik;
     }

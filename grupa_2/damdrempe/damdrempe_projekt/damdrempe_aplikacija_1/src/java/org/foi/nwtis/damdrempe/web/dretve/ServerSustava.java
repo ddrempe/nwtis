@@ -97,10 +97,10 @@ public class ServerSustava extends Thread{
         while (radi) {
             Socket socket = serverSocket.accept();  //TODO javlja exception kod deploya
             System.out.println("SERVER | Stigao zahtjev");
-            //TODO autentikacija korisnika prema bazi podataka
+            //TODO autentikacija korisnika prema bazi podataka?
             if(brojDretvi >= maksDretvi){
                 OutputStream os = socket.getOutputStream();
-                String odgovor = "ERROR; Nema raspolozive radne dretve"; //TODO vidjeti da li treba
+                String odgovor = OdgovoriKomandi.OPCENITO_ERR_BROJDRETVI;
                 os.write(odgovor.getBytes());
                 os.flush();
                 socket.shutdownOutput();

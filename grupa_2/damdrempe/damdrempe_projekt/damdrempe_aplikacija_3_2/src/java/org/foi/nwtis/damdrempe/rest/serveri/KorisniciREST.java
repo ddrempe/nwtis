@@ -5,22 +5,17 @@
  */
 package org.foi.nwtis.damdrempe.rest.serveri;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.gson.Gson;
+import javax.json.JsonArray;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
+import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
 
 /**
  * REST Web Service
@@ -41,17 +36,24 @@ public class KorisniciREST {
 
     /**
      * Retrieves representation of an instance of org.foi.nwtis.damdrempe.rest.serveri.KorisniciREST
+     * @param korisnik
+     * @param lozinka
      * @return an instance of java.lang.String
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getJson() {
-        //preuzimanje svih korisnika
-        //poslati komandu na server
-        //vratiti odgovor OK ERR
+    public String getJson(@HeaderParam("korisnik") String korisnik, @HeaderParam("lozinka") String lozinka) {
+        String komanda = "KORISNIK " + korisnik + "; LOZINKA " + lozinka + "; LISTAJ;";
+        String odgovor = PomocnaKlasa.posaljiKomanduPosluzitelju(komanda);
         
-        String odgovor = PomocnaKlasa.posaljiKomanduPosluzitelju("Ovo je test komanda prema posluzitelju u vrijeme " + LocalDateTime.now().toString());
+        boolean uspjesno = odgovor.contains("OK");
+        JsonOdgovor jsonOdgovor = new JsonOdgovor(uspjesno, "Nema korisnika za dohvacanje");
+        if (uspjesno) {
+            String nizKorisnici = odgovor.substring(odgovor.indexOf(";") + 1);    
+            return jsonOdgovor.vratiKompletanJsonOdgovor(nizKorisnici); //TODO dodaju se escape znakovi, treba proslijediti ko JSON baš
+        } else {
+            return jsonOdgovor.vratiKompletanJsonOdgovor();
+        }
         
-        return odgovor;
     }
 }

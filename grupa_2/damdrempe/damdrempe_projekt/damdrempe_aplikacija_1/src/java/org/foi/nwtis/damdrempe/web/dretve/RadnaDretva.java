@@ -9,10 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
+import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 
 /**
  *
@@ -37,7 +39,7 @@ public class RadnaDretva extends Thread {
         this.nazivDretve = nazivDretve;
         this.konf = konf;
     }
-    
+
     /**
      * Koristi se prilikom prekida izvodenja dretve
      */
@@ -45,7 +47,7 @@ public class RadnaDretva extends Thread {
     public void interrupt() {
         super.interrupt();
     }
-    
+
     /**
      * Pokreće se startanjem dretve
      */
@@ -53,7 +55,6 @@ public class RadnaDretva extends Thread {
     public synchronized void start() {
         super.start();
     }
-    
 
     /**
      * Pokreće čitanje komande i njezinu obradu.
@@ -61,42 +62,45 @@ public class RadnaDretva extends Thread {
     @Override
     public void run() {
         String komanda = procitajKomandu();
-        System.out.println("RADNA | Primljena je komanda: " + komanda);
-        //obradiKomandu(komanda); //TODO obraditi komandu
-        String odgovor = "Ovo je test odgovor u vrijeme " + LocalDateTime.now().toString();
-        System.out.println("RADNA | Saljem odgovor: " + odgovor);
+        System.out.println("RADNA | " + nazivDretve + " | Primljena je komanda: " + komanda);
+
+        String odgovor = obradiKomandu(komanda); //TODO obraditi komandu
+        System.out.println("RADNA | " + nazivDretve + " | Saljem odgovor: " + odgovor);
         posaljiOdgovor(odgovor);
-        ServerSustava.brojDretvi--;       
+
+        ServerSustava.brojDretvi--;
     }
-    
+
     /**
      * Čita niz znakova sa konzole koje je poslao korisnik.
+     *
      * @return vraća pročitani niz znakova koji predstavlja komandu serveru
      */
-    private String procitajKomandu(){
+    private String procitajKomandu() {
         StringBuffer buffer = new StringBuffer();
 
         try {
-            InputStream is = socket.getInputStream();            
+            InputStream is = socket.getInputStream();
 
-            while (true){
+            while (true) {
                 int znak = is.read();
-                if(znak == -1){
+                if (znak == -1) {
                     break;
                 }
                 buffer.append((char) znak);
-            }        
+            }
         } catch (IOException ex) {
             Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
         return buffer.toString();
     }
-    
+
     /**
      * Služi za slanje odgovora na konzolu korisnika sustava.
+     *
      * @param odgovor tekst odgovora koji se šalje
      */
-    private void posaljiOdgovor(String odgovor){
+    private void posaljiOdgovor(String odgovor) {
         try {
             OutputStream os;
             os = socket.getOutputStream();
@@ -106,5 +110,100 @@ public class RadnaDretva extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * Provjerava da li je komanda za posluzitelj ili grupu. Sukladno tome
+     * pokrece odgovarajucu akciju i vraca odgovor korisniku.
+     *
+     * @param komanda znakovni niz koji predstavlja komandu od strane korisnika
+     */
+    private String obradiKomandu(String komanda) {
+        String regexPosluzitelj = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|ZAUSTAVI|LISTAJ);$";
+        String regexGrupa = "^.*GRUPA.*$"; //TODO provjeriti, treba sadrzavati GRUPA
+
+        Matcher provjeraPosluzitelj = provjeriIspravnostKomande(komanda, regexPosluzitelj);
+        Matcher provjeraGrupa = provjeriIspravnostKomande(komanda, regexGrupa);
+
+        String korisnik = "admin";  //TODO provjeraPosluzitelj.group(1)
+        String lozinka = "123456";  //TODO provjeraPosluzitelj.group(2)
+        String akcija = "LISTAJ";   //TODO provjeraPosluzitelj.group(3)
+
+        if (PomocnaKlasa.autentificirajKorisnika(korisnik, lozinka) == false) {
+            return OdgovoriKomandi.OPCENITO_ERR_AUTENTIFIKACIJA;
+        }
+
+        String odgovor;
+        if (provjeraPosluzitelj.matches() == true) {
+            odgovor = pozoviOdgovarajucuPosluziteljAkciju(akcija);
+        } else if (provjeraGrupa.matches() == true) {
+            odgovor = pozoviOdgovarajucuGrupaAkciju(akcija);
+        } else {
+            odgovor = OdgovoriKomandi.OPCENITO_ERR_SINTAKSA;
+        }
+
+        return odgovor;
+    }
+    
+    /**
+     * Ispituje znakovni niz prema zadanom regularnom izrazu
+     *
+     * @param komanda znakovni niz koji predstavlja komandu za server
+     * @param regularniIzraz regularni izraz koji komanda mora zadovoljiti
+     * @return true ako je komanda ispravna, false ako nije
+     */
+    private Matcher provjeriIspravnostKomande(String komanda, String regularniIzraz) {
+        Pattern pattern = Pattern.compile(regularniIzraz);
+        Matcher m = pattern.matcher(komanda);
+
+        return m;
+    }
+
+    /**
+     * Provjerava koju akciju korisnik želi pokrenuti te zaprima odgovore tih
+     * akcija. Akcije za ovu metodu se odnose samo na komande poslane za
+     * posluzitelj.
+     *
+     * @param korisnik korisničko ime iz komande za akciju
+     * @param lozinka lozinka iz komande za akciju
+     * @param akcija vrsta akcija iz komande
+     * @return vraća odgovor o statusu izvedbe komande ovisno o akciji
+     */
+    private String pozoviOdgovarajucuPosluziteljAkciju(String akcija) {
+        String odgovor = "";
+        //TODO sloziti akcije DODAJ I AUTENTIKACIJA
+        switch (akcija) {
+            case "PAUZA":
+                break;
+            case "KRENI":
+                break;
+            case "PASIVNO":
+                break;
+            case "AKTIVNO":
+                break;
+            case "STANI":
+                break;
+            case "STANJE":
+                break;
+            case "LISTAJ":
+                odgovor = AkcijePosluzitelj.listaj();
+                break;
+            default:
+                break;
+        }
+        return odgovor;
+    }
+
+    /**
+     * Određuje koju akciju za grupu korisnik želi pokrenuti prema njegovoj
+     * komandi
+     *
+     * @param komanda znakovni niz koji predstavlja komandu od strane korisnika
+     * @return tekstualni odgovor na zahtjev korisnika pomocu komande
+     */
+    private String pozoviOdgovarajucuGrupaAkciju(String akcija) {
+        String odgovor = "";
+
+        return odgovor;
     }
 }
