@@ -57,7 +57,7 @@ public class JsonOdgovor {
      * @param odgovor
      * @return json rezultat u obliku stringa
      */
-    public String vratiKompletanJsonOdgovor(String odgovor){
+    public String vratiKompletanJsonOdgovor(JsonArray odgovor){
         JsonObject jsonOdgovor;        
 
         if (uspjesno) {

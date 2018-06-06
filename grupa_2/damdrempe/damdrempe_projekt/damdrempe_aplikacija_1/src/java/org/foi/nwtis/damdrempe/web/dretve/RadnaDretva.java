@@ -119,35 +119,33 @@ public class RadnaDretva extends Thread {
      * @param komanda znakovni niz koji predstavlja komandu od strane korisnika
      */
     private String obradiKomandu(String komanda) {
-        String regexPosluzitelj = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|PASIVNO|AKTIVNO|STANI|STANJE|LISTAJ|PREUZMI|AUTENTIKACIJA);$";
-        String regexPosluziteljDA = "";
-        String regexGrupa = "^.*GRUPA.*$"; //TODO provjeriti, treba sadrzavati GRUPA
+        String regexPosluzitelj = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|PASIVNO|AKTIVNO|STANI|STANJE|LISTAJ);$";
+        String regexPosluziteljDA = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (DODAJ|AZURIRAJ) ([A-Za-z0-9_,-]{3,10}) ([A-Za-z0-9_,-]{3,10});$";
+        String regexPosluziteljPreuzmi = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); PREUZMI ([A-Za-z0-9_,-]{3,10});$";
+        String regexGrupa = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); GRUPA (DODAJ|PREKID|KRENI|PAUZA|STANJE);$"; //TODO provjeriti, treba sadrzavati GRUPA
 
-        Matcher provjeraPosluzitelj = provjeriIspravnostKomande(komanda, regexPosluzitelj);
-        Matcher provjeraPosluziteljDA = provjeriIspravnostKomande(komanda, regexPosluziteljDA);
+        Matcher provjeraPosluzitelj = provjeriIspravnostKomande(komanda, regexPosluzitelj);        
+        Matcher provjeraPosluziteljDA = provjeriIspravnostKomande(komanda, regexPosluziteljDA);        
+        Matcher provjeraPosluziteljPreuzmi = provjeriIspravnostKomande(komanda, regexPosluziteljPreuzmi);        
         Matcher provjeraGrupa = provjeriIspravnostKomande(komanda, regexGrupa);
 
-        String korisnik = "admin";  //TODO provjeraPosluzitelj.group(1)
-        String lozinka = "123456";  //TODO provjeraPosluzitelj.group(2)
-        String akcija = "PREUZMI";   //TODO provjeraPosluzitelj.group(3)
-        
-        String ime = "Jasen";
-        String prezime = "Jasenic";
-
-        if (PomocnaKlasa.autentificirajKorisnika(korisnik, lozinka) == false) {
+        if (PomocnaKlasa.autentificirajKorisnika("admin", "123456") == false) { //TODO dohvatiti prave korisnicke podatke
             return OdgovoriKomandi.POSLUZITELJ_ERR_AUTENTIFIKACIJA;
         }
+        //TODO prepoznati komandu autentikacija kad nema nista osim korisnickog imena i lozinke
         //TODO       if (true){ //ako nema ostatka komande
         //            return OdgovoriKomandi.POSLUZITELJ_OK_AUTENTIFIKACIJA;
         //        }
 
         String odgovor;
         if (provjeraPosluzitelj.matches() == true) {
-            odgovor = pozoviOdgovarajucuPosluziteljAkciju(akcija, korisnik);
+            odgovor = pozoviOdgovarajucuPosluziteljAkciju(provjeraPosluzitelj.group(3));
         } else if (provjeraPosluziteljDA.matches() == true) {
-            odgovor = pozoviOdgovarajucuPosluziteljAkcijuDA(akcija, ime, prezime);
+            odgovor = pozoviOdgovarajucuPosluziteljAkcijuDA(provjeraPosluziteljDA.group(3), provjeraPosluziteljDA.group(4), provjeraPosluziteljDA.group(5));
+        } else if (provjeraPosluziteljPreuzmi.matches() == true) {
+            odgovor = pozoviPreuzmiAkciju(provjeraPosluziteljPreuzmi.group(3));
         } else if (provjeraGrupa.matches() == true) {
-            odgovor = pozoviOdgovarajucuGrupaAkciju(akcija);
+            odgovor = pozoviOdgovarajucuGrupaAkciju(provjeraGrupa.group(3));
         } else {
             odgovor = OdgovoriKomandi.OPCENITO_ERR_SINTAKSA;
         }
@@ -179,7 +177,7 @@ public class RadnaDretva extends Thread {
      * @param akcija vrsta akcija iz komande
      * @return vraća odgovor o statusu izvedbe komande ovisno o akciji
      */
-    private String pozoviOdgovarajucuPosluziteljAkciju(String akcija, String korisnik) {
+    private String pozoviOdgovarajucuPosluziteljAkciju(String akcija) {
         String odgovor = "";
         //TODO sloziti akcije DODAJ I AUTENTIKACIJA
         switch (akcija) {
@@ -197,9 +195,6 @@ public class RadnaDretva extends Thread {
                 break;
             case "LISTAJ":
                 odgovor = AkcijePosluzitelj.listaj();
-                break;
-            case "PREUZMI":
-                odgovor = AkcijePosluzitelj.preuzmi(korisnik);
                 break;
             default:
                 break;
@@ -219,15 +214,19 @@ public class RadnaDretva extends Thread {
         String odgovor = "";
         switch (akcija) {
             case "DODAJ":
-                AkcijePosluzitelj.dodaj(ime, prezime);
+                odgovor = AkcijePosluzitelj.dodaj(ime, prezime);
                 break;
             case "AZURIRAJ":
-                AkcijePosluzitelj.azuriraj(ime, prezime);
+                odgovor = AkcijePosluzitelj.azuriraj(ime, prezime);
                 break;
             default:
                 break;
         }
         return odgovor;
+    }
+    
+    private String pozoviPreuzmiAkciju(String korisnik){
+        return AkcijePosluzitelj.preuzmi(korisnik);
     }
 
     /**

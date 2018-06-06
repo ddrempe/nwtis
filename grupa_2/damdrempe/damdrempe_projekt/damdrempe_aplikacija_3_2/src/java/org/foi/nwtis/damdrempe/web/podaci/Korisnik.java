@@ -14,11 +14,11 @@ import java.util.Date;
 public class Korisnik {
 
     private int id;
-    private String kor_ime;
+    private String ki;
     private String ime;
     private String prezime;
     private String lozinka;
-    private String email_adresa;
+    private String email;
     private int vrsta;
     private Date datum_kreiranja;
     private Date datum_promjene;
@@ -30,15 +30,7 @@ public class Korisnik {
     public void setId(int id) {
         this.id = id;
     }
-
-    public String getKor_ime() {
-        return kor_ime;
-    }
-
-    public void setKor_ime(String kor_ime) {
-        this.kor_ime = kor_ime;
-    }
-
+    
     public String getIme() {
         return ime;
     }
@@ -61,14 +53,6 @@ public class Korisnik {
 
     public void setLozinka(String lozinka) {
         this.lozinka = lozinka;
-    }
-
-    public String getEmail_adresa() {
-        return email_adresa;
-    }
-
-    public void setEmail_adresa(String email_adresa) {
-        this.email_adresa = email_adresa;
     }
 
     public int getVrsta() {
@@ -95,5 +79,22 @@ public class Korisnik {
         this.datum_promjene = datum_promjene;
     }
 
+    public String getKi() {
+        return ki;
+    }
+
+    public void setKi(String ki) {
+        this.ki = ki;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    
     
 }

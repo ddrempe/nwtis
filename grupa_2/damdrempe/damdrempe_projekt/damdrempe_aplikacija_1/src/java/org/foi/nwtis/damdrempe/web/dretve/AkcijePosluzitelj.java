@@ -34,7 +34,7 @@ public class AkcijePosluzitelj {
     
     public static String azuriraj(String ime, String prezime){
         //TODO azuriraj korisnika
-        boolean uspjeh = true;
+        boolean uspjeh = false;
         if(uspjeh){
             return OdgovoriKomandi.POSLUZITELJ_AZURIRAJ_OK;
         } else {
