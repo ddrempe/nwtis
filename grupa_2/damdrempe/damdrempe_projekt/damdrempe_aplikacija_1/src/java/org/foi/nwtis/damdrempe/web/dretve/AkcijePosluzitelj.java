@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.JsonArray;
 import org.foi.nwtis.damdrempe.pomocno.BazaPodatakaOperacije;
-import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.rest.serveri.JsonOdgovor;
 import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
 
@@ -22,24 +21,58 @@ import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
  */
 public class AkcijePosluzitelj {
     
-    public static String dodaj(String ime, String prezime){
-        //TODO dodaj korisnika u bazu podataka
-        boolean uspjeh = true;
-        if(uspjeh){
-            return OdgovoriKomandi.POSLUZITELJ_DODAJ_OK;
-        } else {
-            return OdgovoriKomandi.POSLUZITELJ_DODAJ_ERR;
+    public static String dodaj(String ime, String prezime){    
+        String odgovor = "";
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            if(bpo.korisniciSelectImePrezimePostoji(ime, prezime) == true){
+                odgovor = OdgovoriKomandi.POSLUZITELJ_DODAJ_ERR;
+            } else {
+                Korisnik korisnik = stvoriKorisnika(ime, prezime);
+                bpo.korisniciInsert(korisnik);
+                odgovor = OdgovoriKomandi.POSLUZITELJ_DODAJ_OK;
+            }    
+            bpo.zatvoriVezu();
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(AkcijePosluzitelj.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        return odgovor;
     }
     
-    public static String azuriraj(String ime, String prezime){
-        //TODO azuriraj korisnika
-        boolean uspjeh = false;
-        if(uspjeh){
-            return OdgovoriKomandi.POSLUZITELJ_AZURIRAJ_OK;
-        } else {
-            return OdgovoriKomandi.POSLUZITELJ_AZURIRAJ_ERR;
+    public static String azuriraj(String korisnickoIme, String ime, String prezime){
+        String odgovor = "";
+        try {
+            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+            if(bpo.korisniciSelectKorimePostoji(korisnickoIme) == false){
+                odgovor = OdgovoriKomandi.POSLUZITELJ_AZURIRAJ_ERR;
+            } else {
+                bpo.korisniciUpdatePrezimeIme(korisnickoIme, ime, prezime);
+                odgovor = OdgovoriKomandi.POSLUZITELJ_AZURIRAJ_OK;
+            }    
+            bpo.zatvoriVezu();
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(AkcijePosluzitelj.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        return odgovor;
+    }
+    
+    private static Korisnik stvoriKorisnika(String ime, String prezime){
+        Korisnik korisnik = new Korisnik();
+        korisnik.setIme(ime);
+        korisnik.setPrezime(prezime);
+        if(prezime.length() >= 9){
+            prezime = prezime.substring(0, 9);
+        }
+        
+        String korisnickoIme = ime.substring(0, 1) + prezime;
+        korisnickoIme = korisnickoIme.toLowerCase();
+        korisnik.setKor_ime(korisnickoIme);
+        korisnik.setLozinka(korisnickoIme);
+        korisnik.setEmail_adresa(korisnickoIme + "@foi.hr");
+        
+        return korisnik;
     }
     
     public static String listaj(){
@@ -47,6 +80,7 @@ public class AkcijePosluzitelj {
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             korisnici = bpo.korisniciSelectSviKorisnici();
+            bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(AkcijePosluzitelj.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -65,6 +99,7 @@ public class AkcijePosluzitelj {
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             korisnik = bpo.korisniciSelectKorimeKorisnik(korisnickoIme);
+            bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(AkcijePosluzitelj.class.getName()).log(Level.SEVERE, null, ex);
         }

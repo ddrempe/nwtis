@@ -78,7 +78,7 @@ public class RadnaDretva extends Thread {
         String regexPosluzitelj = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|PASIVNO|AKTIVNO|STANI|STANJE|LISTAJ);$";
         String regexPosluziteljDA = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (DODAJ|AZURIRAJ) ([A-Za-z0-9_,-]{3,10}) ([A-Za-z0-9_,-]{3,10});$";
         String regexPosluziteljPreuzmi = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); PREUZMI ([A-Za-z0-9_,-]{3,10});$";
-        String regexGrupa = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); GRUPA (DODAJ|PREKID|KRENI|PAUZA|STANJE);$"; //TODO provjeriti, treba sadrzavati GRUPA
+        String regexGrupa = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); GRUPA (DODAJ|PREKID|KRENI|PAUZA|STANJE);$"; 
 
         Matcher provjeraPosluzitelj = PomocnaKlasa.provjeriIspravnostKomande(komanda, regexPosluzitelj);        
         Matcher provjeraPosluziteljDA = PomocnaKlasa.provjeriIspravnostKomande(komanda, regexPosluziteljDA);        
@@ -89,7 +89,7 @@ public class RadnaDretva extends Thread {
         if (provjeraPosluzitelj.matches() == true) {
             odgovor = pozoviOdgovarajucuPosluziteljAkciju(provjeraPosluzitelj.group(3));
         } else if (provjeraPosluziteljDA.matches() == true) {
-            odgovor = pozoviOdgovarajucuPosluziteljAkcijuDA(provjeraPosluziteljDA.group(3), provjeraPosluziteljDA.group(4), provjeraPosluziteljDA.group(5));
+            odgovor = pozoviOdgovarajucuPosluziteljAkcijuDA(provjeraPosluziteljDA.group(1), provjeraPosluziteljDA.group(3), provjeraPosluziteljDA.group(5), provjeraPosluziteljDA.group(4));
         } else if (provjeraPosluziteljPreuzmi.matches() == true) {
             odgovor = pozoviPreuzmiAkciju(provjeraPosluziteljPreuzmi.group(3));
         } else if (provjeraGrupa.matches() == true) {
@@ -113,7 +113,7 @@ public class RadnaDretva extends Thread {
      */
     private String pozoviOdgovarajucuPosluziteljAkciju(String akcija) {
         String odgovor = "";
-        //TODO sloziti akcije DODAJ I AUTENTIKACIJA
+        //TODO dodati ostale akcije
         switch (akcija) {
             case "PAUZA":
                 break;
@@ -144,14 +144,14 @@ public class RadnaDretva extends Thread {
      * @param akcija vrsta akcija iz komande
      * @return vraća odgovor o statusu izvedbe komande ovisno o akciji
      */
-    private String pozoviOdgovarajucuPosluziteljAkcijuDA(String akcija, String ime, String prezime) {
+    private String pozoviOdgovarajucuPosluziteljAkcijuDA(String korisnickoIme, String akcija, String ime, String prezime) {
         String odgovor = "";
         switch (akcija) {
             case "DODAJ":
                 odgovor = AkcijePosluzitelj.dodaj(ime, prezime);
                 break;
             case "AZURIRAJ":
-                odgovor = AkcijePosluzitelj.azuriraj(ime, prezime);
+                odgovor = AkcijePosluzitelj.azuriraj(korisnickoIme, ime, prezime);
                 break;
             default:
                 break;

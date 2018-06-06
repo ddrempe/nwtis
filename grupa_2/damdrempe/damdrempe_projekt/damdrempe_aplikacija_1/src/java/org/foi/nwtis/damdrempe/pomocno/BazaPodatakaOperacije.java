@@ -473,6 +473,44 @@ public class BazaPodatakaOperacije {
     }
 
     /**
+     * Provjerava da li korisnik postoji
+     *
+     * @param ime
+     * @param prezime
+     * @return true ako postoji, inače false
+     * @throws SQLException
+     */
+    public boolean korisniciSelectImePrezimePostoji(String ime, String prezime) throws SQLException {
+        String upitSelect = "SELECT * FROM korisnici WHERE ime = ? AND prezime = ?";
+
+        PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
+        preparedStmt.setString(1, ime);
+        preparedStmt.setString(2, prezime);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.getResultSet();
+
+        return rs.next();
+    }
+
+    /**
+     * Provjerava da li korisnik postoji
+     *
+     * @param korisnickoIme
+     * @return true ako postoji, inače false
+     * @throws SQLException
+     */
+    public boolean korisniciSelectKorimePostoji(String korisnickoIme) throws SQLException {
+        String upitSelect = "SELECT * FROM korisnici WHERE kor_ime = ?";
+
+        PreparedStatement preparedStmt = veza.prepareStatement(upitSelect);
+        preparedStmt.setString(1, korisnickoIme);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.getResultSet();
+
+        return rs.next();
+    }
+
+    /**
      * Vraća sve korisnike.
      *
      * @return listu svih korisnika
@@ -501,7 +539,7 @@ public class BazaPodatakaOperacije {
 
         return dohvaceniKorisnici;
     }
-    
+
     /**
      * Vraća jednog korisnika.
      *
@@ -530,5 +568,49 @@ public class BazaPodatakaOperacije {
 
         return k;
     }
-    
+
+    /**
+     * Dodaje novi zapis za korisnike
+     *
+     * @param korisnik
+     * @throws SQLException
+     */
+    public void korisniciInsert(Korisnik korisnik) throws SQLException {
+        String upit = "INSERT INTO korisnici (kor_ime, ime, prezime, lozinka, email_adresa)"
+                + " VALUES (?, ?, ?, ?, ?)";
+
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+
+        preparedStmt.setString(1, korisnik.getKor_ime());
+        preparedStmt.setString(2, korisnik.getIme());
+        preparedStmt.setString(3, korisnik.getPrezime());
+        preparedStmt.setString(4, korisnik.getLozinka());
+        preparedStmt.setString(5, korisnik.getEmail_adresa());
+
+        preparedStmt.execute();
+    }
+
+    /**
+     * Ažurira korisnika s novim imenom i prezimenom.
+     *
+     * @param korisnickoIme
+     * @param ime
+     * @param prezime
+     * @return false ako ne postoji, inače true
+     * @throws SQLException
+     */
+    public boolean korisniciUpdatePrezimeIme(String korisnickoIme, String ime, String prezime) throws SQLException {
+        String upit = "UPDATE korisnici SET ime=?, prezime=? WHERE kor_ime=?";
+
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+
+        preparedStmt.setString(1, ime);
+        preparedStmt.setString(2, prezime);
+        preparedStmt.setString(3, korisnickoIme);
+
+        preparedStmt.execute();
+
+        return true;
+    }
+
 }
