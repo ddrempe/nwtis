@@ -108,6 +108,24 @@ public class JsonOdgovor {
     }
     
     /**
+     * Gradi json objekt od dobivenog korisnika.
+     * @param korisnik
+     * @return json rezultat u obliku stringa
+     */
+    public JsonArray postaviKorisnikJsonDio(Korisnik korisnik){
+        JsonArrayBuilder jsonBuilder = Json.createArrayBuilder();
+        
+        jsonBuilder.add(Json.createObjectBuilder()
+                    .add("ki", korisnik.getKor_ime())
+                    .add("prezime", korisnik.getPrezime())
+                    .add("ime", korisnik.getIme())
+                    .add("email", korisnik.getEmail_adresa())
+                    .add("vrsta", korisnik.getVrsta()));     
+        
+        return jsonBuilder.build();
+    }
+    
+    /**
      * Gradi kompletnu strukturu json odgovora koji mora vracati REST servis.
      * Unutar odgovora postoji atribut odgovor koji je u ovom slučaju prazan.
      * @return json rezultat u obliku stringa

@@ -502,4 +502,33 @@ public class BazaPodatakaOperacije {
         return dohvaceniKorisnici;
     }
     
+    /**
+     * Vraća jednog korisnika.
+     *
+     * @param korisnickoime
+     * @return jednog korisnika
+     * @throws SQLException
+     */
+    public Korisnik korisniciSelectKorimeKorisnik(String korisnickoime) throws SQLException {
+        String upit = "SELECT * FROM KORISNICI WHERE kor_ime = ?";
+
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+        preparedStmt.setString(1, korisnickoime);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.executeQuery();
+        rs.next();
+        Korisnik k = new Korisnik();
+        k.setId(rs.getInt("ID"));
+        k.setVrsta(rs.getInt("VRSTA"));
+        k.setIme(rs.getString("IME"));
+        k.setPrezime(rs.getString("PREZIME"));
+        k.setKor_ime(rs.getString("KOR_IME"));
+        k.setEmail_adresa(rs.getString("EMAIL_ADRESA"));
+        k.setDatum_kreiranja(rs.getDate("DATUM_KREIRANJA"));
+        k.setDatum_promjene(rs.getDate("DATUM_PROMJENE"));
+        k.setLozinka("skriveno");
+
+        return k;
+    }
+    
 }

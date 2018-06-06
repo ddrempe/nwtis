@@ -119,23 +119,33 @@ public class RadnaDretva extends Thread {
      * @param komanda znakovni niz koji predstavlja komandu od strane korisnika
      */
     private String obradiKomandu(String komanda) {
-        String regexPosluzitelj = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|ZAUSTAVI|LISTAJ);$";
+        String regexPosluzitelj = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); (PAUZA|KRENI|PASIVNO|AKTIVNO|STANI|STANJE|LISTAJ|PREUZMI|AUTENTIKACIJA);$";
+        String regexPosluziteljDA = "";
         String regexGrupa = "^.*GRUPA.*$"; //TODO provjeriti, treba sadrzavati GRUPA
 
         Matcher provjeraPosluzitelj = provjeriIspravnostKomande(komanda, regexPosluzitelj);
+        Matcher provjeraPosluziteljDA = provjeriIspravnostKomande(komanda, regexPosluziteljDA);
         Matcher provjeraGrupa = provjeriIspravnostKomande(komanda, regexGrupa);
 
         String korisnik = "admin";  //TODO provjeraPosluzitelj.group(1)
         String lozinka = "123456";  //TODO provjeraPosluzitelj.group(2)
-        String akcija = "LISTAJ";   //TODO provjeraPosluzitelj.group(3)
+        String akcija = "PREUZMI";   //TODO provjeraPosluzitelj.group(3)
+        
+        String ime = "Jasen";
+        String prezime = "Jasenic";
 
         if (PomocnaKlasa.autentificirajKorisnika(korisnik, lozinka) == false) {
-            return OdgovoriKomandi.OPCENITO_ERR_AUTENTIFIKACIJA;
+            return OdgovoriKomandi.POSLUZITELJ_ERR_AUTENTIFIKACIJA;
         }
+        //TODO       if (true){ //ako nema ostatka komande
+        //            return OdgovoriKomandi.POSLUZITELJ_OK_AUTENTIFIKACIJA;
+        //        }
 
         String odgovor;
         if (provjeraPosluzitelj.matches() == true) {
-            odgovor = pozoviOdgovarajucuPosluziteljAkciju(akcija);
+            odgovor = pozoviOdgovarajucuPosluziteljAkciju(akcija, korisnik);
+        } else if (provjeraPosluziteljDA.matches() == true) {
+            odgovor = pozoviOdgovarajucuPosluziteljAkcijuDA(akcija, ime, prezime);
         } else if (provjeraGrupa.matches() == true) {
             odgovor = pozoviOdgovarajucuGrupaAkciju(akcija);
         } else {
@@ -158,7 +168,7 @@ public class RadnaDretva extends Thread {
 
         return m;
     }
-
+    
     /**
      * Provjerava koju akciju korisnik želi pokrenuti te zaprima odgovore tih
      * akcija. Akcije za ovu metodu se odnose samo na komande poslane za
@@ -169,7 +179,7 @@ public class RadnaDretva extends Thread {
      * @param akcija vrsta akcija iz komande
      * @return vraća odgovor o statusu izvedbe komande ovisno o akciji
      */
-    private String pozoviOdgovarajucuPosluziteljAkciju(String akcija) {
+    private String pozoviOdgovarajucuPosluziteljAkciju(String akcija, String korisnik) {
         String odgovor = "";
         //TODO sloziti akcije DODAJ I AUTENTIKACIJA
         switch (akcija) {
@@ -187,6 +197,32 @@ public class RadnaDretva extends Thread {
                 break;
             case "LISTAJ":
                 odgovor = AkcijePosluzitelj.listaj();
+                break;
+            case "PREUZMI":
+                odgovor = AkcijePosluzitelj.preuzmi(korisnik);
+                break;
+            default:
+                break;
+        }
+        return odgovor;
+    }
+    
+    /**
+     * Provjerava koju akciju korisnik želi pokrenuti te zaprima odgovore tih
+     * akcija. Akcije za ovu metodu se odnose samo na komande poslane za
+     * posluzitelj.
+     *
+     * @param akcija vrsta akcija iz komande
+     * @return vraća odgovor o statusu izvedbe komande ovisno o akciji
+     */
+    private String pozoviOdgovarajucuPosluziteljAkcijuDA(String akcija, String ime, String prezime) {
+        String odgovor = "";
+        switch (akcija) {
+            case "DODAJ":
+                AkcijePosluzitelj.dodaj(ime, prezime);
+                break;
+            case "AZURIRAJ":
+                AkcijePosluzitelj.azuriraj(ime, prezime);
                 break;
             default:
                 break;
