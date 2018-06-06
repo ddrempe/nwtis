@@ -5,14 +5,8 @@
  */
 package org.foi.nwtis.damdrempe.web.dretve;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 
@@ -25,6 +19,7 @@ public class RadnaDretva extends Thread {
     private String nazivDretve;
     private Socket socket;
     private Konfiguracija konf;
+    private String primljenaKomanda;
 
     /**
      * Konstruktor za spremanje mrezne uticnice, naziva dretve i postavki
@@ -32,12 +27,14 @@ public class RadnaDretva extends Thread {
      * @param socket mrezna uticnica
      * @param nazivDretve naziv dretve
      * @param konf postavke procitane iz datoteke
+     * @param primljenaKomanda
      */
-    public RadnaDretva(Socket socket, String nazivDretve, Konfiguracija konf) {
+    public RadnaDretva(Socket socket, String nazivDretve, Konfiguracija konf, String primljenaKomanda) {
         super(nazivDretve);
         this.socket = socket;
         this.nazivDretve = nazivDretve;
         this.konf = konf;
+        this.primljenaKomanda = primljenaKomanda;
     }
 
     /**
@@ -61,56 +58,15 @@ public class RadnaDretva extends Thread {
      */
     @Override
     public void run() {
-        String komanda = procitajKomandu();
+        String komanda = primljenaKomanda;
         System.out.println("RADNA | " + nazivDretve + " | Primljena je komanda: " + komanda);
 
         String odgovor = obradiKomandu(komanda); //TODO obraditi komandu
         System.out.println("RADNA | " + nazivDretve + " | Saljem odgovor: " + odgovor);
-        posaljiOdgovor(odgovor);
+        PomocnaKlasa.posaljiOdgovor(odgovor, socket);
 
         ServerSustava.brojDretvi--;
-    }
-
-    /**
-     * Čita niz znakova sa konzole koje je poslao korisnik.
-     *
-     * @return vraća pročitani niz znakova koji predstavlja komandu serveru
-     */
-    private String procitajKomandu() {
-        StringBuffer buffer = new StringBuffer();
-
-        try {
-            InputStream is = socket.getInputStream();
-
-            while (true) {
-                int znak = is.read();
-                if (znak == -1) {
-                    break;
-                }
-                buffer.append((char) znak);
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Služi za slanje odgovora na konzolu korisnika sustava.
-     *
-     * @param odgovor tekst odgovora koji se šalje
-     */
-    private void posaljiOdgovor(String odgovor) {
-        try {
-            OutputStream os;
-            os = socket.getOutputStream();
-            os.write(odgovor.getBytes());
-            os.flush();
-            socket.shutdownOutput();
-        } catch (IOException ex) {
-            Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    }   
 
     /**
      * Provjerava da li je komanda za posluzitelj ili grupu. Sukladno tome
@@ -124,18 +80,10 @@ public class RadnaDretva extends Thread {
         String regexPosluziteljPreuzmi = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); PREUZMI ([A-Za-z0-9_,-]{3,10});$";
         String regexGrupa = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10}); GRUPA (DODAJ|PREKID|KRENI|PAUZA|STANJE);$"; //TODO provjeriti, treba sadrzavati GRUPA
 
-        Matcher provjeraPosluzitelj = provjeriIspravnostKomande(komanda, regexPosluzitelj);        
-        Matcher provjeraPosluziteljDA = provjeriIspravnostKomande(komanda, regexPosluziteljDA);        
-        Matcher provjeraPosluziteljPreuzmi = provjeriIspravnostKomande(komanda, regexPosluziteljPreuzmi);        
-        Matcher provjeraGrupa = provjeriIspravnostKomande(komanda, regexGrupa);
-
-        if (PomocnaKlasa.autentificirajKorisnika("admin", "123456") == false) { //TODO dohvatiti prave korisnicke podatke
-            return OdgovoriKomandi.POSLUZITELJ_ERR_AUTENTIFIKACIJA;
-        }
-        //TODO prepoznati komandu autentikacija kad nema nista osim korisnickog imena i lozinke
-        //TODO       if (true){ //ako nema ostatka komande
-        //            return OdgovoriKomandi.POSLUZITELJ_OK_AUTENTIFIKACIJA;
-        //        }
+        Matcher provjeraPosluzitelj = PomocnaKlasa.provjeriIspravnostKomande(komanda, regexPosluzitelj);        
+        Matcher provjeraPosluziteljDA = PomocnaKlasa.provjeriIspravnostKomande(komanda, regexPosluziteljDA);        
+        Matcher provjeraPosluziteljPreuzmi = PomocnaKlasa.provjeriIspravnostKomande(komanda, regexPosluziteljPreuzmi);        
+        Matcher provjeraGrupa = PomocnaKlasa.provjeriIspravnostKomande(komanda, regexGrupa);
 
         String odgovor;
         if (provjeraPosluzitelj.matches() == true) {
@@ -151,20 +99,6 @@ public class RadnaDretva extends Thread {
         }
 
         return odgovor;
-    }
-    
-    /**
-     * Ispituje znakovni niz prema zadanom regularnom izrazu
-     *
-     * @param komanda znakovni niz koji predstavlja komandu za server
-     * @param regularniIzraz regularni izraz koji komanda mora zadovoljiti
-     * @return true ako je komanda ispravna, false ako nije
-     */
-    private Matcher provjeriIspravnostKomande(String komanda, String regularniIzraz) {
-        Pattern pattern = Pattern.compile(regularniIzraz);
-        Matcher m = pattern.matcher(komanda);
-
-        return m;
     }
     
     /**

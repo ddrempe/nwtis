@@ -1,14 +1,21 @@
 package org.foi.nwtis.damdrempe.pomocno;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.rest.klijenti.GMKlijent;
 import org.foi.nwtis.damdrempe.rest.klijenti.OWMKlijent;
+import org.foi.nwtis.damdrempe.web.dretve.RadnaDretva;
 import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
@@ -111,5 +118,61 @@ public class PomocnaKlasa {
         KorisnikPodaci korisnik = new KorisnikPodaci(korisnickoIme, lozinka);
         
         return korisnik;
+    }
+    
+    /**
+     * Čita niz znakova sa konzole koje je poslao korisnik.
+     *
+     * @return vraća pročitani niz znakova koji predstavlja komandu serveru
+     */
+    public static String procitajKomandu(Socket socket) {
+        StringBuffer buffer = new StringBuffer();
+
+        try {
+            InputStream is = socket.getInputStream();
+
+            while (true) {
+                int znak = is.read();
+                if (znak == -1) {
+                    break;
+                }
+                buffer.append((char) znak);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return buffer.toString();
+    }
+    
+    /**
+     * Ispituje znakovni niz prema zadanom regularnom izrazu
+     *
+     * @param komanda znakovni niz koji predstavlja komandu za server
+     * @param regularniIzraz regularni izraz koji komanda mora zadovoljiti
+     * @return true ako je komanda ispravna, false ako nije
+     */
+    public static Matcher provjeriIspravnostKomande(String komanda, String regularniIzraz) {
+        Pattern pattern = Pattern.compile(regularniIzraz);
+        Matcher m = pattern.matcher(komanda);
+
+        return m;
+    }
+    
+    /**
+     * Služi za slanje odgovora na konzolu korisnika sustava.
+     *
+     * @param odgovor tekst odgovora koji se šalje
+     * @param socket
+     */
+    public static void posaljiOdgovor(String odgovor, Socket socket) {
+        try {
+            OutputStream os;
+            os = socket.getOutputStream();
+            os.write(odgovor.getBytes());
+            os.flush();
+            socket.shutdownOutput();
+        } catch (IOException ex) {
+            Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

@@ -14,8 +14,8 @@ public class OdgovoriKomandi {
     public static final String OPCENITO_ERR_BROJDRETVI = "ERROR 700; nema raspolozive radne dretve";
     public static final String OPCENITO_ERR_SINTAKSA = "ERROR 800; sintaksa nije ispravna ili komanda nije dozvoljena";
     
-    public static final String POSLUZITELJ_OK_AUTENTIFIKACIJA = "OK 10; ";
-    public static final String POSLUZITELJ_ERR_AUTENTIFIKACIJA = "ERR 11; korisnik ne postoji ili je neispravna lozinka";
+    public static final String OPCENITO_OK_AUTENTIFIKACIJA = "OK 10; ";
+    public static final String OPCENITO_ERR_AUTENTIFIKACIJA = "ERR 11; korisnik ne postoji ili je neispravna lozinka";
     
     public static final String POSLUZITELJ_LISTAJ_OK = "OK 10; ";
     public static final String POSLUZITELJ_LISTAJ_ERR = "ERR 17; nema korisnika za dohvacanje";
