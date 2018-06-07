@@ -111,6 +111,66 @@ public class AkcijePosluzitelj {
             JsonArray korisniciJsonDio = jsonOdgovor.postaviKorisnikJsonDio(korisnik);            
             return OdgovoriKomandi.POSLUZITELJ_LISTAJ_OK + korisniciJsonDio.toString();
         }    
-
     }    
+    
+    public static String pauza(){
+        if (ServerSustava.serverKomandePokrenut == false) {
+            return OdgovoriKomandi.POSLUZITELJ_PAUZA_ERR;
+        }
+        
+        ServerSustava.serverKomandePokrenut = false;
+        return OdgovoriKomandi.POSLUZITELJ_PAUZA_OK;
+    }
+    
+    public static String kreni(){
+        if (ServerSustava.serverKomandePokrenut == true) {
+            return OdgovoriKomandi.POSLUZITELJ_KRENI_ERR;
+        }
+        
+        ServerSustava.serverKomandePokrenut = true;
+        return OdgovoriKomandi.POSLUZITELJ_KRENI_OK;
+    }
+    
+    public static String pasivno(){
+        if (ServerSustava.serverMeteoAktivan == false) {
+            return OdgovoriKomandi.POSLUZITELJ_PASIVNO_ERR;
+        }
+        
+        ServerSustava.serverMeteoAktivan = false;
+        return OdgovoriKomandi.POSLUZITELJ_PASIVNO_OK;
+    }
+    
+    public static String aktivno(){
+        if (ServerSustava.serverMeteoAktivan == true) {
+            return OdgovoriKomandi.POSLUZITELJ_AKTIVNO_ERR;
+        }
+        
+        ServerSustava.serverMeteoAktivan = true;
+        return OdgovoriKomandi.POSLUZITELJ_AKTIVNO_OK;
+    }
+    
+    public static String stani(){
+        if (ServerSustava.serverPotpunoPokrenut == false) {
+            return OdgovoriKomandi.POSLUZITELJ_STANI_ERR;
+        }
+        
+        //TODO zaustavi server i prekini s radom
+        ServerSustava.serverPotpunoPokrenut = false;
+        return OdgovoriKomandi.POSLUZITELJ_STANI_OK;
+    }
+    
+    public static String stanje(){
+        String odgovor = "";
+        if(ServerSustava.serverKomandePokrenut && ServerSustava.serverMeteoAktivan){
+            odgovor = OdgovoriKomandi.POSLUZITELJ_STANJE_OK;
+        } else if(ServerSustava.serverKomandePokrenut && !ServerSustava.serverMeteoAktivan){
+            odgovor = OdgovoriKomandi.POSLUZITELJ_STANJE_OK2;
+        } else if(!ServerSustava.serverKomandePokrenut && ServerSustava.serverMeteoAktivan){
+            odgovor = OdgovoriKomandi.POSLUZITELJ_STANJE_OK3;
+        } else if(!ServerSustava.serverKomandePokrenut && !ServerSustava.serverMeteoAktivan){
+            odgovor = OdgovoriKomandi.POSLUZITELJ_STANJE_OK4;
+        }
+        
+        return odgovor;
+    }
 }

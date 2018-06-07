@@ -6,7 +6,6 @@
 package org.foi.nwtis.damdrempe.web.dretve;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -26,12 +25,7 @@ public class ServerSustava extends Thread {
     /**
      * Pobrojenje koje definira moguca stanja servera
      */
-    public enum StanjeServera {
-        NISTA,
-        POKRENUT,
-        PAUZIRAN,
-        ZAUSTAVLJEN,
-    }
+    
 
     private ServletContext sc;
     private Konfiguracija konf;
@@ -40,7 +34,9 @@ public class ServerSustava extends Thread {
     ServerSocket serverSocket;
 
     public static int brojDretvi = 0;
-    public static StanjeServera stanje = StanjeServera.NISTA;
+    public static boolean serverKomandePokrenut;
+    public static boolean serverMeteoAktivan;
+    public static boolean serverPotpunoPokrenut;
 
     public ServerSustava(ServletContext sc) {
         this.sc = sc;
@@ -77,7 +73,9 @@ public class ServerSustava extends Thread {
     public void run() {
         konf = (Konfiguracija) sc.getAttribute("Konfig");
         radi = true;
-        stanje = StanjeServera.POKRENUT;
+        serverMeteoAktivan = true;
+        serverKomandePokrenut = true;
+        serverPotpunoPokrenut = true;
         try {
             primajZahtjeve();
         } catch (IOException ex) {

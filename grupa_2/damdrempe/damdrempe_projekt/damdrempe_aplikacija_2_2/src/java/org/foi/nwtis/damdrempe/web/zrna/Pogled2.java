@@ -5,6 +5,7 @@
  */
 package org.foi.nwtis.damdrempe.web.zrna;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
@@ -19,31 +20,64 @@ public class Pogled2 {
     
     private String odgovorGrupa;
     private String stanjeGrupa;
+    
+    private String odgovorPosluzitelj;
+    private String stanjePosluzitelj;
 
     /**
      * Creates a new instance of Pogled1
      */
     public Pogled2() {
-        this.stanjeGrupa = "";
-        this.odgovorGrupa = "Nije pokrenuta jos nijedna komanda grupe.";        
+        this.stanjeGrupa = "Stanje grupe: Nepoznato.";  //TODO prijevod
+        this.odgovorGrupa = "Odgovor grupe: Nije pokrenuta jos nijedna komanda grupe.";  
+        
+        this.stanjePosluzitelj = "Stanje posluzitelja: Nepoznato.";
+        this.odgovorPosluzitelj = "Odgovor posluzitelja: Nije pokrenuta jos nijedna komanda posluzitelja.";
     }
     
-    public void posluziteljPauza(){        
+    @PostConstruct
+    public void init(){
+        grupaStanje();
+        posluziteljStanje();
     }
     
-    public void posluziteljKreni(){        
+    public void posluziteljPauza(){  
+        odgovorPosluzitelj = posaljiKomanduPosluzitelja("PAUZA");
+        posluziteljStanje();
     }
     
-    public void posluziteljPasivno(){        
+    public void posluziteljKreni(){ 
+        odgovorPosluzitelj = posaljiKomanduPosluzitelja("KRENI");
+        posluziteljStanje();
     }
     
-    public void posluziteljAktivno(){        
+    public void posluziteljPasivno(){ 
+        odgovorPosluzitelj = posaljiKomanduPosluzitelja("PASIVNO");
+        posluziteljStanje();
     }
     
-    public void posluziteljStani(){        
+    public void posluziteljAktivno(){   
+        odgovorPosluzitelj = posaljiKomanduPosluzitelja("AKTIVNO");
+        posluziteljStanje();
     }
     
-    public void posluziteljStanje(){        
+    public void posluziteljStani(){  
+        odgovorPosluzitelj = posaljiKomanduPosluzitelja("STANI");
+    }
+    
+    public void posluziteljStanje(){
+        stanjePosluzitelj = posaljiKomanduPosluzitelja("STANJE");
+    }
+    
+    private String posaljiKomanduPosluzitelja(String naziv){
+        String korisnik = "admin";  //TODO prijavljeni korisnik
+        String lozinka = "123456";  //TODO prijavljeni korisnik
+        String komanda = "KORISNIK " + korisnik + "; LOZINKA " + lozinka + "; " + naziv + ";";
+        
+        String odgovor = PomocnaKlasa.posaljiKomanduPosluzitelju(komanda);
+        System.out.println("Primljen odgovor za komandu posluzitelja: " + odgovor);
+        
+        return odgovor;
     }
     
     public void grupaDodaj(){
@@ -76,7 +110,7 @@ public class Pogled2 {
         String komanda = "KORISNIK " + korisnik + "; LOZINKA " + lozinka + "; GRUPA " + naziv + ";";
         
         String odgovor = PomocnaKlasa.posaljiKomanduPosluzitelju(komanda);
-        System.out.println(odgovor);
+        System.out.println("Primljen odgovor za komandu grupe: " + odgovor);
         
         return odgovor;
     }
@@ -96,4 +130,22 @@ public class Pogled2 {
     public void setStanjeGrupa(String stanjeGrupa) {
         this.stanjeGrupa = stanjeGrupa;
     }   
+
+    public String getOdgovorPosluzitelj() {
+        return odgovorPosluzitelj;
+    }
+
+    public void setOdgovorPosluzitelj(String odgovorPosluzitelj) {
+        this.odgovorPosluzitelj = odgovorPosluzitelj;
+    }
+
+    public String getStanjePosluzitelj() {
+        return stanjePosluzitelj;
+    }
+
+    public void setStanjePosluzitelj(String stanjePosluzitelj) {
+        this.stanjePosluzitelj = stanjePosluzitelj;
+    }
+    
+    
 }

@@ -29,19 +29,37 @@
                     <h2>#{p["pogled2.naslov_posluzitelj"]}</h2>
                     <h:commandButton value="#{p['pogled2.veza_pauza']}"
                                      action="#{pogled2.posluziteljPauza()}"
-                                     class="btn btn-default"/>   
+                                     class="btn btn-default">
+                        <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
+                    </h:commandButton>   
                     <h:commandButton value="#{p['pogled2.veza_kreni']}"
                                      action="#{pogled2.posluziteljKreni()}"
-                                     class="btn btn-default"/> 
+                                     class="btn btn-default">
+                        <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
+                    </h:commandButton> 
                     <h:commandButton value="#{p['pogled2.veza_pasivno']}"
                                      action="#{pogled2.posluziteljPasivno()}"
-                                     class="btn btn-default"/> 
+                                     class="btn btn-default">
+                        <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
+                    </h:commandButton> 
                     <h:commandButton value="#{p['pogled2.veza_aktivno']}"
                                      action="#{pogled2.posluziteljAktivno()}"
-                                     class="btn btn-default"/> 
+                                     class="btn btn-default">
+                        <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
+                    </h:commandButton> 
                     <h:commandButton value="#{p['pogled2.veza_stani']}"
                                      action="#{pogled2.posluziteljStani()}"
-                                     class="btn btn-default"/> 
+                                     class="btn btn-default">
+                        <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
+                    </h:commandButton>
+
+                    <br/><br/>
+                    <div class="alert alert-info">
+                        <h:outputLabel id="stanjePosluzitelj" value="#{pogled2.stanjePosluzitelj}"></h:outputLabel>
+                    </div>
+                    <div class="alert alert-warning">
+                        <h:outputLabel id="odgovorPosluzitelj" value="#{pogled2.odgovorPosluzitelj}"></h:outputLabel>
+                    </div>
                 </h:form>
 
                 <h:form>
@@ -50,7 +68,7 @@
                                      action="#{pogled2.grupaDodaj()}"
                                      class="btn btn-default"
                                      id="grupaDodaj">
-                        <f:ajax execute="odgovorGrupa" render="odgovorGrupa stanjeGrupa"/>
+                        <f:ajax execute="odgovorGrupa stanjeGrupa" render="odgovorGrupa stanjeGrupa"/>
                     </h:commandButton>                    
                     <h:commandButton value="#{p['pogled2.veza_prekid']}"
                                      action="#{pogled2.grupaPrekid()}"

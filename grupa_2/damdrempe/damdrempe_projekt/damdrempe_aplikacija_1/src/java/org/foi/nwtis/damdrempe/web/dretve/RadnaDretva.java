@@ -61,7 +61,7 @@ public class RadnaDretva extends Thread {
         String komanda = primljenaKomanda;
         System.out.println("RADNA | " + nazivDretve + " | Primljena je komanda: " + komanda);
 
-        String odgovor = obradiKomandu(komanda); //TODO obraditi komandu
+        String odgovor = obradiKomandu(komanda);
         System.out.println("RADNA | " + nazivDretve + " | Saljem odgovor: " + odgovor);
         PomocnaKlasa.posaljiOdgovor(odgovor, socket);
 
@@ -93,6 +93,10 @@ public class RadnaDretva extends Thread {
         } else if (provjeraPosluziteljPreuzmi.matches() == true) {
             odgovor = pozoviPreuzmiAkciju(provjeraPosluziteljPreuzmi.group(3));
         } else if (provjeraGrupa.matches() == true) {
+            if(ServerSustava.serverKomandePokrenut == false){
+                return OdgovoriKomandi.OPCENITO_ERR_KOMANDEGRUPE;
+            }
+
             odgovor = pozoviOdgovarajucuGrupaAkciju(provjeraGrupa.group(3));
         } else {
             odgovor = OdgovoriKomandi.OPCENITO_ERR_SINTAKSA;
@@ -113,19 +117,24 @@ public class RadnaDretva extends Thread {
      */
     private String pozoviOdgovarajucuPosluziteljAkciju(String akcija) {
         String odgovor = "";
-        //TODO dodati ostale akcije
         switch (akcija) {
             case "PAUZA":
+                odgovor = AkcijePosluzitelj.pauza();
                 break;
             case "KRENI":
+                odgovor = AkcijePosluzitelj.kreni();
                 break;
             case "PASIVNO":
+                odgovor = AkcijePosluzitelj.pasivno();
                 break;
             case "AKTIVNO":
+                odgovor = AkcijePosluzitelj.aktivno();
                 break;
             case "STANI":
+                odgovor = AkcijePosluzitelj.stani();
                 break;
             case "STANJE":
+                odgovor = AkcijePosluzitelj.stanje();
                 break;
             case "LISTAJ":
                 odgovor = AkcijePosluzitelj.listaj();
