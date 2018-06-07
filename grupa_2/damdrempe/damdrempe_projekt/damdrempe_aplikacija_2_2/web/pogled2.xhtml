@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view locale="#{lokalizacija.odabraniJezik}">
+        <h:head>
+            <title>#{p["pogled2.naslov"]}</title>
+            <h:outputStylesheet library="css" name="bootstrap.css" />
+        </h:head>
+        <div class="container-fluid">
+            <h:body>
+                <h:form>
+                    <h:commandLink action="index" 
+                                   value="#{p['index.veza_pocetna']}" />
+                    &nbsp;
+                    <h:commandLink action="pogled1" 
+                                   value="#{p['index.veza_pogled1']}" />
+                    &nbsp;
+                    <h:commandLink action="pogled2" 
+                                   value="#{p['index.veza_pogled2']}" />
+                    &nbsp;
+                    <h:commandLink action="pogled3" 
+                                   value="#{p['index.veza_pogled3']}" />
+                </h:form>
+                <h1>#{p["pogled2.naslov"]}</h1>
+            </h:body>
+        </div>
+    </f:view>
+</html>
+
