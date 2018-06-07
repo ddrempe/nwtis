@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<comment>NWTIS konfiguracija - MySQL</comment>
+<comment>NWTIS konfiguracija</comment>
 <entry key="svn.username">damdrempe</entry>
 <entry key="svn.password">Wodo8102</entry>
 <entry key="port">8000</entry>

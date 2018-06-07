@@ -172,7 +172,25 @@ public class RadnaDretva extends Thread {
      */
     private String pozoviOdgovarajucuGrupaAkciju(String akcija) {
         String odgovor = "";
-
+        switch (akcija) {
+            case "DODAJ":
+                odgovor = AkcijeGrupa.dodaj();
+                break;
+            case "PREKID":
+                odgovor = AkcijeGrupa.prekid();
+                break;
+            case "KRENI":
+                odgovor = AkcijeGrupa.kreni();
+                break;
+            case "PAUZA":
+                odgovor = AkcijeGrupa.pauza();
+                break;
+            case "STANJE":
+                odgovor = AkcijeGrupa.stanje();
+                break;
+            default:
+                break;
+        }
         return odgovor;
     }
 }

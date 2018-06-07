@@ -29,4 +29,21 @@ public class OdgovoriKomandi {
     public static final String POSLUZITELJ_AZURIRAJ_OK = "OK 10; ";
     public static final String POSLUZITELJ_AZURIRAJ_ERR = "ERR 10; korisnik za azuriranje ne postoji";
     
+    public static final String GRUPA_DODAJ_OK = "OK 20; ";
+    public static final String GRUPA_DODAJ_ERR = "ERR 20; grupa je vec registrirana";
+    
+    public static final String GRUPA_PREKID_OK = "OK 20; ";
+    public static final String GRUPA_PREKID_ERR = "ERR 21; grupa jos nije registrirana";
+    
+    public static final String GRUPA_KRENI_OK = "OK 20; ";
+    public static final String GRUPA_KRENI_ERR = "ERR 22; grupa je bila aktivna";
+    public static final String GRUPA_KRENI_ERR2 = "ERR 21; grupa ne postoji";
+    
+    public static final String GRUPA_PAUZA_OK = "OK 20; ";
+    public static final String GRUPA_PAUZA_ERR = "ERR 23; grupa nije bila aktivna";
+    public static final String GRUPA_PAUZA_ERR2 = "ERR 21; grupa ne postoji";
+    
+    public static final String GRUPA_STANJE_OK = "OK 21; grupa je aktivna";
+    public static final String GRUPA_STANJE_OK2 = "OK 22; grupa je blokirana";
+    public static final String GRUPA_STANJE_ERR = "ERR 21; grupa ne postoji";    
 }
