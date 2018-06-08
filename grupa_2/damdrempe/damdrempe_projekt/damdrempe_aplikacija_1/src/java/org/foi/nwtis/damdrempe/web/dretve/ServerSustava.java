@@ -8,6 +8,7 @@ package org.foi.nwtis.damdrempe.web.dretve;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -25,8 +26,6 @@ public class ServerSustava extends Thread {
     /**
      * Pobrojenje koje definira moguca stanja servera
      */
-    
-
     private ServletContext sc;
     private Konfiguracija konf;
     private boolean radi = false;
@@ -78,8 +77,10 @@ public class ServerSustava extends Thread {
         serverPotpunoPokrenut = true;
         try {
             primajZahtjeve();
+        } catch (SocketException ex) {
+            System.out.println("SERVER | Zaustavljeno primanje zahtjeva " + ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("SERVER | IOException: Zaustavljeno primanje zahtjeva " + ex.getMessage());
         }
     }
 
@@ -98,16 +99,26 @@ public class ServerSustava extends Thread {
         serverSocket = new ServerSocket(port, maksCekanje);
         while (radi) {
             Socket socket = serverSocket.accept();  //TODO javlja exception kod deploya
-           
-            Dnevnik dnevnik = new Dnevnik();            
+
+            Dnevnik dnevnik = new Dnevnik();
             boolean nastavi = true;
             System.out.println("SERVER | Stigao zahtjev");
+
+            String odgovor = "";
+            if (ServerSustava.serverPotpunoPokrenut == false) {
+                System.out.println("SERVER | Server je POTPUNO ZAUSTAVLJEN - vise ne prima komande. Zavrsavam rad dretve...");
+                odgovor = OdgovoriKomandi.POSLUZITELJ_STANI_ERR;
+                PomocnaKlasa.posaljiOdgovor(odgovor, socket);
+                System.out.println("SERVER | Saljem odgovor: " + odgovor);
+                radi = false;
+                continue;
+            }
 
             String komanda = PomocnaKlasa.procitajKomandu(socket);
             String regex = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10});(.*)";
             Matcher matcher = PomocnaKlasa.provjeriIspravnostKomande(komanda, regex);
-            String odgovor = "";
             
+
             if (matcher.matches() == false) {
                 System.out.println("SERVER | Neispravna komanda: " + komanda);
                 odgovor = OdgovoriKomandi.OPCENITO_ERR_SINTAKSA;
@@ -125,7 +136,7 @@ public class ServerSustava extends Thread {
                         dnevnik.postaviUspjesanStatus();
                     }
                 }
-            } 
+            }
 
             if (nastavi == false) {
                 PomocnaKlasa.posaljiOdgovor(odgovor, socket);
@@ -143,7 +154,7 @@ public class ServerSustava extends Thread {
                     radnaDretva.start();
                 }
             }
-            
+
             dnevnik.zavrsiISpremiDnevnik(matcher.group(1), komanda);
         }
     }

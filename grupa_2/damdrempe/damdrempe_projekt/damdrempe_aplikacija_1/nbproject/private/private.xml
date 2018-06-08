@@ -3,11 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/rest/serveri/ParkiranjeREST.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/web/dretve/PreuzmiMeteoPodatke.java</file>
             <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/web/dretve/ServerSustava.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/web/dretve/AkcijeGrupa.java</file>
             <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/web/dretve/RadnaDretva.java</file>
             <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/web/dretve/AkcijePosluzitelj.java</file>
-            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/pomocno/BazaPodatakaOperacije.java</file>
+            <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/web/WEB-INF/NWTiS.db.config_1.xml</file>
             <file>file:/C:/NWTiS/grupa_2/damdrempe/damdrempe_projekt/damdrempe_aplikacija_1/src/java/org/foi/nwtis/damdrempe/web/dretve/OdgovoriKomandi.java</file>
         </group>
     </open-files>

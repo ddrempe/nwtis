@@ -5,9 +5,9 @@
  */
 package org.foi.nwtis.damdrempe.web.zrna;
 
-import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 
 /**
@@ -15,54 +15,40 @@ import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
  * @author ddrempetic
  */
 @Named(value = "pogled2")
-@RequestScoped
-public class Pogled2 {
+@SessionScoped
+public class Pogled2 implements Serializable{
     
-    private String odgovorGrupa;
-    private String stanjeGrupa;
+    private String odgovorGrupa = "Odgovor grupe: Nije pokrenuta jos nijedna komanda grupe.";  
+    private String stanjeGrupa = "Stanje grupe: Nepoznato.";  //TODO prijevod
     
-    private String odgovorPosluzitelj;
-    private String stanjePosluzitelj;
+    private String odgovorPosluzitelj = "Odgovor posluzitelja: Nije pokrenuta jos nijedna komanda posluzitelja.";
+    private String stanjePosluzitelj = "Stanje posluzitelja: Nepoznato.";
 
     /**
      * Creates a new instance of Pogled1
      */
     public Pogled2() {
-        this.stanjeGrupa = "Stanje grupe: Nepoznato.";  //TODO prijevod
-        this.odgovorGrupa = "Odgovor grupe: Nije pokrenuta jos nijedna komanda grupe.";  
-        
-        this.stanjePosluzitelj = "Stanje posluzitelja: Nepoznato.";
-        this.odgovorPosluzitelj = "Odgovor posluzitelja: Nije pokrenuta jos nijedna komanda posluzitelja.";
-    }
-    
-    @PostConstruct
-    public void init(){
-        grupaStanje();
-        posluziteljStanje();
     }
     
     public void posluziteljPauza(){  
         odgovorPosluzitelj = posaljiKomanduPosluzitelja("PAUZA");
-        posluziteljStanje();
     }
     
     public void posluziteljKreni(){ 
         odgovorPosluzitelj = posaljiKomanduPosluzitelja("KRENI");
-        posluziteljStanje();
     }
     
     public void posluziteljPasivno(){ 
         odgovorPosluzitelj = posaljiKomanduPosluzitelja("PASIVNO");
-        posluziteljStanje();
     }
     
     public void posluziteljAktivno(){   
         odgovorPosluzitelj = posaljiKomanduPosluzitelja("AKTIVNO");
-        posluziteljStanje();
     }
     
     public void posluziteljStani(){  
         odgovorPosluzitelj = posaljiKomanduPosluzitelja("STANI");
+        stanjePosluzitelj = "Posluzitelj je POTPUNO ZAUSTAVLJEN.";
     }
     
     public void posluziteljStanje(){
@@ -82,22 +68,18 @@ public class Pogled2 {
     
     public void grupaDodaj(){
         odgovorGrupa = posaljiKomanduGrupe("DODAJ");
-        grupaStanje();
     }
     
     public void grupaPrekid(){
         odgovorGrupa = posaljiKomanduGrupe("PREKID");
-        grupaStanje();
     }
     
     public void grupaKreni(){
         odgovorGrupa = posaljiKomanduGrupe("KRENI");
-        grupaStanje();
     }
     
     public void grupaPauza(){
         odgovorGrupa = posaljiKomanduGrupe("PAUZA");
-        grupaStanje();
     }
     
     public void grupaStanje(){

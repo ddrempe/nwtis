@@ -82,6 +82,12 @@ public class PreuzmiMeteoPodatke extends Thread {
      */
     private void radiPosao() {
         while (radi) {
+            if(ServerSustava.serverPotpunoPokrenut == false){
+                System.out.println("METEO | Server je POTPUNO ZAUSTAVLJEN - vise ne preuzima meteopodatke. Zavrsavam rad dretve...");
+                radi = false;
+                continue;
+            }
+            
             try {
                 if(ServerSustava.serverMeteoAktivan == true){
                     preuzmiMeteoPodatkeSaServisa();

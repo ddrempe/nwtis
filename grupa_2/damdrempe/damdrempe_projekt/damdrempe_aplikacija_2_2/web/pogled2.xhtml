@@ -47,9 +47,14 @@
                                      class="btn btn-default">
                         <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
                     </h:commandButton> 
+                    <h:commandButton value="#{p['pogled2.veza_stanje']}"
+                                     action="#{pogled2.posluziteljStanje()}"
+                                     class="btn btn-info">
+                        <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
+                    </h:commandButton>
                     <h:commandButton value="#{p['pogled2.veza_stani']}"
                                      action="#{pogled2.posluziteljStani()}"
-                                     class="btn btn-default">
+                                     class="btn btn-danger">
                         <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
                     </h:commandButton>
 
@@ -83,6 +88,11 @@
                     <h:commandButton value="#{p['pogled2.veza_pauza']}"
                                      action="#{pogled2.grupaPauza()}"
                                      class="btn btn-default">
+                        <f:ajax execute="odgovorGrupa stanjeGrupa" render="odgovorGrupa stanjeGrupa"/>
+                    </h:commandButton> 
+                    <h:commandButton value="#{p['pogled2.veza_stanje']}"
+                                     action="#{pogled2.grupaStanje()}"
+                                     class="btn btn-info">
                         <f:ajax execute="odgovorGrupa stanjeGrupa" render="odgovorGrupa stanjeGrupa"/>
                     </h:commandButton> 
 
