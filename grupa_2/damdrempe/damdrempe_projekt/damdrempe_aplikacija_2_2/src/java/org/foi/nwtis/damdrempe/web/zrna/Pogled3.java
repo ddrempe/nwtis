@@ -11,11 +11,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import org.foi.nwtis.damdrempe.pomocno.JsonGraditelj;
 import org.foi.nwtis.damdrempe.rest.klijenti.ParkiranjeRESTKlijent;
+import org.foi.nwtis.damdrempe.rest.klijenti.ParkiranjeRESTKlijentId;
+import org.foi.nwtis.damdrempe.rest.klijenti.ParkiranjeRESTKlijentIdVozila;
 import org.foi.nwtis.damdrempe.rest.klijenti.ProcitaniJsonOdgovor;
 import org.foi.nwtis.damdrempe.web.podaci.Izbornik;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPrognoza;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
+import org.foi.nwtis.damdrempe.web.podaci.Vozilo;
 
 /**
  *
@@ -35,6 +39,7 @@ public class Pogled3 implements Serializable {
     private List<MeteoPrognoza> popisMeteo = new ArrayList<>();
 
     private String statusParkiralista;
+    private List<Vozilo> listaVozila = new ArrayList<>();
 
     private String korisnickoIme = "admin"; //TODO stvarni podaci prijavljenog korisnika
     private String lozinka = "123456";
@@ -73,37 +78,71 @@ public class Pogled3 implements Serializable {
         poruka = "Dohvaćen je status.";
     }
 
-    public String dodajParkiraliste() {
+    public void dodajParkiralisteREST() {
+        if(naziv.isEmpty() || adresa.isEmpty() || kapacitet.isEmpty()){
+            poruka = "Niste popunili sve podatke za unos parkirališta.";
+            return;
+        }
         
-        return "";
+        String parkiralistePodaci = JsonGraditelj.napraviJsonZaDodajParkiraliste(naziv, adresa, kapacitet);        
+        ParkiranjeRESTKlijent klijent = new ParkiranjeRESTKlijent();
+        String odgovorJsonTekst = klijent.postJson(parkiralistePodaci, String.class, korisnickoIme, lozinka);
+        
+        preuzmiSvaParkiralistaREST();
+        poruka = odgovorJsonTekst;       
     }
 
-    public String obrisiParkiraliste() {
-
-        return "";
+    public void obrisiParkiralisteREST() {
+        ParkiranjeRESTKlijentId klijent = new ParkiranjeRESTKlijentId(odabraniParking);
+        String odgovorJsonTekst = klijent.deleteJson(String.class, korisnickoIme, lozinka);
+        
+        preuzmiSvaParkiralistaREST();
+        odabraniParking = popisParking.get(0).getVrijednost();
+        poruka = odgovorJsonTekst;
     }
 
-    public String aktivirajParkiraliste() {
-
-        return "";
+    public void aktivirajParkiralisteREST() {
+        Parkiraliste p = dajOdabranoParkiraliste();
+        p.setStatus("AKTIVAN");
+        String parkiralistePodaci = JsonGraditelj.napraviJsonZaAzurirajParkiraliste(p);
+        
+        ParkiranjeRESTKlijentId klijent = new ParkiranjeRESTKlijentId(odabraniParking);
+        String odgovorJsonTekst = klijent.putJson(parkiralistePodaci, String.class, korisnickoIme, lozinka);
+        
+        preuzmiSvaParkiralistaREST();
+        poruka = odgovorJsonTekst;
     }
 
-    public String blokirajParkiraliste() {
-
-        return "";
+    public void blokirajParkiralisteREST() {
+        Parkiraliste p = dajOdabranoParkiraliste();
+        p.setStatus("PASIVAN");
+        String parkiralistePodaci = JsonGraditelj.napraviJsonZaAzurirajParkiraliste(p);
+        
+        ParkiranjeRESTKlijentId klijent = new ParkiranjeRESTKlijentId(odabraniParking);
+        String odgovorJsonTekst = klijent.putJson(parkiralistePodaci, String.class, korisnickoIme, lozinka);
+        
+        preuzmiSvaParkiralistaREST();
+        poruka = odgovorJsonTekst;
     }
 
-    public String dohvatiVozilaParkiralista() {
-        return "";
+    public void preuzmiVozilaParkiralistaREST() {
+        
+        ParkiranjeRESTKlijentIdVozila klijent = new ParkiranjeRESTKlijentIdVozila(odabraniParking);
+        String odgovorJsonTekst = klijent.getJsonVozila(String.class, korisnickoIme, lozinka);
+
+        ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovorJsonTekst);
+        listaVozila = procitaniJsonOdgovor.vratiNizVozila();
+
+        poruka = "Vozila su dohvacena.";
     }
 
     public String dohvatiZadnjeMeteo() {
-
+        poruka = "Dohvati zadnje meteo";
         return "";
     }
 
     public String dohvatiVazeceMeteo() {
-
+        poruka = "Dohvati vazece meteo";
         return "";
     }
 

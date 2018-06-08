@@ -9,6 +9,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
+import org.foi.nwtis.damdrempe.web.podaci.Vozilo;
 
 /**
  * Klasa koja iz teksta odgovora kojeg je poslao REST servis cita sve elemente.
@@ -78,6 +79,27 @@ public class ProcitaniJsonOdgovor {
         }
         
         return listaParkiralista;
+    }
+    
+    public List<Vozilo> vratiNizVozila(){
+        List<Vozilo> listaVozila = new ArrayList<>();
+        for (JsonValue jsonValue : odgovorNiz) {
+            String objektString = jsonValue.toString();            
+            JsonReader jsonReader = Json.createReader(new StringReader(objektString));
+            JsonObject jsonObject = jsonReader.readObject();  
+            
+            Vozilo v = new Vozilo();
+            v.setParkiraliste(vratiVrijednostInt(jsonObject, "idParkiraliste"));
+            v.setRegistracija(vratiVrijednostString(jsonObject, "registracija"));
+            
+            String akcijaString = vratiVrijednostString(jsonObject, "status");
+            Vozilo.StatusVozila akcijaStatus = (akcijaString == "ULAZ") ? Vozilo.StatusVozila.ULAZ : Vozilo.StatusVozila.IZLAZ;
+            v.setAkcija(akcijaStatus);          
+            
+            listaVozila.add(v);
+        }
+        
+        return listaVozila;
     }
 
     /**

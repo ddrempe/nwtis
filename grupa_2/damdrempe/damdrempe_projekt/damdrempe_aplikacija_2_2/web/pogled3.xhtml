@@ -45,9 +45,9 @@
                                      class="form-control"/>
                         <h:commandButton 
                             value="#{p['pogled3.gumb_dodaj']}" 
-                            action="#{pogled3.dodajParkiraliste()}"
+                            action="#{pogled3.dodajParkiralisteREST()}"
                             class="btn btn-block btn-primary">
-                            <f:ajax execute="kapacitet naziv adresa" render="popisparking"/>
+                            <f:ajax execute="kapacitet naziv adresa" render="popisparking poruka"/>
                         </h:commandButton>
 
                     </h:panelGrid>
@@ -73,26 +73,26 @@
                                              class="btn btn-block btn-info">
                                 <f:ajax execute="popisparking" render="poruka statusParkiralista" />
                             </h:commandButton>
-                            <br/><h3>
-                            <h:outputText class="label label-info" id="statusParkiralista" value="#{pogled3.statusParkiralista}"  /></h3>
+                            <br/>
+                            <h:outputText class="label label-info" id="statusParkiralista" value="#{pogled3.statusParkiralista}"  />
 
                         </h:panelGroup>
 
                         <h:panelGroup>
                             <h:commandButton value="#{p['pogled3.gumb_obrisi']}" 
-                                             action="#{pogled3.obrisiParkiraliste()}"
+                                             action="#{pogled3.obrisiParkiralisteREST()}"
                                              class="btn btn-block btn-danger">
-                                <f:ajax execute="popisparking" render="popisparking" />
+                                <f:ajax execute="popisparking" render="popisparking poruka" />
                             </h:commandButton>
                             <h:commandButton value="#{p['pogled3.gumb_aktiviraj']}" 
-                                             action="#{pogled3.aktivirajParkiraliste()}"
+                                             action="#{pogled3.aktivirajParkiralisteREST()}"
                                              class="btn btn-block btn-default">
-                                <f:ajax execute="popisparking" render="popisparking" />
+                                <f:ajax execute="popisparking" render="popisparking poruka" />
                             </h:commandButton>                
                             <h:commandButton value="#{p['pogled3.gumb_blokiraj']}" 
-                                             action="#{pogled3.blokirajParkiraliste()}"
+                                             action="#{pogled3.blokirajParkiralisteREST()}"
                                              class="btn btn-block btn-default">
-                                <f:ajax execute="popisparking" render="popisparking" />
+                                <f:ajax execute="popisparking" render="popisparking poruka" />
                             </h:commandButton>
                         </h:panelGroup> 
 
@@ -100,20 +100,20 @@
                             <h:commandButton value="#{p['pogled3.gumb_zadnjiMeteo']}" 
                                              action="#{pogled3.dohvatiZadnjeMeteo()}"
                                              class="btn btn-block btn-default">
-                                <f:ajax execute="popisparking" render="popisMeteo" />
+                                <f:ajax execute="popisparking" render="popisMeteo poruka" />
                             </h:commandButton>
                             <h:commandButton value="#{p['pogled3.gumb_vazeciMeteo']}" 
                                              action="#{pogled3.dohvatiVazeceMeteo()}"
                                              class="btn btn-block btn-default">
-                                <f:ajax execute="popisparking" render="popisMeteo" />
+                                <f:ajax execute="popisparking" render="popisMeteo poruka" />
                             </h:commandButton>
                         </h:panelGroup>
 
                         <h:panelGroup>
                             <h:commandButton value="#{p['pogled3.gumb_vozila']}" 
-                                             action="#{pogled3.dohvatiVozilaParkiralista()}"
+                                             action="#{pogled3.preuzmiVozilaParkiralistaREST()}"
                                              class="btn btn-block btn-default">
-                                <f:ajax execute="popisparking" render="popisVozila" />
+                                <f:ajax execute="popisparking" render="popisVozila poruka" />
                             </h:commandButton>
                         </h:panelGroup>
                     </h:panelGrid>
