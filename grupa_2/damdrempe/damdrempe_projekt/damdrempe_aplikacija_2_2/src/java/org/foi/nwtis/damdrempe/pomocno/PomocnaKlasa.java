@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
@@ -50,7 +51,9 @@ public class PomocnaKlasa {
                 buffer.append((char) znak);
             }
             is.close();
-            odgovor = buffer.toString();            
+            odgovor = buffer.toString();
+        } catch (SocketTimeoutException ex) {
+            odgovor = "APLIKACIJA2 | Predugo cekanje na odgovor. Server je zaustavljen ili ne vraca odgovor. " + ex.getMessage();           
         } catch (IOException ex) {
             Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
         } 

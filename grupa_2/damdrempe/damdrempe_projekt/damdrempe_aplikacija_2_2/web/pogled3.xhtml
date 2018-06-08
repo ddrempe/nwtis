@@ -1,16 +1,130 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>TODO supply a title</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view locale="#{lokalizacija.odabraniJezik}">
+        <h:head>
+            <title>#{p["pogled3.naslov"]}</title>
+            <h:outputStylesheet library="css" name="bootstrap.css" />
+        </h:head>
+        <div class="container-fluid">
+            <h:body>
+                <h:form>
+                    <h:commandLink action="index" 
+                                   value="#{p['index.veza_pocetna']}" />
+                    &nbsp;
+                    <h:commandLink action="pogled1" 
+                                   value="#{p['index.veza_pogled1']}" />
+                    &nbsp;
+                    <h:commandLink action="pogled2" 
+                                   value="#{p['index.veza_pogled2']}" />
+                    &nbsp;
+                    <h:commandLink action="pogled3" 
+                                   value="#{p['index.veza_pogled3']}" />
+                </h:form>
+                <h1>#{p["pogled3.naslov"]}</h1>
+
+                <h:form>
+                    <h:panelGrid columns="3" class="table">
+
+                        <h:outputLabel for="naziv" value="#{p['pogled3.labela_naziv']}"/>
+                        <h:inputText id="naziv" 
+                                     value="#{pogled3.naziv}"
+                                     class="form-control"/>
+                        <br/>
+                        <h:outputLabel for="kapacitet" value="#{p['pogled3.labela_kapacitet']}"/>
+                        <h:inputText id="kapacitet" 
+                                     value="#{pogled3.kapacitet}"
+                                     class="form-control"/>
+                        <br/>
+
+                        <h:outputLabel for="adresa" value="#{p['pogled3.labela_adresa']}"/>
+                        <h:inputText id="adresa" 
+                                     value="#{pogled3.adresa}"
+                                     class="form-control"/>
+                        <h:commandButton 
+                            value="#{p['pogled3.gumb_dodaj']}" 
+                            action="#{pogled3.dodajParkiraliste()}"
+                            class="btn btn-block btn-primary">
+                            <f:ajax execute="kapacitet naziv adresa" render="popisparking"/>
+                        </h:commandButton>
+
+                    </h:panelGrid>
+
+                    <br/>
+                    <h:panelGrid columns="5" class="table">
+                        <h:panelGroup>
+                            <h:outputLabel for="popisparking" value="#{p['pogled3.labela_parkiralista']}"/>
+                            <h:selectOneListbox id="popisparking" 
+                                                size="5" 
+                                                value="#{pogled3.odabraniParking}"
+                                                class="form-control">
+                                <f:selectItems value="#{pogled3.popisParking}" 
+                                               var="parkir"
+                                               itemLabel="#{parkir.labela}" 
+                                               itemValue="#{parkir.vrijednost}" />
+                            </h:selectOneListbox>
+                        </h:panelGroup>
+
+                        <h:panelGroup>
+                            <h:commandButton value="#{p['pogled3.gumb_status']}" 
+                                             action="#{pogled3.dajStatusParkiralista()}"
+                                             class="btn btn-block btn-info">
+                                <f:ajax execute="popisparking" render="poruka statusParkiralista" />
+                            </h:commandButton>
+                            <br/><h3>
+                            <h:outputText class="label label-info" id="statusParkiralista" value="#{pogled3.statusParkiralista}"  /></h3>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup>
+                            <h:commandButton value="#{p['pogled3.gumb_obrisi']}" 
+                                             action="#{pogled3.obrisiParkiraliste()}"
+                                             class="btn btn-block btn-danger">
+                                <f:ajax execute="popisparking" render="popisparking" />
+                            </h:commandButton>
+                            <h:commandButton value="#{p['pogled3.gumb_aktiviraj']}" 
+                                             action="#{pogled3.aktivirajParkiraliste()}"
+                                             class="btn btn-block btn-default">
+                                <f:ajax execute="popisparking" render="popisparking" />
+                            </h:commandButton>                
+                            <h:commandButton value="#{p['pogled3.gumb_blokiraj']}" 
+                                             action="#{pogled3.blokirajParkiraliste()}"
+                                             class="btn btn-block btn-default">
+                                <f:ajax execute="popisparking" render="popisparking" />
+                            </h:commandButton>
+                        </h:panelGroup> 
+
+                        <h:panelGroup>
+                            <h:commandButton value="#{p['pogled3.gumb_zadnjiMeteo']}" 
+                                             action="#{pogled3.dohvatiZadnjeMeteo()}"
+                                             class="btn btn-block btn-default">
+                                <f:ajax execute="popisparking" render="popisMeteo" />
+                            </h:commandButton>
+                            <h:commandButton value="#{p['pogled3.gumb_vazeciMeteo']}" 
+                                             action="#{pogled3.dohvatiVazeceMeteo()}"
+                                             class="btn btn-block btn-default">
+                                <f:ajax execute="popisparking" render="popisMeteo" />
+                            </h:commandButton>
+                        </h:panelGroup>
+
+                        <h:panelGroup>
+                            <h:commandButton value="#{p['pogled3.gumb_vozila']}" 
+                                             action="#{pogled3.dohvatiVozilaParkiralista()}"
+                                             class="btn btn-block btn-default">
+                                <f:ajax execute="popisparking" render="popisVozila" />
+                            </h:commandButton>
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                    <div class="alert alert-warning">
+                        <h:outputLabel id="poruka" value="#{pogled3.poruka}"></h:outputLabel>
+                    </div>
+
+                </h:form>
+            </h:body>
+        </div>
+    </f:view>
 </html>
+
