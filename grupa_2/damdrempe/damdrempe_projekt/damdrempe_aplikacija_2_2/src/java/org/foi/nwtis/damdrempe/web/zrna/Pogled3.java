@@ -20,6 +20,8 @@ import org.foi.nwtis.damdrempe.web.podaci.Izbornik;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPrognoza;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 import org.foi.nwtis.damdrempe.web.podaci.Vozilo;
+import org.foi.nwtis.damdrempe.ws.klijenti.MeteoPodaci;
+import org.foi.nwtis.damdrempe.ws.klijenti.MeteoWSKlijent;
 
 /**
  *
@@ -36,10 +38,10 @@ public class Pogled3 implements Serializable {
     private String poruka;
     private List<Parkiraliste> listaParkiralista = new ArrayList<>();
     private List<Izbornik> popisParking = new ArrayList<>();
-    private List<MeteoPrognoza> popisMeteo = new ArrayList<>();
 
     private String statusParkiralista;
     private List<Vozilo> listaVozila = new ArrayList<>();
+    org.foi.nwtis.damdrempe.ws.klijenti.MeteoPodaci meteoPodaci;
 
     private String korisnickoIme = "admin"; //TODO stvarni podaci prijavljenog korisnika
     private String lozinka = "123456";
@@ -136,14 +138,28 @@ public class Pogled3 implements Serializable {
         poruka = "Vozila su dohvacena.";
     }
 
-    public String dohvatiZadnjeMeteo() {
-        poruka = "Dohvati zadnje meteo";
-        return "";
+    public void dohvatiZadnjeMeteo() {
+        int idOdabraniParking = Integer.parseInt(odabraniParking);
+        meteoPodaci = MeteoWSKlijent.dajZadnjeMeteoPodatke(idOdabraniParking, korisnickoIme, lozinka);
+        
+        if(meteoPodaci == null){
+            poruka = "Nije moguće dohvatiti zadnje meteopodatke.";
+            return;
+        }
+        
+        poruka = "Dohvaceni su zadnji meteopodaci.";
     }
 
-    public String dohvatiVazeceMeteo() {
-        poruka = "Dohvati vazece meteo";
-        return "";
+    public void dohvatiVazeceMeteo() {
+        int idOdabraniParking = Integer.parseInt(odabraniParking);
+        meteoPodaci = MeteoWSKlijent.dajVazeceMeteoPodatke(idOdabraniParking, korisnickoIme, lozinka);
+        
+        if(meteoPodaci == null){
+            poruka = "Nije moguće dohvatiti vazece meteopodatke.";
+            return;
+        }
+        
+        poruka = "Dohvaceni su vazeci meteopodaci.";
     }
 
     private Parkiraliste dajOdabranoParkiraliste() {
@@ -206,14 +222,6 @@ public class Pogled3 implements Serializable {
         this.poruka = poruka;
     }
 
-    public List<MeteoPrognoza> getPopisMeteo() {
-        return popisMeteo;
-    }
-
-    public void setPopisMeteo(List<MeteoPrognoza> popisMeteo) {
-        this.popisMeteo = popisMeteo;
-    }
-
     public String getStatusParkiralista() {
         return statusParkiralista;
     }
@@ -221,5 +229,23 @@ public class Pogled3 implements Serializable {
     public void setStatusParkiralista(String statusParkiralista) {
         this.statusParkiralista = statusParkiralista;
     }
+
+    public List<Vozilo> getListaVozila() {
+        return listaVozila;
+    }
+
+    public void setListaVozila(List<Vozilo> listaVozila) {
+        this.listaVozila = listaVozila;
+    }
+
+    public MeteoPodaci getMeteoPodaci() {
+        return meteoPodaci;
+    }
+
+    public void setMeteoPodaci(MeteoPodaci meteoPodaci) {
+        this.meteoPodaci = meteoPodaci;
+    }
+    
+    
 
 }

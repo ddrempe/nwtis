@@ -100,12 +100,12 @@
                             <h:commandButton value="#{p['pogled3.gumb_zadnjiMeteo']}" 
                                              action="#{pogled3.dohvatiZadnjeMeteo()}"
                                              class="btn btn-block btn-default">
-                                <f:ajax execute="popisparking" render="popisMeteo poruka" />
+                                <f:ajax execute="popisparking" render="meteo poruka" />
                             </h:commandButton>
                             <h:commandButton value="#{p['pogled3.gumb_vazeciMeteo']}" 
                                              action="#{pogled3.dohvatiVazeceMeteo()}"
                                              class="btn btn-block btn-default">
-                                <f:ajax execute="popisparking" render="popisMeteo poruka" />
+                                <f:ajax execute="popisparking" render="meteo poruka" />
                             </h:commandButton>
                         </h:panelGroup>
 
@@ -118,11 +118,76 @@
                         </h:panelGroup>
                     </h:panelGrid>
 
-                    <div class="alert alert-warning">
-                        <h:outputLabel id="poruka" value="#{pogled3.poruka}"></h:outputLabel>
-                    </div>
+                    <h:panelGroup id="poruka" layout="block" >
+                        <h:panelGroup rendered="#{pogled3.poruka ne null}">
+                            <div class="alert alert-warning">
+                                <h:outputLabel 
+                                    value="#{pogled3.poruka}">
+                                </h:outputLabel>
+                            </div>
 
+                        </h:panelGroup>
+                    </h:panelGroup>
                 </h:form>
+
+                <h:panelGroup id="meteo">
+                    <h:dataTable value="#{pogled3.meteoPodaci}" 
+                                 class="table table-striped"
+                                 var="meteo"
+                                 rendered="#{pogled3.meteoPodaci ne null}">
+                        <h:column>
+                            <f:facet name="header">#{p['pogled3.labela_vrijeme']}</f:facet>
+                                #{meteo.weatherValue}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{p['pogled3.labela_temp']}</f:facet>
+                                #{meteo.temperatureValue}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{p['pogled3.labela_tempmin']}</f:facet>
+                                #{meteo.temperatureMin}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{p['pogled3.labela_tempmax']}</f:facet>
+                                #{meteo.temperatureMax}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{p['pogled3.labela_vlaga']}</f:facet>
+                                #{meteo.humidityValue}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{p['pogled3.labela_tlak']}</f:facet>
+                                #{meteo.pressureValue}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{p['pogled3.labela_vjetar']}</f:facet>
+                                #{meteo.windSpeedValue}
+                        </h:column>
+                    </h:dataTable> 
+                </h:panelGroup>
+
+                <div class="pre-scrollable">
+                    <h:panelGroup id="popisVozila" style="overflow: auto;">
+                        <h:dataTable value="#{pogled3.listaVozila}" 
+                                     class="table table-striped"
+                                     var="voz"
+                                     rendered="#{pogled3.listaVozila.size() ne 0}">
+                            <h:column>
+                                <f:facet name="header">#{p['pogled3.labela_id']}</f:facet>
+                                    #{voz.parkiraliste}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">#{p['pogled3.labela_akcija']}</f:facet>
+                                    #{voz.akcija}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">#{p['pogled3.labela_registracija']}</f:facet>
+                                    #{voz.registracija}
+                            </h:column>
+                        </h:dataTable> 
+                    </h:panelGroup>
+                </div>
+
             </h:body>
         </div>
     </f:view>
