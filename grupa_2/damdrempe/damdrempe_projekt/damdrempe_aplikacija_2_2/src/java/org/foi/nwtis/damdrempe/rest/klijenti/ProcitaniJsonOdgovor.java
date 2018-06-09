@@ -8,6 +8,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
+import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 import org.foi.nwtis.damdrempe.web.podaci.Vozilo;
 
@@ -100,6 +101,26 @@ public class ProcitaniJsonOdgovor {
         }
         
         return listaVozila;
+    }
+    
+    public List<Korisnik> vratiNizKorisnika(){
+        List<Korisnik> listaKorisnika = new ArrayList<>();
+        for (JsonValue jsonValue : odgovorNiz) {
+            String objektString = jsonValue.toString();            
+            JsonReader jsonReader = Json.createReader(new StringReader(objektString));
+            JsonObject jsonObject = jsonReader.readObject();  
+            
+            Korisnik k = new Korisnik();
+            k.setKor_ime(vratiVrijednostString(jsonObject, "ki"));
+            k.setIme(vratiVrijednostString(jsonObject, "ime"));
+            k.setPrezime(vratiVrijednostString(jsonObject, "prezime"));
+            k.setEmail_adresa(vratiVrijednostString(jsonObject, "email"));            
+            k.setVrsta(vratiVrijednostInt(jsonObject, "vrsta"));                   
+            
+            listaKorisnika.add(k);
+        }
+        
+        return listaKorisnika;
     }
 
     /**

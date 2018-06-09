@@ -4,4 +4,5 @@
 <comment>NWTIS konfiguracija - Java DB</comment>
 <entry key="port">8000</entry>
 <entry key="adresa">127.0.0.1</entry>
+<entry key="stranicenjeBrojZapisa">5</entry>
 </properties>

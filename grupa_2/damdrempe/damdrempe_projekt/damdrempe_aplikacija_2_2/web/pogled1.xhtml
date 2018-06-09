@@ -24,6 +24,133 @@
                                    value="#{p['index.veza_pogled3']}" />
                 </h:form>
                 <h1>#{p["pogled1.naslov"]}</h1>
+
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3>#{p["pogled1.labela_registracija"]}</h3>
+                            <h:form class="form-horizontal">
+                                <h:panelGroup class="form-group">
+
+                                    <h:outputLabel for="imeReg" value="#{p['pogled1.labela_ime']}"/>
+                                    <h:inputText id="imeReg" 
+                                                 value="#{pogled1.imeReg}"
+                                                 class="form-control"
+                                                 validatorMessage="#{p['pogled1.poruka_ime']}">
+                                        <f:validateLength minimum = "3" maximum = "9" />
+                                    </h:inputText>
+                                    <br/>
+                                    <h:outputLabel for="prezimeReg" value="#{p['pogled1.labela_prezime']}"/>
+                                    <h:inputText id="prezimeReg" 
+                                                 value="#{pogled1.prezimeReg}"
+                                                 class="form-control"
+                                                 validatorMessage="#{p['pogled1.poruka_prezime']}">
+                                        <f:validateLength minimum = "3" maximum = "9" />
+                                    </h:inputText>
+                                    <br/>
+                                    <h:commandButton 
+                                        value="#{p['pogled1.gumb_dodaj']}" 
+                                        action="#{pogled1.registracijaKorisnika()}"
+                                        class="btn btn-block btn-primary">
+                                        <f:ajax execute="imeReg prezimeReg" render="poruka popisKorisnika imeRegVal prezimeRegVal"/>
+                                    </h:commandButton>
+                                    <h:message class="label label-danger" id="imeRegVal" for="imeReg"/><br/>
+                                    <h:message class="label label-danger" id="prezimeRegVal" for="prezimeReg"/>
+                                </h:panelGroup>
+                            </h:form>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <h3>#{p["pogled1.labela_azuriranje"]}</h3>
+                            <h:form class="form-horizontal">
+                                <h:panelGroup class="form-group">
+
+                                    <h:outputLabel for="imeAzu" value="#{p['pogled1.labela_ime']}"/>
+                                    <h:inputText id="imeAzu" 
+                                                 value="#{pogled1.imeAzu}"
+                                                 class="form-control"
+                                                 validatorMessage="#{p['pogled1.poruka_ime']}">
+                                        <f:validateLength minimum = "3" maximum = "9" />
+                                    </h:inputText>
+                                    <br/>
+                                    <h:outputLabel for="prezimeAzu" value="#{p['pogled1.labela_prezime']}"/>
+                                    <h:inputText id="prezimeAzu" 
+                                                 value="#{pogled1.prezimeAzu}"
+                                                 class="form-control"
+                                                 validatorMessage="#{p['pogled1.poruka_prezime']}">
+                                        <f:validateLength minimum = "3" maximum = "9" />
+                                    </h:inputText>
+                                    <br/>
+                                    <h:commandButton 
+                                        value="#{p['pogled1.gumb_azuriraj']}" 
+                                        action="#{pogled1.azuriranjeKorisnika()}"
+                                        class="btn btn-block btn-primary">
+                                        <f:ajax execute="imeAzu prezimeAzu" render="poruka popisKorisnika imeAzuVal prezimeAzuVal"/>
+                                    </h:commandButton>
+                                    <h:message class="label label-danger" id="imeAzuVal" for="imeAzu"/><br/>
+                                    <h:message class="label label-danger" id="prezimeAzuVal" for="prezimeAzu"/>
+                                </h:panelGroup>
+                            </h:form>
+                        </div>
+
+                    </div>
+                </div>
+
+                <h:panelGroup id="poruka" layout="block" >
+                    <h:panelGroup rendered="#{pogled1.poruka ne null &amp;&amp; pogled1.poruka.length() != 0}">
+                        <div class="alert alert-warning">
+                            <h:outputLabel 
+                                value="#{pogled1.poruka}">
+                            </h:outputLabel>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:form>
+                    <h:panelGroup id="popisKorisnika">
+                        <h:dataTable value="#{pogled1.listaKorisnikaZaPrikaz}" 
+                                     class="table table-striped"
+                                     var="k"
+                                     rendered="#{pogled1.listaKorisnikaZaPrikaz.size() ne 0}">
+                            <h:column>
+                                <f:facet name="header">#{p['pogled1.labela_korime']}</f:facet>
+                                    #{k.kor_ime}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">#{p['pogled1.labela_ime']}</f:facet>
+                                    #{k.ime}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">#{p['pogled1.labela_prezime']}</f:facet>
+                                    #{k.prezime}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">#{p['pogled1.labela_email']}</f:facet>
+                                    #{k.email_adresa}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">#{p['pogled1.labela_vrsta']}</f:facet>
+                                    #{k.vrsta}
+                            </h:column>
+                        </h:dataTable>
+
+                    </h:panelGroup>
+                    <h:commandButton value="#{p['pogled1.gumb_prethodni']}" 
+                                     action="#{pogled1.prethodnaStranica()}"
+                                     class="btn btn-default btn-md">
+                        <f:ajax execute="popisKorisnika" render="popisKorisnika"/>
+                    </h:commandButton>
+                    <h:commandButton value="#{p['pogled1.gumb_sljedeci']}" 
+                                     action="#{pogled1.sljedecaStranica()}"
+                                     class="btn btn-default btn-md">
+                        <f:ajax execute="popisKorisnika" render="popisKorisnika"/>
+                    </h:commandButton>
+
+
+                </h:form>
+
+
             </h:body>
         </div>
     </f:view>

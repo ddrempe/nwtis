@@ -98,12 +98,12 @@
 
                         <h:panelGroup>
                             <h:commandButton value="#{p['pogled3.gumb_zadnjiMeteo']}" 
-                                             action="#{pogled3.dohvatiZadnjeMeteo()}"
+                                             action="#{pogled3.dohvatiZadnjeMeteoSOAP()}"
                                              class="btn btn-block btn-default">
                                 <f:ajax execute="popisparking" render="meteo poruka" />
                             </h:commandButton>
                             <h:commandButton value="#{p['pogled3.gumb_vazeciMeteo']}" 
-                                             action="#{pogled3.dohvatiVazeceMeteo()}"
+                                             action="#{pogled3.dohvatiVazeceMeteoSOAP()}"
                                              class="btn btn-block btn-default">
                                 <f:ajax execute="popisparking" render="meteo poruka" />
                             </h:commandButton>

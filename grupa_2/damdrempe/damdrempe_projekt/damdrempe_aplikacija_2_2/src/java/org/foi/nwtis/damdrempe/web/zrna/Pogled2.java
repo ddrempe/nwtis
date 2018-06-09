@@ -18,11 +18,11 @@ import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 @SessionScoped
 public class Pogled2 implements Serializable{
     
-    private String odgovorGrupa = "Odgovor grupe: Nije pokrenuta jos nijedna komanda grupe.";  
-    private String stanjeGrupa = "Stanje grupe: Nepoznato.";  //TODO prijevod
+    private String odgovorGrupa; 
+    private String stanjeGrupa;
     
-    private String odgovorPosluzitelj = "Odgovor posluzitelja: Nije pokrenuta jos nijedna komanda posluzitelja.";
-    private String stanjePosluzitelj = "Stanje posluzitelja: Nepoznato.";
+    private String odgovorPosluzitelj;
+    private String stanjePosluzitelj;
 
     /**
      * Creates a new instance of Pogled1

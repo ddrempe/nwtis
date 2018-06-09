@@ -58,13 +58,23 @@
                         <f:ajax execute="odgovorPosluzitelj stanjePosluzitelj" render="odgovorPosluzitelj stanjePosluzitelj"/>
                     </h:commandButton>
 
+
                     <br/><br/>
-                    <div class="alert alert-info">
-                        <h:outputLabel id="stanjePosluzitelj" value="#{pogled2.stanjePosluzitelj}"></h:outputLabel>
-                    </div>
-                    <div class="alert alert-warning">
-                        <h:outputLabel id="odgovorPosluzitelj" value="#{pogled2.odgovorPosluzitelj}"></h:outputLabel>
-                    </div>
+                    <h:panelGroup id="stanjePosluzitelj" layout="block" >
+                        <h:panelGroup rendered="#{pogled2.stanjePosluzitelj ne null}">
+                            <div class="alert alert-info">
+                                <h:outputLabel  value="#{pogled2.stanjePosluzitelj}"></h:outputLabel>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <h:panelGroup id="odgovorPosluzitelj" layout="block">
+                        <h:panelGroup rendered="#{pogled2.odgovorPosluzitelj ne null}">
+                            <div class="alert alert-warning">
+                                <h:outputLabel value="#{pogled2.odgovorPosluzitelj}"></h:outputLabel>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
                 </h:form>
 
                 <h:form>
@@ -97,12 +107,21 @@
                     </h:commandButton> 
 
                     <br/><br/>
-                    <div class="alert alert-info">
-                        <h:outputLabel id="stanjeGrupa" value="#{pogled2.stanjeGrupa}"></h:outputLabel>
-                    </div>
-                    <div class="alert alert-warning">
-                        <h:outputLabel id="odgovorGrupa" value="#{pogled2.odgovorGrupa}"></h:outputLabel>
-                    </div>
+                    <h:panelGroup id="stanjeGrupa" layout="block" >
+                        <h:panelGroup rendered="#{pogled2.stanjeGrupa ne null}">
+                            <div class="alert alert-info">
+                                <h:outputLabel  value="#{pogled2.stanjeGrupa}"></h:outputLabel>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <h:panelGroup id="odgovorGrupa" layout="block">
+                        <h:panelGroup rendered="#{pogled2.odgovorGrupa ne null}">
+                            <div class="alert alert-warning">
+                                <h:outputLabel value="#{pogled2.odgovorGrupa}"></h:outputLabel>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
 
                 </h:form>
             </h:body>
