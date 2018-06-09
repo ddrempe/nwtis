@@ -14,6 +14,7 @@ public class OdgovoriKomandi {
     public static final String OPCENITO_ERR_BROJDRETVI = "ERROR 100; nema raspolozive radne dretve";
     public static final String OPCENITO_ERR_SINTAKSA = "ERROR 200; sintaksa nije ispravna ili komanda nije dozvoljena";
     public static final String OPCENITO_ERR_KOMANDEGRUPE = "ERROR 300; primanje komandi grupe je pauzirano";
+    public static final String OPCENITO_ERR_ODGOVORSERVISA = "ERROR 400; odgovor FALSE od operacije servisa";
     
     public static final String OPCENITO_OK_AUTENTIFIKACIJA = "OK 10; ";
     public static final String OPCENITO_ERR_AUTENTIFIKACIJA = "ERR 11; korisnik ne postoji ili je neispravna lozinka";
@@ -51,20 +52,21 @@ public class OdgovoriKomandi {
     public static final String POSLUZITELJ_STANJE_OK4 = "OK 14; preuzima samo posluziteljske komande i NE preuzima meteopodatke";
 
     public static final String GRUPA_DODAJ_OK = "OK 20; ";
-    public static final String GRUPA_DODAJ_ERR = "ERR 20; grupa je vec registrirana";
+    public static final String GRUPA_DODAJ_ERR = "ERR 20; grupa se moze registrirati samo kada je deregistrirana";
     
     public static final String GRUPA_PREKID_OK = "OK 20; ";
-    public static final String GRUPA_PREKID_ERR = "ERR 21; grupa jos nije registrirana";
+    public static final String GRUPA_PREKID_ERR = "ERR 21; grupa je vec deregistrirana";
     
     public static final String GRUPA_KRENI_OK = "OK 20; ";
     public static final String GRUPA_KRENI_ERR = "ERR 22; grupa je bila aktivna";
-    public static final String GRUPA_KRENI_ERR2 = "ERR 21; grupa ne postoji";
+    public static final String GRUPA_KRENI_ERR2 = "ERR 21; grupa ne postoji, deregistrirana je";
     
     public static final String GRUPA_PAUZA_OK = "OK 20; ";
     public static final String GRUPA_PAUZA_ERR = "ERR 23; grupa nije bila aktivna";
-    public static final String GRUPA_PAUZA_ERR2 = "ERR 21; grupa ne postoji";
+    public static final String GRUPA_PAUZA_ERR2 = "ERR 21; grupa ne postoji, deregistrirana je";
     
     public static final String GRUPA_STANJE_OK = "OK 21; grupa je aktivna";
     public static final String GRUPA_STANJE_OK2 = "OK 22; grupa je blokirana";
-    public static final String GRUPA_STANJE_ERR = "ERR 21; grupa ne postoji";    
+    public static final String GRUPA_STANJE_OK3 = "OK 23; grupa je registrirana";
+    public static final String GRUPA_STANJE_ERR = "ERR 21; grupa ne postoji, deregistrirana je";    
 }

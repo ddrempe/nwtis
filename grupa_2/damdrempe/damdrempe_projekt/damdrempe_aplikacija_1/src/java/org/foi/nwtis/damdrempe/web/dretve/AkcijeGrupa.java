@@ -16,54 +16,61 @@ import org.foi.nwtis.damdrempe.ws.klijenti.ParkiranjeWSKlijent;
 public class AkcijeGrupa {
 
     public static String dodaj() {
-        //ako grupa već postoji greška
-        //TODO ne znam da li je dobro i da li je ikad u stanju NEPOSTOJI
-        if (dajStanjeGrupe() != org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.NEPOSTOJI) {
+        //samo ako je deregistrirana može se registrirati
+        //moze se registrirati samo ako je deregistrirana
+        if (dajStatusGrupe() != org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.DEREGISTRIRAN) {
             return OdgovoriKomandi.GRUPA_DODAJ_ERR;
         }
 
         KorisnikPodaci k = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
-        boolean rezultat = ParkiranjeWSKlijent.registrirajGrupu(k.getKorisnickoIme(), k.getLozinka());
+        boolean rezultat = ParkiranjeWSKlijent.registrirajGrupu(k.getKorisnickoIme(), k.getLozinka());        
+        String odgovor = rezultat ? OdgovoriKomandi.GRUPA_DODAJ_OK : OdgovoriKomandi.OPCENITO_ERR_ODGOVORSERVISA;
 
-        return OdgovoriKomandi.GRUPA_DODAJ_OK;
+        return odgovor;
     }
 
     public static String prekid() {
-        //ako grupa još ne postoji greška
-        //TODO ne znam da li je dobro i da li je ikad u stanju NEPOSTOJI
-        if (dajStanjeGrupe() == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.NEPOSTOJI) {
+        //ako grupa još ne postoji greška, nije registrirana, samo ako je u statusu deregistrirana
+        //TODO u svim statusima osim deregistriran se moze deregistrirati??
+        if (dajStatusGrupe() == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.DEREGISTRIRAN) {
             return OdgovoriKomandi.GRUPA_PREKID_ERR;
         }
 
         KorisnikPodaci k = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
         boolean rezultat = ParkiranjeWSKlijent.deregistrirajGrupu(k.getKorisnickoIme(), k.getLozinka());
+        String odgovor = rezultat ? OdgovoriKomandi.GRUPA_PREKID_OK : OdgovoriKomandi.OPCENITO_ERR_ODGOVORSERVISA;
 
-        return OdgovoriKomandi.GRUPA_PREKID_OK;
+        return odgovor;
     }
 
     public static String kreni() {
+        org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = dajStatusGrupe();
+        
         //ako grupa još ne postoji greška
-        if (dajStanjeGrupe() == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.NEPOSTOJI) {
+        if (status == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.DEREGISTRIRAN) {
             return OdgovoriKomandi.GRUPA_KRENI_ERR2;
         }
         //ako je grupa već aktivna greška
-        else if (dajStanjeGrupe() == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.AKTIVAN) {
+        else if (status == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.AKTIVAN) {
             return OdgovoriKomandi.GRUPA_KRENI_ERR;
         }         
         
         KorisnikPodaci k = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
         boolean rezultat = ParkiranjeWSKlijent.aktivirajGrupu(k.getKorisnickoIme(), k.getLozinka());
+        String odgovor = rezultat ? OdgovoriKomandi.GRUPA_KRENI_OK : OdgovoriKomandi.OPCENITO_ERR_ODGOVORSERVISA;
 
-        return OdgovoriKomandi.GRUPA_KRENI_OK;
+        return odgovor;
     }
 
     public static String pauza() {
+        org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = dajStatusGrupe();
+        
         //ako grupa još ne postoji greška
-        if (dajStanjeGrupe() == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.NEPOSTOJI) {
+        if (status == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.DEREGISTRIRAN) {
             return OdgovoriKomandi.GRUPA_PAUZA_ERR2;
         } 
         //ako grupa još nije aktivna
-        else if (dajStanjeGrupe() != org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.AKTIVAN) {
+        else if (status != org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.AKTIVAN) {
             return OdgovoriKomandi.GRUPA_PAUZA_ERR;
         }        
         
@@ -74,7 +81,7 @@ public class AkcijeGrupa {
     }
 
     public static String stanje() {
-        org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = dajStanjeGrupe();
+        org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = dajStatusGrupe();
 
         String odgovor = "";
         if (null != status) {
@@ -85,7 +92,10 @@ public class AkcijeGrupa {
                 case BLOKIRAN:
                     odgovor = OdgovoriKomandi.GRUPA_STANJE_OK2;
                     break;
-                case NEPOSTOJI:
+                case REGISTRIRAN:
+                    odgovor = OdgovoriKomandi.GRUPA_STANJE_OK3;
+                    break;
+                case DEREGISTRIRAN:
                     odgovor = OdgovoriKomandi.GRUPA_STANJE_ERR;
                     break;
                 default:
@@ -96,7 +106,7 @@ public class AkcijeGrupa {
         return odgovor;
     }
 
-    private static org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika dajStanjeGrupe() {
+    private static org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika dajStatusGrupe() {
         KorisnikPodaci k = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
         org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = ParkiranjeWSKlijent.dajStatusGrupe(k.getKorisnickoIme(), k.getLozinka());
 

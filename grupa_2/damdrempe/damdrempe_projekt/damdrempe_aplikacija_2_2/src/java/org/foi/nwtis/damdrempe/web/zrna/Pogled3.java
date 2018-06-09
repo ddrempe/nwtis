@@ -133,8 +133,13 @@ public class Pogled3 implements Serializable {
 
         ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovorJsonTekst);
         listaVozila = procitaniJsonOdgovor.vratiNizVozila();
+        
+        if(listaVozila.isEmpty()){
+            poruka = "Nije dohvaceno nijedno vozilo za odabrano parkiraliste.";
+            return;
+        }
 
-        poruka = "Vozila su dohvacena.";
+        poruka = "Dohvaceno je " + listaVozila.size() + " vozila.";
     }
 
     public void dohvatiZadnjeMeteoSOAP() {

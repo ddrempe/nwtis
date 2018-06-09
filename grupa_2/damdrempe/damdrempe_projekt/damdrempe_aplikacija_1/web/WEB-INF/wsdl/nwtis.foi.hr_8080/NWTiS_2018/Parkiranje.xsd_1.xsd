@@ -442,6 +442,8 @@
 <xs:enumeration value="PASIVAN" />
 <xs:enumeration value="AKTIVAN" />
 <xs:enumeration value="NEAKTIVAN" />
+<xs:enumeration value="REGISTRIRAN" />
+<xs:enumeration value="DEREGISTRIRAN" />
 <xs:enumeration value="BLOKIRAN" />
 <xs:enumeration value="NEPOSTOJI" />
 </xs:restriction>
