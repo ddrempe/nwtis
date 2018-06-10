@@ -2,11 +2,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <h:head>
-        <title>Facelet Title</title>
-    </h:head>
-    <h:body>
-        Hello from Facelets
-    </h:body>
+        <h:head>
+            <title>Početna stranica</title>
+            <h:outputStylesheet library="css" name="bootstrap.css" />
+        </h:head>
+        <div class="container-fluid">
+            <h:body>
+                <h:form>
+                    <h:commandLink action="index" 
+                                   value="Početna" />
+                    &nbsp;
+                    <h:commandLink action="pogled1" 
+                                   value="Pogled 1" />
+                    &nbsp;
+                    <h:commandLink action="pogled2" 
+                                   value="Pogled 2" />
+                </h:form>
+                <h1>Početna stranica</h1>
+            </h:body>
+        </div>
 </html>
 

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
 import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
+import org.foi.nwtis.damdrempe.web.podaci.DnevnikPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
@@ -452,6 +453,37 @@ public class BazaPodatakaOperacije {
 
         preparedStmt.execute();
     }
+    
+    /**
+     * Vraća sve zapise iz dnevnika.
+     *
+     * @return listu svih zapisa
+     * @throws SQLException
+     */
+    public ArrayList<DnevnikPodaci> dnevnikSelectSviZapisi() throws SQLException {
+        ArrayList<DnevnikPodaci> dohvaceniZapisi = new ArrayList<>();
+        String upit = "SELECT * FROM DNEVNIK";
+
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.executeQuery();
+        while (rs.next()) {
+            DnevnikPodaci d = new DnevnikPodaci();
+            d.setId(rs.getInt("ID"));
+            d.setStatus(rs.getInt("STATUS"));
+            d.setTrajanje(rs.getInt("TRAJANJE"));
+            d.setKorisnik(rs.getString("KORISNIK"));
+            d.setUrl(rs.getString("URL"));
+            d.setIpadresa(rs.getString("IPADRESA"));
+            d.setVrijeme(rs.getDate("VRIJEME"));
+
+            dohvaceniZapisi.add(d);
+        }
+
+        return dohvaceniZapisi;
+    }
+    
+    
 
     /**
      * Provjerava da li korisnik postoji

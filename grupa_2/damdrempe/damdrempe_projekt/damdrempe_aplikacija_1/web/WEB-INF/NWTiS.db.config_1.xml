@@ -21,4 +21,6 @@
 <entry key="port">8000</entry>
 <entry key="maks.broj.zahtjeva.cekanje">5</entry>
 <entry key="maks.broj.radnih.dretvi">10</entry>
+<entry key="stranicenje.pogled1">7</entry>
+<entry key="stranicenje.pogled2">20</entry>
 </properties>

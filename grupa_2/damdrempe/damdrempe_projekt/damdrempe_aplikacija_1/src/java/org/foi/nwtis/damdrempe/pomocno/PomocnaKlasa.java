@@ -22,104 +22,120 @@ import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 /**
- * Klasa sa svim pomocnim operacijama koje se koriste na više mjesta.
- * Trenutno sadržava samo operacije za dohvat Google Maps lokacije i OpenWeatherMaps meteopodataka.
+ * Klasa sa svim pomocnim operacijama koje se koriste na više mjesta. Trenutno
+ * sadržava samo operacije za dohvat Google Maps lokacije i OpenWeatherMaps
+ * meteopodataka.
+ *
  * @author ddrempetic
  */
 public class PomocnaKlasa {
-    
+
     /**
      * Dohvaca lokaciju pomocu Google Maps servisa
+     *
      * @param adresa adresa za koju se trazi lokacija
      * @return objekt Lokacija
      */
-    public static Lokacija dohvatiGMLokaciju(String adresa){
-        ServletContext sc = SlusacAplikacije.servletContext; 
+    public static Lokacija dohvatiGMLokaciju(String adresa) {
+        ServletContext sc = SlusacAplikacije.servletContext;
         Konfiguracija k = (Konfiguracija) sc.getAttribute("Konfig");
         String gmapiKey = k.dajPostavku("gmapikey");
         GMKlijent gmk = new GMKlijent(gmapiKey);
         return gmk.getGeoLocation(adresa);
-    }    
-    
+    }
+
     /**
      * Dohvaca meteopodatke pomocu OpenWeatherMaps servisa
+     *
      * @param latitude geografska širina
      * @param longitude geografska dužina
      * @return objekt koji sadrži sve dostupne meteopodatke za lokaciju
      */
-    public static MeteoPodaci dohvatiOWMMeteo(String latitude, String longitude){
-        ServletContext sc = SlusacAplikacije.servletContext; 
+    public static MeteoPodaci dohvatiOWMMeteo(String latitude, String longitude) {
+        ServletContext sc = SlusacAplikacije.servletContext;
         Konfiguracija k = (Konfiguracija) sc.getAttribute("Konfig");
         String apiKey = k.dajPostavku("apikey");
         OWMKlijent owmk = new OWMKlijent(apiKey);
         MeteoPodaci meteo = null;
         try {
-            meteo = owmk.getRealTimeWeather(latitude, longitude);            
+            meteo = owmk.getRealTimeWeather(latitude, longitude);
         } catch (NullPointerException ex) {
             Logger.getLogger("Nije moguće dohvatiti sve meteo podatke!");
         }
         return meteo;
-    }  
-    
+    }
+
     /**
      * Provjerava da li korisnik postoji
+     *
      * @param korisnickoIme
      * @param lozinka
      * @return true ako postoji, inače false
      */
-    public static boolean autentificirajKorisnika(String korisnickoIme, String lozinka){
+    public static boolean autentificirajKorisnika(String korisnickoIme, String lozinka) {
         boolean postoji = false;
         KorisnikPodaci korisnik = new KorisnikPodaci(korisnickoIme, lozinka);
-        
+
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             postoji = bpo.korisniciSelectKorisnikPostoji(korisnik);
-            bpo.zatvoriVezu();            
+            bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return postoji;
     }
-    
+
     /**
      * Zapisuje novi zapis u tablicu dnevnik
-     * @param dnevnik 
+     *
+     * @param dnevnik
      */
-    public static void zapisiUDnevnik(Dnevnik dnevnik){
+    public static void zapisiUDnevnik(Dnevnik dnevnik) {
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
             bpo.dnevnikInsert(dnevnik);
-            bpo.zatvoriVezu();            
+            bpo.zatvoriVezu();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public static String dajTrenutnuIPAdresu(){
+
+    /**
+     * Vraca trenutnu IP adresu na kojoj se vrti aplikacija
+     *
+     * @return
+     */
+    public static String dajTrenutnuIPAdresu() {
         String ipAdresa = "";
         try {
             ipAdresa = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException ex) {
             Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return ipAdresa;
     }
-    
-    public static KorisnikPodaci dohvatiKorisnickePodatkeZaSvn(){
+
+    /**
+     * Dohvaća korisnicko ime i lozinku za SVN iz konfiguracije
+     *
+     * @return
+     */
+    public static KorisnikPodaci dohvatiKorisnickePodatkeZaSvn() {
         String korisnickoIme;
-        String lozinka;        
+        String lozinka;
         ServletContext sc = SlusacAplikacije.servletContext;
         Konfiguracija konf = (Konfiguracija) sc.getAttribute("Konfig");
-        
+
         korisnickoIme = konf.dajPostavku("svn.username");
         lozinka = konf.dajPostavku("svn.password");
         KorisnikPodaci korisnik = new KorisnikPodaci(korisnickoIme, lozinka);
-        
+
         return korisnik;
     }
-    
+
     /**
      * Čita niz znakova sa konzole koje je poslao korisnik.
      *
@@ -143,7 +159,7 @@ public class PomocnaKlasa {
         }
         return buffer.toString();
     }
-    
+
     /**
      * Ispituje znakovni niz prema zadanom regularnom izrazu
      *
@@ -157,7 +173,7 @@ public class PomocnaKlasa {
 
         return m;
     }
-    
+
     /**
      * Služi za slanje odgovora na konzolu korisnika sustava.
      *
@@ -174,5 +190,19 @@ public class PomocnaKlasa {
         } catch (IOException ex) {
             Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * Dohvaća postavku konfiguracije prema nazivu vrijednosti
+     *
+     * @param naziv
+     * @return
+     */
+    public static String dohvatiPostavku(String naziv) {
+        ServletContext sc = SlusacAplikacije.servletContext;
+        Konfiguracija konf = (Konfiguracija) sc.getAttribute("Konfig");
+        String vrijednost = konf.dajPostavku(naziv);
+
+        return vrijednost;
     }
 }

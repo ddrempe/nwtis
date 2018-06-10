@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+        <h:head>
+            <title>Pogled 1</title>
+            <h:outputStylesheet library="css" name="bootstrap.css" />
+        </h:head>
+        <div class="container-fluid">
+            <h:body>
+                <h:form>
+                    <h:commandLink action="index" 
+                                   value="Početna" />
+                    &nbsp;
+                    <h:commandLink action="pogled1" 
+                                   value="Pogled 1" />
+                    &nbsp;
+                    <h:commandLink action="pogled2" 
+                                   value="Pogled 2" />
+                </h:form>
+                <h1>Pogled 1</h1>
+                
+                <h:form>
+                    <h:panelGroup id="popisKorisnika">
+                        <h:dataTable value="#{pogled1.stranicenje.listaZaPrikaz}" 
+                                     class="table table-striped"
+                                     var="k"
+                                     rendered="#{pogled1.stranicenje.listaZaPrikaz.size() ne 0}">
+                            <h:column>
+                                <f:facet name="header">ID</f:facet>
+                                    #{k.id}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Korisničko ime</f:facet>
+                                    #{k.kor_ime}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Ime</f:facet>
+                                    #{k.ime}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Prezime</f:facet>
+                                    #{k.prezime}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">E-mail</f:facet>
+                                    #{k.email_adresa}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Vrsta</f:facet>
+                                    #{k.vrsta}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Datum kreiranja</f:facet>
+                                    #{k.datum_kreiranja}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Datum promjene</f:facet>
+                                    #{k.datum_promjene}
+                            </h:column>
+                        </h:dataTable>
+
+                    </h:panelGroup>
+                    <h:commandButton value="Prethodni" 
+                                     action="#{pogled1.stranicenje.prethodniZapisi()}"
+                                     class="btn btn-default btn-md">
+                        <f:ajax execute="popisKorisnika" render="popisKorisnika"/>
+                    </h:commandButton>
+                    <h:commandButton value="Sljedeci" 
+                                     action="#{pogled1.stranicenje.sljedeciZapisi()}"
+                                     class="btn btn-default btn-md">
+                        <f:ajax execute="popisKorisnika" render="popisKorisnika"/>
+                    </h:commandButton>
+
+
+                </h:form>
+            </h:body>
+        </div>
+</html>
+

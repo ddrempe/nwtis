@@ -1,9 +1,5 @@
 package org.foi.nwtis.damdrempe.web.podaci;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 
 /**
