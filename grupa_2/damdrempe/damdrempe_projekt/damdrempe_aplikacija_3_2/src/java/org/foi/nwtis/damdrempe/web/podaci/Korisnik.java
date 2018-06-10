@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.podaci;
 
 import java.util.Date;
 
 /**
- *
+ * Klasa za rad s korisnicima.
  * @author ddrempetic
  */
 public class Korisnik {

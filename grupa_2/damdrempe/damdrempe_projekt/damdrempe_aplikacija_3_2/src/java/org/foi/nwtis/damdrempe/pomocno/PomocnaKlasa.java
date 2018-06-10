@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.pomocno;
 
 import java.io.IOException;
@@ -16,11 +11,16 @@ import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 /**
- *
+ * Pomocna klasa za sve operacije u aplikaciji.
  * @author ddrempetic
  */
 public class PomocnaKlasa {
     
+    /**
+     * Dohvaca postavku iz konfiguracije prema nazivu.
+     * @param naziv
+     * @return 
+     */
     private static String dohvatiPostavku(String naziv){ 
         ServletContext sc = SlusacAplikacije.servletContext;
         Konfiguracija konf = (Konfiguracija) sc.getAttribute("Konfig");        
@@ -29,6 +29,11 @@ public class PomocnaKlasa {
         return vrijednost;
     }
     
+    /**
+     * Šalje komandu poslužitelju preko socketa.
+     * @param komanda
+     * @return 
+     */
     public static String posaljiKomanduPosluzitelju(String komanda){
         String adresa = PomocnaKlasa.dohvatiPostavku("adresa");
         int port = Integer.parseInt(PomocnaKlasa.dohvatiPostavku("port"));

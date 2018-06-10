@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.rest.serveri;
 
 import com.google.gson.Gson;
@@ -40,10 +35,10 @@ public class KorisniciREST {
     }
 
     /**
-     * Retrieves representation of an instance of org.foi.nwtis.damdrempe.rest.serveri.KorisniciREST
+     * Šalje komandu za preuzimanje svih korisnika.
      * @param korisnik
      * @param lozinka
-     * @return an instance of java.lang.String
+     * @return 
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -77,17 +72,31 @@ public class KorisniciREST {
         }       
     }   
     
+    /**
+     * Šalje komandu za autentikaciju ili preuzimanje podataka jednog korisnika.
+     * Ako je proslijeđeno dodatno korisničko ime putem zaglavlja, tada se radi o autentikaciji.
+     * @param korisnik
+     * @param lozinka
+     * @return 
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{korisnickoIme}")
     public String getAutentikacijaPreuzimannje(@HeaderParam("korisnik") String korisnik, @HeaderParam("lozinka") String lozinka) {
-        if(korisnik!=null){
+        if(korisnik != null){
             return preuzimanje(korisnik, lozinka);
         } else {
             return autentikacija(lozinka);           
         }        
     }
 
+    /**
+     * Stvara komandu za preuzimanje podataka jednog korisnika sa poslužitelja.
+     * 
+     * @param korisnik
+     * @param lozinka
+     * @return 
+     */
     private String preuzimanje(String korisnik, String lozinka) {
         String korisnickoIme = context.getPathParameters().getFirst("korisnickoIme");
         String komanda = "KORISNIK " + korisnik + "; LOZINKA " + lozinka + "; PREUZMI " + korisnickoIme + ";";
@@ -118,6 +127,12 @@ public class KorisniciREST {
         }          
     }
     
+    /**
+     * Stvara komandu za autentikaciju korisnika na poslužitelju.
+     * 
+     * @param lozinka
+     * @return 
+     */
     private String autentikacija(String lozinka) {
         String korisnik = context.getPathParameters().getFirst("korisnickoIme");
         String komanda = "KORISNIK " + korisnik + "; LOZINKA " + lozinka + ";";
@@ -129,6 +144,13 @@ public class KorisniciREST {
         return jsonOdgovor.vratiKompletanJsonOdgovor();        
     }   
     
+    /**
+     * Šalje komandu za dodavanje korisnika s određenim imenom i prezimenom.
+     * @param lozinka
+     * @param ime
+     * @param prezime
+     * @return 
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{korisnickoIme}")
@@ -143,6 +165,13 @@ public class KorisniciREST {
         return jsonOdgovor.vratiKompletanJsonOdgovor();            
     }
     
+    /**
+     * Šalje komandu za ažuriranje korisnika s oređenim imenom i prezimenom.
+     * @param lozinka
+     * @param ime
+     * @param prezime
+     * @return 
+     */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{korisnickoIme}")
