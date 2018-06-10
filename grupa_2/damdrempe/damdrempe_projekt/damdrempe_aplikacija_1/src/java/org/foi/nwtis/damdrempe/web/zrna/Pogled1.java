@@ -5,6 +5,7 @@
  */
 package org.foi.nwtis.damdrempe.web.zrna;
 
+import java.io.Serializable;
 import javax.inject.Named;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
 @Named(value = "pogled1")
 @ManagedBean
 @SessionScoped
-public class Pogled1 {
+public class Pogled1 implements Serializable{
     
     private String poruka;    
     private List<Korisnik> listaKorisnika = new ArrayList<>();

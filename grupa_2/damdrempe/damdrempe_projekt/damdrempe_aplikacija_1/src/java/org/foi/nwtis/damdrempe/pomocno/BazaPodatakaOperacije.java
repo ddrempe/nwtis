@@ -462,7 +462,7 @@ public class BazaPodatakaOperacije {
      */
     public ArrayList<DnevnikPodaci> dnevnikSelectSviZapisi() throws SQLException {
         ArrayList<DnevnikPodaci> dohvaceniZapisi = new ArrayList<>();
-        String upit = "SELECT * FROM DNEVNIK";
+        String upit = "SELECT * FROM DNEVNIK ORDER BY VRIJEME DESC";
 
         PreparedStatement preparedStmt = veza.prepareStatement(upit);
         preparedStmt.execute();
@@ -475,7 +475,7 @@ public class BazaPodatakaOperacije {
             d.setKorisnik(rs.getString("KORISNIK"));
             d.setUrl(rs.getString("URL"));
             d.setIpadresa(rs.getString("IPADRESA"));
-            d.setVrijeme(rs.getDate("VRIJEME"));
+            d.setVrijeme(rs.getTimestamp("VRIJEME"));
 
             dohvaceniZapisi.add(d);
         }
@@ -483,7 +483,68 @@ public class BazaPodatakaOperacije {
         return dohvaceniZapisi;
     }
     
-    
+    /**
+     * Vraća sve zapise iz dnevnika.
+     *
+     * @return listu svih zapisa
+     * @throws SQLException
+     */
+    public ArrayList<DnevnikPodaci> dnevnikSelectFiltrirano(String korisnik, Timestamp odVrijeme, Timestamp doVrijeme, String adresaZahtjeva) throws SQLException {
+        ArrayList<DnevnikPodaci> dohvaceniZapisi = new ArrayList<>();
+        String upit = "SELECT * FROM DNEVNIK WHERE 1=1 ";
+        
+        if(odVrijeme != null){
+            upit += " AND vrijeme>=? ";
+        }
+        if(doVrijeme != null){
+            upit += " AND vrijeme<=? ";
+        }
+        if(!korisnik.isEmpty()){
+            upit += " AND korisnik=? ";
+        }
+        if(!adresaZahtjeva.isEmpty()){
+            upit += " AND url=? ";
+        }
+                
+        upit += " ORDER BY VRIJEME DESC";
+
+        PreparedStatement preparedStmt = veza.prepareStatement(upit);
+        
+        if(odVrijeme != null){
+            preparedStmt.setTimestamp(1, odVrijeme);
+        }
+        if(doVrijeme != null){
+            preparedStmt.setTimestamp(2, doVrijeme);
+        }
+        if(!korisnik.isEmpty()){
+            preparedStmt.setString(3, korisnik);
+        }
+        if(!adresaZahtjeva.isEmpty()){
+            if(korisnik.isEmpty()){
+                preparedStmt.setString(3, adresaZahtjeva);
+            } else {
+                preparedStmt.setString(4, adresaZahtjeva);
+            }            
+        }
+        
+        preparedStmt.execute();
+        ResultSet rs = preparedStmt.executeQuery();
+        
+        while (rs.next()) {
+            DnevnikPodaci d = new DnevnikPodaci();
+            d.setId(rs.getInt("ID"));
+            d.setStatus(rs.getInt("STATUS"));
+            d.setTrajanje(rs.getInt("TRAJANJE"));
+            d.setKorisnik(rs.getString("KORISNIK"));
+            d.setUrl(rs.getString("URL"));
+            d.setIpadresa(rs.getString("IPADRESA"));
+            d.setVrijeme(rs.getTimestamp("VRIJEME"));
+
+            dohvaceniZapisi.add(d);
+        }
+
+        return dohvaceniZapisi;
+    }   
 
     /**
      * Provjerava da li korisnik postoji
@@ -563,8 +624,8 @@ public class BazaPodatakaOperacije {
             k.setPrezime(rs.getString("PREZIME"));
             k.setKor_ime(rs.getString("KOR_IME"));
             k.setEmail_adresa(rs.getString("EMAIL_ADRESA"));
-            k.setDatum_kreiranja(rs.getDate("DATUM_KREIRANJA"));
-            k.setDatum_promjene(rs.getDate("DATUM_PROMJENE"));
+            k.setDatum_kreiranja(rs.getTimestamp("DATUM_KREIRANJA"));
+            k.setDatum_promjene(rs.getTimestamp("DATUM_PROMJENE"));
             k.setLozinka("skriveno");
             dohvaceniKorisnici.add(k);
         }
