@@ -16,7 +16,6 @@ import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.rest.klijenti.GMKlijent;
 import org.foi.nwtis.damdrempe.rest.klijenti.OWMKlijent;
 import org.foi.nwtis.damdrempe.web.dretve.RadnaDretva;
-import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;

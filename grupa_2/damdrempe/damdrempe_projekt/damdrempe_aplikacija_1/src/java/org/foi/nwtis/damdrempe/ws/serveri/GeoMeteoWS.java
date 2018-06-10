@@ -15,7 +15,7 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import org.foi.nwtis.damdrempe.pomocno.BazaPodatakaOperacije;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
-import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
+import org.foi.nwtis.damdrempe.pomocno.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.MeteoPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 

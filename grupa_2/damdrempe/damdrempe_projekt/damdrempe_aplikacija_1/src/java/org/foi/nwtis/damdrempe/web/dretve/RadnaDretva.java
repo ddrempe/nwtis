@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.dretve;
 
 import java.net.Socket;
@@ -11,7 +6,8 @@ import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 
 /**
- *
+ * Radna dretva za obradu komandi.
+ * Kreira je posluzitelj.
  * @author ddrempetic
  */
 public class RadnaDretva extends Thread {
@@ -168,6 +164,11 @@ public class RadnaDretva extends Thread {
         return odgovor;
     }
     
+    /**
+     * Poziva akciju na komandu preuzmi.
+     * @param korisnik
+     * @return 
+     */
     private String pozoviPreuzmiAkciju(String korisnik){
         return AkcijePosluzitelj.preuzmi(korisnik);
     }

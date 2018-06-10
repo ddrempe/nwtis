@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.bp.BP_Konfiguracija;
-import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.DnevnikPodaci;
 import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
@@ -484,7 +483,7 @@ public class BazaPodatakaOperacije {
     }
     
     /**
-     * Vraća sve zapise iz dnevnika.
+     * Vraća filtrirane zapise iz dnevnika.
      *
      * @return listu svih zapisa
      * @throws SQLException

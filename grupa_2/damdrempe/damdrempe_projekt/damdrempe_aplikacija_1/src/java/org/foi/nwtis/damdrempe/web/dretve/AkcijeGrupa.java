@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.dretve;
 
 import org.foi.nwtis.damdrempe.pomocno.KorisnikPodaci;
@@ -10,11 +5,15 @@ import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 import org.foi.nwtis.damdrempe.ws.klijenti.ParkiranjeWSKlijent;
 
 /**
- *
+ * Klasa koja izvršava potrebne akcije za komande grupe.
  * @author ddrempetic
  */
 public class AkcijeGrupa {
 
+    /**
+     * Registrira grupu putem servisa.
+     * @return propisani odgovor.
+     */
     public static String dodaj() {
         //samo ako je deregistrirana može se registrirati
         //moze se registrirati samo ako je deregistrirana
@@ -29,9 +28,13 @@ public class AkcijeGrupa {
         return odgovor;
     }
 
+    /**
+     * Deregistrira grupu putem servisa.
+     * @return propisani odgovor.
+     */
     public static String prekid() {
         //ako grupa još ne postoji greška, nije registrirana, samo ako je u statusu deregistrirana
-        //TODO u svim statusima osim deregistriran se moze deregistrirati??
+        //u svim statusima osim deregistriran se moze deregistrirati
         if (dajStatusGrupe() == org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika.DEREGISTRIRAN) {
             return OdgovoriKomandi.GRUPA_PREKID_ERR;
         }
@@ -43,6 +46,10 @@ public class AkcijeGrupa {
         return odgovor;
     }
 
+    /**
+     * Aktivira grupu putem servisa.
+     * @return propisani odgovor.
+     */
     public static String kreni() {
         org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = dajStatusGrupe();
         
@@ -62,6 +69,10 @@ public class AkcijeGrupa {
         return odgovor;
     }
 
+    /**
+     * Blokira grupu putem servisa.
+     * @return propisani odgovor.
+     */
     public static String pauza() {
         org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = dajStatusGrupe();
         
@@ -80,6 +91,10 @@ public class AkcijeGrupa {
         return OdgovoriKomandi.GRUPA_PAUZA_OK;
     }
 
+    /**
+     * Vraca stanje grupe putem servisa.
+     * @return propisani odgovor.
+     */
     public static String stanje() {
         org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = dajStatusGrupe();
 
@@ -106,6 +121,10 @@ public class AkcijeGrupa {
         return odgovor;
     }
 
+    /**
+     * Pomocna metoda za dohvacanje statusa grupe putem servisa.
+     * @return 
+     */
     private static org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika dajStatusGrupe() {
         KorisnikPodaci k = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn();
         org.foi.nwtis.damdrempe.ws.klijenti.StatusKorisnika status = ParkiranjeWSKlijent.dajStatusGrupe(k.getKorisnickoIme(), k.getLozinka());

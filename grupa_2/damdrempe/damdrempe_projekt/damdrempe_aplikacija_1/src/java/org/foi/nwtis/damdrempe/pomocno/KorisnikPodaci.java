@@ -6,7 +6,7 @@
 package org.foi.nwtis.damdrempe.pomocno;
 
 /**
- *
+ * Klasa za pohranu korisničkog imena i lozinke u objekt.
  * @author ddrempetic
  */
 public class KorisnikPodaci {

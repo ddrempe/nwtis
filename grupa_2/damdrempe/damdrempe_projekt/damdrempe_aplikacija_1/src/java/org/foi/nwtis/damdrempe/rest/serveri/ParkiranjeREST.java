@@ -30,11 +30,12 @@ import javax.ws.rs.core.Response;
 import org.foi.nwtis.damdrempe.pomocno.BazaPodatakaOperacije;
 import org.foi.nwtis.damdrempe.pomocno.KorisnikPodaci;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
-import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
+import org.foi.nwtis.damdrempe.pomocno.Dnevnik;
 import org.foi.nwtis.damdrempe.web.podaci.Lokacija;
 import org.foi.nwtis.damdrempe.web.podaci.Parkiraliste;
 import org.foi.nwtis.damdrempe.ws.klijenti.ParkiranjeWSKlijent;
 import org.foi.nwtis.damdrempe.ws.klijenti.StatusParkiralista;
+import org.foi.nwtis.damdrempe.ws.klijenti.Vozilo;
 
 /**
  * REST Web Service
@@ -334,21 +335,27 @@ public class ParkiranjeREST {
 
         try {
             autentificirajKorisnika(korisnickoIme, lozinka);
-            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
-            if (!bpo.parkiralistaSelectIdPostoji(idParkiralista)) {
+            
+            if(parkiralisteImaVozila(idParkiralista)){
                 uspjesno = false;
-                poruka = "Parkiraliste s id " + id + " ne postoji!";
+                poruka = "Parkiraliste ima vozila!";
             } else {
-                if (bpo.meteoSelectIdParkiralistaPostoje(idParkiralista)) {
+                BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
+                if (!bpo.parkiralistaSelectIdPostoji(idParkiralista)) {
                     uspjesno = false;
-                    poruka = "Postoje meteopodaci za parkiraliste s id " + id + " !";
+                    poruka = "Parkiraliste s id " + id + " ne postoji!";
                 } else {
-                    bpo.parkiralistaDelete(idParkiralista);
-                    obrisiParkiralisteNaServisu(idParkiralista);
-                    dnevnik.postaviUspjesanStatus();
+                    if (bpo.meteoSelectIdParkiralistaPostoje(idParkiralista)) {
+                        uspjesno = false;
+                        poruka = "Postoje meteopodaci za parkiraliste s id " + id + " !";
+                    } else {
+                        bpo.parkiralistaDelete(idParkiralista);
+                        obrisiParkiralisteNaServisu(idParkiralista);
+                        dnevnik.postaviUspjesanStatus();
+                    }
                 }
-            }
-            bpo.zatvoriVezu();
+                bpo.zatvoriVezu();            
+            }            
         } catch (SQLException | ClassNotFoundException | JsonSyntaxException ex) {
             uspjesno = false;
             poruka = ex.toString();
@@ -485,5 +492,21 @@ public class ParkiranjeREST {
         Response.ResponseBuilder rb = Response.status(Response.Status.METHOD_NOT_ALLOWED);
         Response response = rb.build();
         return response;
+    }
+    
+    /**
+     * Provjerava da li parkiralište ima vozila.
+     * @param idParkiraliste
+     * @return true ako ima, inace false
+     */
+    private boolean parkiralisteImaVozila(int idParkiraliste){
+        KorisnikPodaci korisnik = PomocnaKlasa.dohvatiKorisnickePodatkeZaSvn(); 
+        List<Vozilo> listaVozila = ParkiranjeWSKlijent.dajSvaVozilaParkiralistaGrupe(korisnik.getKorisnickoIme(), korisnik.getLozinka(), idParkiraliste);
+        
+        if (listaVozila.isEmpty()){
+            return false;
+        }
+        
+        return true;
     }
 }

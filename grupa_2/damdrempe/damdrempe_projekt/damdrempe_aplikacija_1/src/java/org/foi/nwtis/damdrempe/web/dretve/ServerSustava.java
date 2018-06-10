@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.dretve;
 
 import java.io.IOException;
@@ -15,22 +10,22 @@ import java.util.regex.Matcher;
 import javax.servlet.ServletContext;
 import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
-import org.foi.nwtis.damdrempe.web.podaci.Dnevnik;
+import org.foi.nwtis.damdrempe.pomocno.Dnevnik;
 
 /**
+ * Posluzitelj koji zaprima komande na socketu.
  *
  * @author ddrempetic
  */
 public class ServerSustava extends Thread {
 
-    /**
-     * Pobrojenje koje definira moguca stanja servera
-     */
     private ServletContext sc;
     private Konfiguracija konf;
     private boolean radi = false;
     private int redniBrojZadnjeDretve = 0;
     ServerSocket serverSocket;
+    String odgovor;
+    boolean nastavi;
 
     public static int brojDretvi = 0;
     public static boolean serverKomandePokrenut;
@@ -90,7 +85,7 @@ public class ServerSustava extends Thread {
      *
      * @throws IOException
      */
-    private void primajZahtjeve() throws IOException {  //TODO refaktorirati radi broja linija
+    private void primajZahtjeve() throws IOException {
         int port = Integer.parseInt(konf.dajPostavku("port"));
         int maksCekanje = Integer.parseInt(konf.dajPostavku("maks.broj.zahtjeva.cekanje"));
         int maksDretvi = Integer.parseInt(konf.dajPostavku("maks.broj.radnih.dretvi"));
@@ -98,65 +93,95 @@ public class ServerSustava extends Thread {
 
         serverSocket = new ServerSocket(port, maksCekanje);
         while (radi) {
-            Socket socket = serverSocket.accept();  //TODO javlja exception kod deploya
-
-            Dnevnik dnevnik = new Dnevnik();
-            boolean nastavi = true;
+            Socket socket = serverSocket.accept();
             System.out.println("SERVER | Stigao zahtjev");
+            Dnevnik dnevnik = new Dnevnik();
+            nastavi = true;
+            odgovor = "";
 
-            String odgovor = "";
             if (ServerSustava.serverPotpunoPokrenut == false) {
-                System.out.println("SERVER | Server je POTPUNO ZAUSTAVLJEN - vise ne prima komande. Zavrsavam rad dretve...");
-                odgovor = OdgovoriKomandi.POSLUZITELJ_STANI_ERR;
-                PomocnaKlasa.posaljiOdgovor(odgovor, socket);
-                System.out.println("SERVER | Saljem odgovor: " + odgovor);
-                radi = false;
+                zavrsiZaustavljanjeServera(socket);
                 continue;
             }
 
             String komanda = PomocnaKlasa.procitajKomandu(socket);
             String regex = "^KORISNIK ([A-Za-z0-9_,-]{3,10}); LOZINKA ([A-Za-z0-9_,#,!,-]{3,10});(.*)";
             Matcher matcher = PomocnaKlasa.provjeriIspravnostKomande(komanda, regex);
-            
 
-            if (matcher.matches() == false) {
-                System.out.println("SERVER | Neispravna komanda: " + komanda);
-                odgovor = OdgovoriKomandi.OPCENITO_ERR_SINTAKSA;
-                nastavi = false;
-            } else {
-                if (PomocnaKlasa.autentificirajKorisnika(matcher.group(1), matcher.group(2)) == false) {
-                    System.out.println("SERVER | Nije prosla autentikacija: " + komanda);
-                    odgovor = OdgovoriKomandi.OPCENITO_ERR_AUTENTIFIKACIJA;
-                    nastavi = false;
-                } else {
-                    if (matcher.group(3).isEmpty()) {
-                        System.out.println("SERVER | Provedena samo autentikacija s uspjehom za komandu: " + komanda);
-                        odgovor = OdgovoriKomandi.OPCENITO_OK_AUTENTIFIKACIJA;
-                        nastavi = false;
-                        dnevnik.postaviUspjesanStatus();
-                    }
-                }
-            }
+            izvrsiAutentikaciju(matcher, komanda, dnevnik);
+            obradiKomandu(socket, dnevnik, maksDretvi, komanda);
+            dnevnik.zavrsiISpremiDnevnik(matcher.group(1), komanda);
+        }
+    }
 
-            if (nastavi == false) {
+    /**
+     * Prvo provjerava da li se radilo samo o autentikaciji. Ako nije, tada
+     * kreira dretvu za obradu komande.
+     *
+     * @param socket
+     * @param dnevnik
+     * @param maksDretvi
+     * @param komanda
+     */
+    private void obradiKomandu(Socket socket, Dnevnik dnevnik, int maksDretvi, String komanda) {
+        if (nastavi == false) {
+            PomocnaKlasa.posaljiOdgovor(odgovor, socket);
+            System.out.println("SERVER | Saljem odgovor: " + odgovor);
+        } else {
+            dnevnik.postaviUspjesanStatus();
+            if (brojDretvi >= maksDretvi) {
+                odgovor = OdgovoriKomandi.OPCENITO_ERR_BROJDRETVI;
                 PomocnaKlasa.posaljiOdgovor(odgovor, socket);
                 System.out.println("SERVER | Saljem odgovor: " + odgovor);
             } else {
-                dnevnik.postaviUspjesanStatus();
-                if (brojDretvi >= maksDretvi) {
-                    odgovor = OdgovoriKomandi.OPCENITO_ERR_BROJDRETVI;
-                    PomocnaKlasa.posaljiOdgovor(odgovor, socket);
-                    System.out.println("SERVER | Saljem odgovor: " + odgovor);
-                } else {
-                    brojDretvi++;
-                    povecajRedniBrojZadnjeDretve();
-                    RadnaDretva radnaDretva = new RadnaDretva(socket, "damdrempe - dretva " + redniBrojZadnjeDretve + " ", konf, komanda);
-                    radnaDretva.start();
+                brojDretvi++;
+                povecajRedniBrojZadnjeDretve();
+                RadnaDretva radnaDretva = new RadnaDretva(socket, "damdrempe - dretva " + redniBrojZadnjeDretve + " ", konf, komanda);
+                radnaDretva.start();
+            }
+        }
+    }
+
+    /**
+     * Obavlja autentikaciju komande. Provjerava prvo samu ispravnost sintakse.
+     *
+     * @param matcher
+     * @param komanda
+     * @param dnevnik
+     */
+    private void izvrsiAutentikaciju(Matcher matcher, String komanda, Dnevnik dnevnik) {
+        if (matcher.matches() == false) {
+            System.out.println("SERVER | Neispravna komanda: " + komanda);
+            odgovor = OdgovoriKomandi.OPCENITO_ERR_SINTAKSA;
+            nastavi = false;
+        } else {
+            if (PomocnaKlasa.autentificirajKorisnika(matcher.group(1), matcher.group(2)) == false) {
+                System.out.println("SERVER | Nije prosla autentikacija: " + komanda);
+                odgovor = OdgovoriKomandi.OPCENITO_ERR_AUTENTIFIKACIJA;
+                nastavi = false;
+            } else {
+                if (matcher.group(3).isEmpty()) {
+                    System.out.println("SERVER | Provedena samo autentikacija s uspjehom za komandu: " + komanda);
+                    odgovor = OdgovoriKomandi.OPCENITO_OK_AUTENTIFIKACIJA;
+                    nastavi = false;
+                    dnevnik.postaviUspjesanStatus();
                 }
             }
-
-            dnevnik.zavrsiISpremiDnevnik(matcher.group(1), komanda);
         }
+    }
+
+    /**
+     * Ako je server u postupku zaustavljanja, potrebno je vratiti poruku da je
+     * sada potpuno zaustavljen. Prestaje se s slušanjem na socketu.
+     *
+     * @param socket
+     */
+    private void zavrsiZaustavljanjeServera(Socket socket) {
+        System.out.println("SERVER | Server je POTPUNO ZAUSTAVLJEN - vise ne prima komande. Zavrsavam rad dretve...");
+        odgovor = OdgovoriKomandi.POSLUZITELJ_STANI_ERR;
+        PomocnaKlasa.posaljiOdgovor(odgovor, socket);
+        System.out.println("SERVER | Saljem odgovor: " + odgovor);
+        radi = false;
     }
 
     /**

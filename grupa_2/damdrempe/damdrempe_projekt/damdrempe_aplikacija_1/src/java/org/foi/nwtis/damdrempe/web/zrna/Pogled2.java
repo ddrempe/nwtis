@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.web.zrna;
 
 import java.io.Serializable;
@@ -22,7 +17,7 @@ import org.foi.nwtis.damdrempe.web.podaci.DnevnikPodaci;
 
 
 /**
- *
+ * Pogled 2 za pregled i filtriranje dnevnika.
  * @author ddrempetic
  */
 @Named(value = "pogled2")
@@ -48,7 +43,7 @@ public class Pogled2 implements Serializable{
     }
     
     /**
-     * Dohvaća popis korisnika.
+     * Dohvaća popis zapisa iz dnevnika.
      */
     @PostConstruct
     public void init() {
@@ -57,6 +52,9 @@ public class Pogled2 implements Serializable{
         stranicenje = new Stranicenje(listaZapisa, brojZapisaPoStranici);    
     }
     
+    /**
+     * Preuzima sve zapise dnevnika iz baze podataka.
+     */
     public void preuzmiSveZapise(){      
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
@@ -67,6 +65,9 @@ public class Pogled2 implements Serializable{
         }     
     }
     
+    /**
+     * Preuzima zapise iz dnevnika prema unesenim podacima (filteru) na sucelju.
+     */
     public void preuzmiFiltrirano(){
         try {
             BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();

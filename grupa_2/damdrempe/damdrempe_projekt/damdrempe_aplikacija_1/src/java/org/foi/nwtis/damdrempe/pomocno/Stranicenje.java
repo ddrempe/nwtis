@@ -5,7 +5,7 @@ import java.util.List;
 
 
 /**
- *
+ * Klasa za stranicenje na klijentskoj strani.
  * @author ddrempetic
  */
 public class Stranicenje<E> {
@@ -23,6 +23,11 @@ public class Stranicenje<E> {
     private boolean prvaStranica;
     private boolean zadnjaStranica;
 
+    /**
+     * Konstruktor klase.
+     * @param lista
+     * @param brojZapisaPoStranici 
+     */
     public Stranicenje(List<E> lista, int brojZapisaPoStranici) {
         this.pomak = 0;
         this.listaCijela = lista;
@@ -35,7 +40,7 @@ public class Stranicenje<E> {
     }   
     
     /**
-     * Mijenja pomak u odnosu na prvu stranicu i ponovno preuzima zapise.
+     * Mijenja pomak u odnosu na prvu stranicu i osvjezava listu za prikaz.
      *
      */
     public void prethodniZapisi() {
@@ -48,7 +53,7 @@ public class Stranicenje<E> {
     }
     
     /**
-     * Mijenja pomak u odnosu na prvu stranicu i ponovno preuzima zapise.
+     * Mijenja pomak u odnosu na prvu stranicu i osvjezava listu za prikaz.
      *
      */
     public void sljedeciZapisi() {
@@ -60,6 +65,9 @@ public class Stranicenje<E> {
         osvjeziListuZaPrikaz();
     }
     
+    /**
+     * Postavlja sve potrebne indekse i vrijednosti te uzima podskup liste koji ce se prikazivati.
+     */
     private void osvjeziListuZaPrikaz(){
         ukupnoZapisa = listaCijela.size();
         indeksPrvogZapisa = pomak * brojZapisaPoStraniciZaPrikaz;
@@ -78,10 +86,18 @@ public class Stranicenje<E> {
         listaZaPrikaz = new ArrayList<>(listaCijela.subList(indeksPrvogZapisa, indeksZadnjegZapisa));
     }
     
+    /**
+     * Provjerava da li je trenutna stranica zadnja.
+     * @return 
+     */
     public boolean zadnjaStranica(){
         return pomak == maksPomak;
     }
     
+    /**
+     * Provjerava da li je trenutna stranica prva.
+     * @return 
+     */
     public boolean prvaStranica(){
         return pomak == 0;
     }
@@ -100,7 +116,5 @@ public class Stranicenje<E> {
 
     public boolean isZadnjaStranica() {
         return zadnjaStranica();
-    }
-    
-    
+    }   
 }

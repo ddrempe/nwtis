@@ -1,4 +1,4 @@
-package org.foi.nwtis.damdrempe.web.podaci;
+package org.foi.nwtis.damdrempe.pomocno;
 
 import org.foi.nwtis.damdrempe.pomocno.PomocnaKlasa;
 
@@ -22,10 +22,18 @@ public class Dnevnik {
         this.status = 0;
     }
     
+    /**
+     * Operacija u kojoj je dnevnik koristen je uspjesna.
+     */
     public void postaviUspjesanStatus(){
         this.status = 1;
     }
     
+    /**
+     * Postavlja konacne vrijednosti zapisa za dnevnik.
+     * @param korisnik
+     * @param url 
+     */
     public void zavrsiDnevnik(String korisnik, String url){
         this.ipAdresa = PomocnaKlasa.dajTrenutnuIPAdresu();        
         this.korisnik = korisnik;
@@ -34,6 +42,11 @@ public class Dnevnik {
         this.trajanje = (int) (this.krajRada - this.pocetakRada);
     }
     
+    /**
+     * Postavlja konacne vrijednosti zapisa za dnevnik i sprema u bazu podataka.
+     * @param korisnik
+     * @param url 
+     */
     public void zavrsiISpremiDnevnik(String korisnik, String url){
         this.zavrsiDnevnik(korisnik, url);
         PomocnaKlasa.zapisiUDnevnik(this);
