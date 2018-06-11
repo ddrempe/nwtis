@@ -4,7 +4,7 @@ import java.util.Date;
 
 /**
  * Preuzeta klasa.
- * @author ddrempetic
+ * @author nwtis_g1
  */
 public class MeteoPodaci {
 

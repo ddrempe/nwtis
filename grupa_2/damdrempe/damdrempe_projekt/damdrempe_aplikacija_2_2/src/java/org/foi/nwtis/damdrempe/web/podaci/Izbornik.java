@@ -1,10 +1,8 @@
 package org.foi.nwtis.damdrempe.web.podaci;
 
-import java.util.Objects;
-
 /**
  * Preuzeta klasa.
- * @author ddrempetic
+ * @author nwtis_g1
  */
 public class Izbornik {
     private String labela;

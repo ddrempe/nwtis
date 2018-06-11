@@ -51,7 +51,7 @@
                                     <br/>
                                     <h:commandButton 
                                         value="#{p['pogled1.gumb_dodaj']}" 
-                                        action="#{pogled1.registracijaKorisnika()}"
+                                        action="#{pogled1.registracijaKorisnikaREST()}"
                                         class="btn btn-block btn-primary">
                                         <f:ajax execute="imeReg prezimeReg" render="poruka popisKorisnika imeRegVal prezimeRegVal"/>
                                     </h:commandButton>
@@ -84,7 +84,7 @@
                                     <br/>
                                     <h:commandButton 
                                         value="#{p['pogled1.gumb_azuriraj']}" 
-                                        action="#{pogled1.azuriranjeKorisnika()}"
+                                        action="#{pogled1.azuriranjeKorisnikaREST()}"
                                         class="btn btn-block btn-primary">
                                         <f:ajax execute="imeAzu prezimeAzu" render="poruka popisKorisnika imeAzuVal prezimeAzuVal"/>
                                     </h:commandButton>

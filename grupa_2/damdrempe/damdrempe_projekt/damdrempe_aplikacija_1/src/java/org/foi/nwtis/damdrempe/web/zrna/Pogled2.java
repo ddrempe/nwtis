@@ -30,8 +30,8 @@ public class Pogled2 implements Serializable{
     private Stranicenje stranicenje;
     
     private String korisnik;
-    private Date odVrijeme = new Date(System.currentTimeMillis() - 604800000);
-    private Date doVrijeme = new Date(System.currentTimeMillis());
+    private Date odVrijeme;
+    private Date doVrijeme;
     private String adresaZahtjeva;
     
     private int brojZapisaPoStranici;
@@ -47,22 +47,17 @@ public class Pogled2 implements Serializable{
      */
     @PostConstruct
     public void init() {
-        preuzmiSveZapise();
+        korisnik = "";
+        adresaZahtjeva = "";
+        
+        int brojDanaZaPrikaz = Integer.parseInt(PomocnaKlasa.dohvatiPostavku("broj.dana.pogled2"));
+        long trenutnoVrijemeLong = System.currentTimeMillis();
+        long odVrijemeLong = trenutnoVrijemeLong - brojDanaZaPrikaz * 24 * 60 * 60 * 1000;
+        doVrijeme = new Date(trenutnoVrijemeLong);
+        odVrijeme = new Date(odVrijemeLong);
+        
         brojZapisaPoStranici = Integer.parseInt(PomocnaKlasa.dohvatiPostavku("stranicenje.pogled2"));
-        stranicenje = new Stranicenje(listaZapisa, brojZapisaPoStranici);    
-    }
-    
-    /**
-     * Preuzima sve zapise dnevnika iz baze podataka.
-     */
-    public void preuzmiSveZapise(){      
-        try {
-            BazaPodatakaOperacije bpo = new BazaPodatakaOperacije();
-            listaZapisa = bpo.dnevnikSelectSviZapisi();
-            poruka = "Dohvaceno je ukupno " + listaZapisa.size() + " zapisa.";
-        } catch (SQLException | ClassNotFoundException ex) {
-            poruka = "Greska prilikom dohvacanja korisnika: " + ex.getMessage();
-        }     
+        preuzmiFiltrirano();   
     }
     
     /**

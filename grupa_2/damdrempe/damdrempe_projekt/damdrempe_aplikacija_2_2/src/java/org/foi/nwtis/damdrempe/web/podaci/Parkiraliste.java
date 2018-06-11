@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.foi.nwtis.damdrempe.web.podaci;
 
 /**
- *
- * @author damdrempe
+ * Klasa za rad s parkiralištima u bazi podataka iz prve aplikacije.
+ * @author ddrempetic
  */
 public class Parkiraliste {
     private int id;

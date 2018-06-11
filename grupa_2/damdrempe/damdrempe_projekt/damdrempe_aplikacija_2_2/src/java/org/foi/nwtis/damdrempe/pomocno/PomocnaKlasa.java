@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.foi.nwtis.damdrempe.pomocno;
 
 import java.io.IOException;
@@ -17,24 +12,37 @@ import org.foi.nwtis.damdrempe.konfiguracije.Konfiguracija;
 import org.foi.nwtis.damdrempe.web.slusaci.SlusacAplikacije;
 
 /**
+ * Klasa sa svim pomocnim operacijama koje se koriste na više mjesta.
  *
  * @author ddrempetic
  */
 public class PomocnaKlasa {
-    
-    private static String dohvatiPostavku(String naziv){ 
+
+    /**
+     * Dohvaca postavku iz konfiguracije prema nazivu.
+     *
+     * @param naziv
+     * @return
+     */
+    public static String dohvatiPostavku(String naziv) {
         ServletContext sc = SlusacAplikacije.servletContext;
-        Konfiguracija konf = (Konfiguracija) sc.getAttribute("Konfig");        
+        Konfiguracija konf = (Konfiguracija) sc.getAttribute("Konfig");
         String vrijednost = konf.dajPostavku(naziv);
-        
+
         return vrijednost;
     }
-    
-    public static String posaljiKomanduPosluzitelju(String komanda){
+
+    /**
+     * Šalje komandu poslužitelju preko socketa.
+     *
+     * @param komanda
+     * @return
+     */
+    public static String posaljiKomanduPosluzitelju(String komanda) {
         String adresa = PomocnaKlasa.dohvatiPostavku("adresa");
         int port = Integer.parseInt(PomocnaKlasa.dohvatiPostavku("port"));
-        String odgovor = "";           
-        
+        String odgovor = "";
+
         try {
             Socket socket = new Socket(adresa, port);
             InputStream is = socket.getInputStream();
@@ -43,9 +51,9 @@ public class PomocnaKlasa {
             os.write(komanda.getBytes());
             os.flush();
             socket.shutdownOutput();
-            while (true){
+            while (true) {
                 int znak = is.read();
-                if(znak == -1){
+                if (znak == -1) {
                     break;
                 }
                 buffer.append((char) znak);
@@ -53,12 +61,12 @@ public class PomocnaKlasa {
             is.close();
             odgovor = buffer.toString();
         } catch (SocketTimeoutException ex) {
-            odgovor = "APLIKACIJA2 | Predugo cekanje na odgovor. Server je zaustavljen ili ne vraca odgovor. " + ex.getMessage();           
+            odgovor = "APLIKACIJA2 | Predugo cekanje na odgovor. Server je zaustavljen ili ne vraca odgovor. " + ex.getMessage();
         } catch (IOException ex) {
             Logger.getLogger(PomocnaKlasa.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        
+        }
+
         return odgovor;
     }
-    
+
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.foi.nwtis.damdrempe.web.podaci.Korisnik;
 
 /**
- *
+ * Klasa za stranicenje na klijentskoj strani.
  * @author ddrempetic
  */
 public class Stranicenje {
@@ -61,6 +61,9 @@ public class Stranicenje {
         return true;
     }
     
+    /**
+     * Postavlja sve potrebne indekse i vrijednosti te uzima podskup liste koji ce se prikazivati.
+     */
     private void osvjeziListuZaPrikaz(){
         ukupnoZapisa = listaCijela.size();
         indeksPrvogZapisa = pomak * brojZapisaPoStraniciZaPrikaz;
@@ -79,6 +82,10 @@ public class Stranicenje {
         listaZaPrikaz = new ArrayList<>(listaCijela.subList(indeksPrvogZapisa, indeksZadnjegZapisa));
     }
 
+    /**
+     * Getter za listu zapisa za prikaz.
+     * @return 
+     */
     public List<Korisnik> dajZapiseZaPrikaz() {
         return listaZaPrikaz;
     }
