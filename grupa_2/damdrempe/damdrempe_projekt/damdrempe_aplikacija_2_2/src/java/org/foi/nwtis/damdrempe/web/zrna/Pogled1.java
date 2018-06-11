@@ -53,8 +53,7 @@ public class Pogled1 implements Serializable {
         stranicenjeBrojZapisa = Integer.parseInt(PomocnaKlasa.dohvatiPostavku("stranicenjePogled1"));
 
         preuzmiSveKorisnikeREST();
-        stranicenje = new Stranicenje(listaKorisnika, stranicenjeBrojZapisa);
-        listaKorisnikaZaPrikaz = stranicenje.dajZapiseZaPrikaz();
+        popuniFormuZaAzuriranje();
     }
 
     /**
@@ -66,6 +65,18 @@ public class Pogled1 implements Serializable {
         ProcitaniJsonOdgovor procitaniJsonOdgovor = new ProcitaniJsonOdgovor(odgovorJsonTekst);
 
         listaKorisnika = procitaniJsonOdgovor.vratiNizKorisnika();
+        stranicenje = new Stranicenje(listaKorisnika, stranicenjeBrojZapisa);
+        listaKorisnikaZaPrikaz = stranicenje.dajZapiseZaPrikaz();
+    }
+    
+    private void popuniFormuZaAzuriranje(){
+        for (Korisnik korisnik : listaKorisnika) {
+            if(korisnik.getKor_ime().equals(korisnickoIme)){
+                imeAzu = korisnik.getIme();
+                prezimeAzu = korisnik.getPrezime();
+                return;
+            }
+        }
     }
 
     /**

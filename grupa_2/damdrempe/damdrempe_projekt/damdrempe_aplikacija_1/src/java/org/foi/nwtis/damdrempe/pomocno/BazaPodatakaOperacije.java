@@ -86,7 +86,7 @@ public class BazaPodatakaOperacije {
      */
     public ArrayList<Parkiraliste> parkiralistaSelectSvaParkiralista() throws SQLException {
         ArrayList<Parkiraliste> dohvacenaParkiralista = new ArrayList<>();
-        String upit = "SELECT * FROM PARKIRALISTA";
+        String upit = "SELECT p.id, p.naziv, p.adresa, p.latitude, p.longitude, p.kapacitet, p.status, k.kor_ime AS korisnik FROM PARKIRALISTA P, KORISNICI K WHERE P.IDKORISNIK = K.ID";
 
         PreparedStatement preparedStmt = veza.prepareStatement(upit);
         preparedStmt.execute();
@@ -102,6 +102,7 @@ public class BazaPodatakaOperacije {
             p.setAdresa(rs.getString("ADRESA"));
             p.setKapacitet(rs.getInt("KAPACITET"));
             p.setStatus(rs.getString("STATUS"));
+            p.setKorisnik(rs.getString("KORISNIK"));
 
             dohvacenaParkiralista.add(p);
         }

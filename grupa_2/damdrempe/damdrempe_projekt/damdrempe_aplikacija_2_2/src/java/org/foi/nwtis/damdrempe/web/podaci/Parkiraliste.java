@@ -11,6 +11,7 @@ public class Parkiraliste {
     private Lokacija geoloc;
     private int kapacitet;
     private String status;
+    private String korisnik;
 
     public Parkiraliste() {
     }
@@ -69,4 +70,14 @@ public class Parkiraliste {
     public void setStatus(String status) {
         this.status = status;
     }   
+
+    public String getKorisnik() {
+        return korisnik;
+    }
+
+    public void setKorisnik(String korisnik) {
+        this.korisnik = korisnik;
+    }
+
+
 }

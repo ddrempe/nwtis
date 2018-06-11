@@ -108,6 +108,16 @@
                 </h:panelGroup>
 
                 <h:form>
+                    <h:commandButton value="#{p['pogled1.gumb_prethodni']}" 
+                                     action="#{pogled1.prethodnaStranica()}"
+                                     class="btn btn-default btn-md">
+                        <f:ajax execute="popisKorisnika" render="popisKorisnika"/>
+                    </h:commandButton>
+                    <h:commandButton value="#{p['pogled1.gumb_sljedeci']}" 
+                                     action="#{pogled1.sljedecaStranica()}"
+                                     class="btn btn-default btn-md">
+                        <f:ajax execute="popisKorisnika" render="popisKorisnika"/>
+                    </h:commandButton>
                     <h:panelGroup id="popisKorisnika">
                         <h:dataTable value="#{pogled1.listaKorisnikaZaPrikaz}" 
                                      class="table table-striped"
@@ -136,16 +146,6 @@
                         </h:dataTable>
 
                     </h:panelGroup>
-                    <h:commandButton value="#{p['pogled1.gumb_prethodni']}" 
-                                     action="#{pogled1.prethodnaStranica()}"
-                                     class="btn btn-default btn-md">
-                        <f:ajax execute="popisKorisnika" render="popisKorisnika"/>
-                    </h:commandButton>
-                    <h:commandButton value="#{p['pogled1.gumb_sljedeci']}" 
-                                     action="#{pogled1.sljedecaStranica()}"
-                                     class="btn btn-default btn-md">
-                        <f:ajax execute="popisKorisnika" render="popisKorisnika"/>
-                    </h:commandButton>
 
 
                 </h:form>

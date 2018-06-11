@@ -73,8 +73,10 @@ public class Pogled3 implements Serializable {
         popisParking = new ArrayList<>();
 
         for (Parkiraliste p : listaParkiralista) {
-            Izbornik i = new Izbornik(p.getNaziv(), Integer.toString(p.getId()));
-            popisParking.add(i);
+            if(p.getKorisnik().equals(korisnickoIme)){
+                Izbornik i = new Izbornik(p.getNaziv(), Integer.toString(p.getId()));
+                popisParking.add(i);
+            }
         }
     }
 

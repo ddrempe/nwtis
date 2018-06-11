@@ -85,6 +85,7 @@ public class ProcitaniJsonOdgovor {
             p.setAdresa(vratiVrijednostString(jsonObject, "adresa"));
             p.setStatus(vratiVrijednostString(jsonObject, "status"));
             p.setKapacitet(vratiVrijednostInt(jsonObject, "kapacitet"));
+            p.setKorisnik(vratiVrijednostString(jsonObject, "korisnik"));
 
             listaParkiralista.add(p);
         }

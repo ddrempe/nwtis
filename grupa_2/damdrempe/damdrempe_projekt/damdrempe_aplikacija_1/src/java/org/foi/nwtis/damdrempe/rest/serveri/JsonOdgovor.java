@@ -45,7 +45,8 @@ public class JsonOdgovor {
                     .add("latitude", parkiraliste.getGeoloc().getLatitude())
                     .add("longitude", parkiraliste.getGeoloc().getLongitude())
                     .add("kapacitet", parkiraliste.getKapacitet())
-                    .add("status", parkiraliste.getStatus()));
+                    .add("status", parkiraliste.getStatus())
+                    .add("korisnik", parkiraliste.getKorisnik()));
         }
         
         return jsonBuilder.build();

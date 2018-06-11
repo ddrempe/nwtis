@@ -5,6 +5,6 @@
 <entry key="port">8000</entry>
 <entry key="adresa">127.0.0.1</entry>
 <entry key="stranicenjePogled1">5</entry>
-<entry key="korisnickoIme">pero</entry>
+<entry key="korisnickoIme">admin</entry>
 <entry key="lozinka">123456</entry>
 </properties>
